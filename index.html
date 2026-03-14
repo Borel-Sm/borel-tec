@@ -35,7 +35,7 @@
         
         /* CALENDÁRIO COM AGENDA */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; }
-        .dia { background: #21262d; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; transition: 0.2s; cursor: pointer; position: relative; }
+        .dia { background: #21262d; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; transition: 0.2s; cursor: pointer; position: relative; min-height: 40px; display: flex; align-items: center; justify-content: center; }
         .dia-ok { background: #238636 !important; border-color: #39ff14 !important; font-weight: bold; }
         .dia-meta { border-bottom: 3px solid #58a6ff !important; }
 
@@ -94,7 +94,7 @@
 
     <div class="card">
         <h3 style="color:#58a6ff">📅 AGENDA E MEMÓRIA</h3>
-        <p style="font-size: 0.75rem; color: #8b949e; margin-bottom: 10px;">Clique no dia para definir a meta.</p>
+        <p style="font-size: 0.75rem; color: #8b949e; margin-bottom: 10px;">Clique no dia para programar carga ou ver produção.</p>
         <div class="cal-grid" id="calendario"></div>
         <button class="btn-red" onclick="zerarCalendario()" style="background:#4a0000; margin-top: 15px;">ZERAR TUDO (MÊS)</button>
     </div>
@@ -122,10 +122,10 @@
             "FLY":"FLY", "MEGA":"MEGA", "BELLA":"BELLA", "BOSS":"BOSS", "FAZANO":"FAZANO", "TIVOLI":"TIVOLI", "PARATY":"PARATY"
         };
 
-        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v16')) || [];
-        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v16')) || {};
-        let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v16')) || [];
-        let agendaMetas = JSON.parse(localStorage.getItem('borel_metas_v16')) || {};
+        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v17')) || [];
+        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v17')) || {};
+        let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v17')) || [];
+        let agendaMetas = JSON.parse(localStorage.getItem('borel_metas_v17')) || {};
 
         function autenticar() {
             if(document.getElementById('user').value === "BorelTec" && document.getElementById('pass').value === "Borel77") {
@@ -135,12 +135,12 @@
         }
 
         function salvar() {
-            localStorage.setItem('borel_h_v16', JSON.stringify(historicoGeral));
-            localStorage.setItem('borel_s_v16', document.getElementById('somaDia').innerText);
-            localStorage.setItem('borel_m_v16', document.getElementById('metaValor').value);
-            localStorage.setItem('borel_c_v16', JSON.stringify(memoriaCal));
-            localStorage.setItem('borel_ativas_v16', JSON.stringify(cargasAtivas));
-            localStorage.setItem('borel_metas_v16', JSON.stringify(agendaMetas));
+            localStorage.setItem('borel_h_v17', JSON.stringify(historicoGeral));
+            localStorage.setItem('borel_s_v17', document.getElementById('somaDia').innerText);
+            localStorage.setItem('borel_m_v17', document.getElementById('metaValor').value);
+            localStorage.setItem('borel_c_v17', JSON.stringify(memoriaCal));
+            localStorage.setItem('borel_ativas_v17', JSON.stringify(cargasAtivas));
+            localStorage.setItem('borel_metas_v17', JSON.stringify(agendaMetas));
         }
 
         function adicionarManual() {
@@ -210,17 +210,27 @@
         }
 
         function renderCal() {
-            const cal = document.getElementById('calendario'); cal.innerHTML = "";
+            const cal = document.getElementById('calendario'); 
+            if(!cal) return;
+            cal.innerHTML = "";
             const hoje = new Date();
             const diasMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).getDate();
+            
             for(let i=1; i<=diasMes; i++) {
                 const key = `${hoje.getFullYear()}-${hoje.getMonth()}-${i}`;
-                const div = document.createElement('div'); div.className = 'dia'; div.innerText = i;
+                const div = document.createElement('div'); 
+                div.className = 'dia'; 
+                div.innerText = i;
+                
                 if(memoriaCal[key]) div.classList.add('dia-ok');
                 if(agendaMetas[key]) div.classList.add('dia-meta');
+                
                 div.onclick = () => {
-                    const m = prompt(`DIA ${i}\nProdução: ${memoriaCal[key]||0}\nMeta Agendada: ${agendaMetas[key]||"Nenhuma"}\n\nNova Meta:`, agendaMetas[key]||"");
-                    if(m !== null) { m==="" ? delete agendaMetas[key] : agendaMetas[key]=parseInt(m); renderCal(); salvar(); carregarMetaHoje(); }
+                    const m = prompt(`DIA ${i}\nProdução Salva: ${memoriaCal[key]||0}\nMeta Agendada: ${agendaMetas[key]||"Nenhuma"}\n\nDigite a nova META para este dia:`, agendaMetas[key]||"");
+                    if(m !== null) { 
+                        m==="" ? delete agendaMetas[key] : agendaMetas[key]=parseInt(m); 
+                        renderCal(); salvar(); carregarMetaHoje(); 
+                    }
                 };
                 cal.appendChild(div);
             }
@@ -229,7 +239,9 @@
         function carregarMetaHoje() {
             const h = new Date();
             const key = `${h.getFullYear()}-${h.getMonth()}-${h.getDate()}`;
-            if(agendaMetas[key]) document.getElementById('metaValor').value = agendaMetas[key];
+            if(agendaMetas[key]) {
+                document.getElementById('metaValor').value = agendaMetas[key];
+            }
         }
 
         function limparHistorico() { if(confirm("Limpar tela?")) { historicoGeral=[]; document.getElementById('somaDia').innerText="0"; renderHistorico(); salvar(); } }
@@ -242,9 +254,16 @@
 
         window.onload = () => {
             const log = localStorage.getItem('borel_sessao');
-            if(log && (new Date().getTime() - log < 12*60*60*1000)) document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v16') || "0";
-            carregarMetaHoje(); renderCargas(); renderHistorico(); renderCal();
+            if(log && (new Date().getTime() - log < 12*60*60*1000)) {
+                document.getElementById('tela-login').style.display = 'none';
+            }
+            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v17') || "0";
+            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v17') || "";
+            
+            carregarMetaHoje(); 
+            renderCargas(); 
+            renderHistorico(); 
+            renderCal();
         };
     </script>
 </body>
