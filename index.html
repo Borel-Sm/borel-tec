@@ -3,48 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borel Tec - Terminal Oficial</title>
+    <title>Borel Tec - Sistema Inteligente</title>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 110px 15px 20px 15px; background: #0d1117; }
-        
-        /* Login */
         #tela-login { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { position: relative; border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; height: 400px; }
-        .login-card img.fundo-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .login-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 30px; box-sizing: border-box; background: rgba(0,0,0,0.5); }
-        .login-card h3 { color: #ffffff; margin-bottom: 25px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-top: 0; }
-        .login-card input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(1, 4, 9, 0.8); border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; outline: none; }
-
-        /* Interface Principal */
+        .login-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 40px 20px; background: #161b22; }
+        .login-card input { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; box-sizing: border-box; }
         .minha-logo { position: fixed; top: 15px; left: 15px; height: 50px; z-index: 1001; }
         .top-btns { position: fixed; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 1000; }
-        .btn-top { background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 10px 15px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; }
-        .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        
-        .meta-container { background: #161b22; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #30363d; }
-        .progress-bg { background: #30363d; height: 18px; border-radius: 9px; margin-top: 10px; overflow: hidden; }
-        .progress-fill { background: #238636; height: 100%; width: 0%; transition: width 0.5s; }
-
+        .btn-top { background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 10px 15px; border-radius: 6px; font-weight: bold; }
+        .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.2rem; }
         .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
-        select, input[type="number"], input[type="text"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
-
-        .item { background: rgba(48, 54, 61, 0.5); border-left: 4px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 4px; position: relative; }
+        .item { background: rgba(48, 54, 61, 0.5); border-left: 4px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 4px; }
+        .item.pausado { border-left-color: #f1e05a; opacity: 0.5; }
         .btn-green { background: #238636; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; }
         .btn-red { background: #da3633; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; margin-top: 10px; }
-
-        /* Histórico */
-        #listaHistorico { max-height: 250px; overflow-y: auto; margin-bottom: 10px; font-size: 0.85rem; }
-        .historico-item { border-bottom: 1px solid #30363d; padding: 5px 0; }
-        
-        /* CALENDARIO */
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 10px; }
-        .dia { background: #21262d; padding: 8px 0; text-align: center; border-radius: 4px; font-size: 0.75rem; border: 1px solid #30363d; }
-        .dia-ok { background: #238636 !important; cursor: pointer; border-color: #39ff14; }
-
-        /* CALCULADORA MODAL */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #161b22; padding: 20px; border-radius: 12px; z-index: 2000; border: 1px solid #30363d; width: 280px; }
-        #calc-display { width: 100%; height: 50px; background: #010409; color: #39ff14; text-align: right; font-size: 1.5rem; border: 1px solid #30363d; margin-bottom: 10px; padding: 5px; box-sizing: border-box; }
+        .btn-mini { width: auto; padding: 8px 12px; font-size: 0.8rem; margin-top: 8px; margin-right: 5px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; }
+        select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; }
+        .dia { background: #21262d; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; }
+        .dia-ok { background: #238636 !important; border-color: #39ff14; }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #161b22; padding: 20px; border-radius: 12px; z-index: 2000; border: 2px solid #30363d; width: 280px; }
+        #calc-display { width: 100%; height: 50px; background: #010409; color: #39ff14; text-align: right; font-size: 1.5rem; border: 1px solid #30363d; margin-bottom: 10px; padding: 10px; box-sizing: border-box; }
         .grid-calc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .btn-c { padding: 15px; background: #21262d; color: white; border: 1px solid #30363d; border-radius: 4px; font-weight: bold; }
     </style>
@@ -53,62 +34,52 @@
 
     <div id="tela-login">
         <div class="login-card">
-            <img src="fundo.jpg" class="fundo-img">
-            <div class="login-content">
-                <h3>SISTEMA DE PRODUÇÃO</h3>
-                <input type="text" id="user" placeholder="USUÁRIO">
-                <input type="password" id="pass" placeholder="SENHA">
-                <button class="btn-green" onclick="autenticar()">ACESSAR</button>
-                <p id="erro" style="color: #f85149; display: none; margin-top: 10px;">Acesso Negado</p>
-            </div>
+            <h3>BOREL TEC</h3>
+            <input type="text" id="user" placeholder="USUÁRIO">
+            <input type="password" id="pass" placeholder="SENHA">
+            <button class="btn-green" onclick="autenticar()">ACESSAR</button>
         </div>
     </div>
 
     <img src="logo.png" class="minha-logo">
     <div class="top-btns">
         <button class="btn-top" onclick="document.getElementById('camera-input').click()">📷 SCAN</button>
-        <button class="btn-top" onclick="toggleModal('calc-modal')">🧮 CALC</button>
+        <button class="btn-top" onclick="toggleCalc()">🧮 CALC</button>
     </div>
     <input type="file" id="camera-input" accept="image/*" capture="camera" style="display:none" onchange="processarImagem(event)">
 
-    <div class="total-box">HOJE: <span id="somaDia">0</span> CADEIRAS</div>
+    <div class="total-box">PRODUÇÃO HOJE: <span id="somaDia">0</span></div>
 
-    <div class="meta-container">
-        <label>Meta Hoje:</label>
-        <input type="number" id="metaValor" placeholder="Ex: 2300" onchange="atualizarProgresso()">
-        <div style="font-size: 0.85rem;">Progresso Meta: <span id="progressoTexto">0%</span></div>
-        <div class="progress-bg"><div id="barraFill" class="progress-fill"></div></div>
+    <div class="card" style="margin-top:15px">
+        <label>Meta do Dia:</label>
+        <input type="number" id="metaValor" placeholder="Ex: 2300" onchange="salvar()">
     </div>
 
     <div class="card">
-        <h3>Lançar Modelo</h3>
+        <h3>Lançar Carga</h3>
         <select id="modelo">
-            <option value="ARMANI">ARMANI</option><option value="BELLA">BELLA</option>
-            <option value="BOSS">BOSS</option><option value="FAZANO">FAZANO</option>
-            <option value="FLY">FLY</option><option value="IMOLA">IMOLA</option>
-            <option value="MALTA">MALTA</option><option value="MEGA">MEGA</option>
-            <option value="PARATY">PARATY</option><option value="RAVEL">RAVEL</option>
-            <option value="SCOTT">SCOTT</option><option value="TIVOLI">TIVOLI</option>
+            <option value="MALTA">MALTA</option><option value="RAVEL">RAVEL</option><option value="ARMANI">ARMANI</option>
+            <option value="IMOLA">IMOLA</option><option value="SCOTT">SCOTT</option><option value="FLY">FLY</option>
+            <option value="MEGA">MEGA</option><option value="BELLA">BELLA</option><option value="BOSS">BOSS</option>
+            <option value="FAZANO">FAZANO</option><option value="TIVOLI">TIVOLI</option><option value="PARATY">PARATY</option>
         </select>
-        <input type="number" id="quantidade" placeholder="Qtd">
-        <button class="btn-green" style="background:#1f6feb" onclick="adicionarCarga()">INICIAR CARGA</button>
+        <input type="number" id="quantidade" placeholder="Quantidade">
+        <button class="btn-green" style="background:#1f6feb" onclick="adicionarManual()">INICIAR CARGA</button>
     </div>
 
     <div id="listaProducao"></div>
 
     <div class="card">
-        <h3>Histórico e Relatório</h3>
-        <div id="listaHistorico"></div>
-        <button class="btn-green" onclick="enviarZap()">📤 ENVIAR RELATÓRIO WHATSAPP</button>
-        <button class="btn-green" style="background:#8957e5; margin-top:10px;" onclick="fecharDia()">💾 SALVAR NO CALENDÁRIO</button>
-        <button class="btn-red" style="background:#484f58" onclick="limparHistorico()">LIMPAR APENAS HISTÓRICO</button>
+        <h3>Histórico e Relatórios</h3>
+        <div id="listaHistorico" style="max-height: 200px; overflow-y: auto; margin-bottom:10px;"></div>
+        <button class="btn-green" onclick="enviarZap()">📤 WHATSAPP INTELIGENTE</button>
+        <button class="btn-green" style="background:#8957e5; margin-top:10px" onclick="fecharDia()">💾 SALVAR NO CALENDÁRIO</button>
     </div>
 
     <div class="card">
-        <h3 style="color:#58a6ff">📅 MEMÓRIA DE PRODUÇÃO</h3>
-        <div id="mesTitulo" style="text-align:center; font-weight:bold; color:#58a6ff; margin-bottom:10px"></div>
+        <h3 style="color:#58a6ff">📅 PRODUÇÃO MENSAL</h3>
         <div class="cal-grid" id="calendario"></div>
-        <button class="btn-red" onclick="zerarTudo()" style="margin-top:20px">REINICIAR TUDO (Sair)</button>
+        <button class="btn-red" onclick="limparTudo()" style="background:#484f58">ZERAR HOJE</button>
     </div>
 
     <div id="calc-modal" class="modal">
@@ -118,198 +89,155 @@
             <button class="btn-c" onclick="calcOp('/')">/</button><button class="btn-c" onclick="calcOp('*')">x</button>
             <button class="btn-c" onclick="calcNum('7')">7</button><button class="btn-c" onclick="calcNum('8')">8</button><button class="btn-c" onclick="calcNum('9')">9</button><button class="btn-c" onclick="calcOp('-')">-</button>
             <button class="btn-c" onclick="calcNum('4')">4</button><button class="btn-c" onclick="calcNum('5')">5</button><button class="btn-c" onclick="calcNum('6')">6</button><button class="btn-c" onclick="calcOp('+')">+</button>
-            <button class="btn-c" onclick="calcNum('1')">1</button><button class="btn-c" onclick="calcNum('2')">2</button><button class="btn-c" onclick="calcNum('3')">3</button>
-            <button class="btn-c" style="background:#238636; grid-column: span 2;" onclick="calcResult()">=</button><button class="btn-c" onclick="calcNum('0')">0</button>
-            <button class="btn-c" style="grid-column: span 4; background:#484f58; margin-top:10px" onclick="toggleModal('calc-modal')">FECHAR</button>
+            <button class="btn-c" onclick="calcNum('1')">1</button><button class="btn-c" onclick="calcNum('2')">2</button><button class="btn-c" onclick="calcNum('3')">3</button><button class="btn-c" style="background:#238636; grid-row: span 2;" onclick="calcResult()">=</button>
+            <button class="btn-c" style="grid-column: span 2;" onclick="calcNum('0')">0</button><button class="btn-c" onclick="calcNum('.')">.</button>
         </div>
+        <button class="btn-red" onclick="toggleCalc()" style="width:100%; margin-top:10px;">FECHAR</button>
     </div>
 
     <script>
-        // --- LOGIN 12H ---
-        function autenticar() {
-            const u = document.getElementById('user').value.trim();
-            const p = document.getElementById('pass').value.trim();
-            if(u === "BorelTec" && p === "Borel77") {
-                const agora = new Date().getTime();
-                localStorage.setItem('login_time', agora);
-                document.getElementById('tela-login').style.display = 'none';
-            } else { document.getElementById('erro').style.display = 'block'; }
-        }
+        const de_para = {
+            "PARIS":"MALTA", "BELGA":"MALTA", "VIGOR":"MALTA", "LUNA":"MALTA", "MALTA":"MALTA",
+            "NOVITA":"RAVEL", "RAVEL":"RAVEL",
+            "AREZO":"ARMANI", "MALIBU":"ARMANI", "ARMANI":"ARMANI",
+            "SCOT":"SCOTT", "SCOTT":"SCOTT",
+            "DJON":"IMOLA", "IMOLA":"IMOLA",
+            "FLY":"FLY", "MEGA":"MEGA", "BELLA":"BELLA", "BOSS":"BOSS", "FAZANO":"FAZANO", "TIVOLI":"TIVOLI", "PARATY":"PARATY"
+        };
 
-        function verificarLogin() {
-            const salvo = localStorage.getItem('login_time');
-            if (salvo) {
-                const agora = new Date().getTime();
-                const dozeHoras = 12 * 60 * 60 * 1000;
-                if (agora - salvo < dozeHoras) {
-                    document.getElementById('tela-login').style.display = 'none';
-                }
+        function autenticar() {
+            if(document.getElementById('user').value === "BorelTec" && document.getElementById('pass').value === "Borel77") {
+                localStorage.setItem('borel_sessao', new Date().getTime());
+                document.getElementById('tela-login').style.display = 'none';
             }
         }
 
-        // --- CORE DATA V5 ---
-        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v5')) || [];
-        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v5')) || {};
-        
-        // --- MAPA DE CATEGORIAS (Mapeia o original para a categoria) ---
-        const de_para = { 
-            // Categoria Malta
-            "PARIS":"MALTA", "BELGA":"MALTA", "MALTA":"MALTA", "VIGOR":"MALTA", "LUNA":"MALTA",
-            // Categoria Ravel
-            "NOVITA":"RAVEL", "RAVEL":"RAVEL",
-            // Categoria Scott
-            "SCOT":"SCOTT", "SCOTT":"SCOTT",
-            // Categoria Armani
-            "AREZO":"ARMANI", "MALIBU":"ARMANI", "ARMANI":"ARMANI",
-            // As outras continuam igual
-            "FLY":"FLY", "MEGA":"MEGA", "IMOLA":"IMOLA", "DJON":"IMOLA", "BELLA":"BELLA", "BOSS":"BOSS", "FAZANO":"FAZANO", "TIVOLI":"TIVOLI"
-        };
+        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v9')) || [];
+        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v9')) || {};
 
         function salvar() {
-            localStorage.setItem('borel_h_v5', JSON.stringify(historicoGeral));
-            localStorage.setItem('borel_s_v5', document.getElementById('somaDia').innerText);
-            localStorage.setItem('borel_m_v5', document.getElementById('metaValor').value);
-            localStorage.setItem('borel_p_html_v5', document.getElementById('listaProducao').innerHTML);
-            atualizarProgresso();
+            localStorage.setItem('borel_h_v9', JSON.stringify(historicoGeral));
+            localStorage.setItem('borel_s_v9', document.getElementById('somaDia').innerText);
+            localStorage.setItem('borel_m_v9', document.getElementById('metaValor').value);
+            localStorage.setItem('borel_p_v9', document.getElementById('listaProducao').innerHTML);
+            localStorage.setItem('borel_c_v9', JSON.stringify(memoriaCal));
         }
 
-        function atualizarProgresso() {
-            const total = parseInt(document.getElementById('somaDia').innerText);
-            const meta = parseInt(document.getElementById('metaValor').value) || 0;
-            const porc = meta > 0 ? Math.min((total / meta) * 100, 100).toFixed(1) : 0;
-            document.getElementById('barraFill').style.width = porc + "%";
-            document.getElementById('progressoTexto').innerText = porc + "%";
-        }
-
-        function adicionarCarga() {
+        function adicionarManual() {
             const m = document.getElementById('modelo').value;
             const q = document.getElementById('quantidade').value;
             if(!q || q <= 0) return;
-            const ini = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            gerarCardProducao(m, q, ini);
+            gerarCard(m, q, new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}));
             document.getElementById('quantidade').value = ""; salvar();
         }
 
-        // --- GERAR CARD DE PRODUÇÃO ---
-        function gerarCardProducao(mod, qtd, ini) {
-            const categoria = de_para[mod] || mod; // Busca a categoria, se não achar usa o nome original
+        function gerarCard(mod, qtd, ini) {
+            const modFinal = de_para[mod] || mod;
             const div = document.createElement('div');
             div.className = 'item';
             div.innerHTML = `
-                <strong>${mod}</strong>: ${qtd} un. (Início: ${ini})<br>
-                <small>Categoria: ${categoria}</small><br>
-                <button class="btn-green" style="width:auto; margin-top:5px; padding:8px" onclick="concluir(this, '${mod}', ${qtd}, '${ini}', '${categoria}')">CONCLUIR</button>
+                <strong>${modFinal}</strong>: <span class="qtd-txt" onclick="editarQtd(this)">${qtd}</span> un.<br>
+                <small>Início: ${ini}</small><br>
+                <button class="btn-green btn-mini" onclick="concluir(this, '${modFinal}')">CONCLUIR</button>
+                <button class="btn-mini" style="background:#f1e05a; color:black" onclick="pausar(this)">PAUSAR</button>
+                <button class="btn-mini" style="background:#da3633; color:white" onclick="excluir(this)">EXCLUIR</button>
             `;
             document.getElementById('listaProducao').appendChild(div);
         }
 
-        function concluir(btn, modOriginal, qtd, ini, cat) {
+        function editarQtd(span) {
+            const n = prompt("Nova quantidade:", span.innerText);
+            if(n && !isNaN(n)) { span.innerText = n; salvar(); }
+        }
+
+        function pausar(btn) {
+            const item = btn.closest('.item');
+            item.classList.toggle('pausado');
+            btn.innerText = item.classList.contains('pausado') ? 'RETOMAR' : 'PAUSAR';
+            salvar();
+        }
+
+        function excluir(btn) {
+            if(confirm("Excluir?")) { btn.closest('.item').remove(); salvar(); }
+        }
+
+        function concluir(btn, mod) {
+            const item = btn.closest('.item');
+            const qtd = parseInt(item.querySelector('.qtd-txt').innerText);
             const fim = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
             document.getElementById('somaDia').innerText = parseInt(document.getElementById('somaDia').innerText) + qtd;
-            historicoGeral.push({ modOriginal, qtd, cat, ini, fim, data: new Date().toLocaleDateString() });
-            btn.closest('.item').remove(); renderHistorico(); salvar();
+            historicoGeral.push({ mod, qtd, fim });
+            item.remove(); renderHistorico(); salvar();
         }
 
         function renderHistorico() {
             const lista = document.getElementById('listaHistorico'); lista.innerHTML = "";
             historicoGeral.slice().reverse().forEach(i => {
-                lista.innerHTML += `<div class="historico-item">
-                    ✅ <strong>${i.modOriginal}</strong>: ${i.qtd}un <small>Categoria: ${i.cat}</small>
-                    <small style="display:block; color:#8b949e">🕒 ${i.ini} às ${i.fim}</small>
-                </div>`;
+                lista.innerHTML += `<div style="border-bottom:1px solid #30363d; padding:5px">✅ ${i.mod}: ${i.qtd}un - ${i.fim}</div>`;
             });
         }
 
-        // --- WHATSAPP (Relatório Detalhado com Mapeamento) ---
         function enviarZap() {
-            const total = document.getElementById('somaDia').innerText;
-            const meta = document.getElementById('metaValor').value || 0;
-            let status = parseInt(total) >= parseInt(meta) ? "✅ *META CONCLUÍDA*" : "❌ *META NÃO CONCLUÍDA*";
+            const total = parseInt(document.getElementById('somaDia').innerText);
+            const meta = parseInt(document.getElementById('metaValor').value) || 0;
             
+            // Relatório Inteligente: Agrupa por categoria
+            let resumo = {};
+            historicoGeral.forEach(i => {
+                resumo[i.mod] = (resumo[i.mod] || 0) + i.qtd;
+            });
+
             let msg = `*RELATÓRIO BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n--------------------\n`;
-            
-            // Lista Detalhada
-            historicoGeral.forEach(i => {
-                msg += `• ${i.modOriginal}: ${i.qtd}un (${i.ini}-${i.fim})\n`;
-            });
-            
-            msg += `--------------------\n`;
-            
-            // Resumo por Categorias (Cálculo Automático)
-            let resumoCat = {};
-            historicoGeral.forEach(i => {
-                if(!resumoCat[i.cat]) resumoCat[i.cat] = 0;
-                resumoCat[i.cat] += i.qtd;
-            });
-            
-            msg += `*RESUMO CATEGORIAS*\n`;
-            for(let cat in resumoCat) {
-                msg += `${cat}: ${resumoCat[cat]} un.\n`;
+            for (let mod in resumo) {
+                msg += `• ${mod}: ${resumo[mod]} un.\n`;
             }
-            
-            msg += `--------------------\n*TOTAL GERAL:* ${total}\n*META:* ${meta}\n\n${status}`;
+            msg += `--------------------\n*TOTAL:* ${total}\n*META:* ${meta}\n`;
+            msg += total >= meta ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
+
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
-        // --- CALENDARIO ---
         function renderCal() {
-            const d = new Date(); const mes = d.getMonth(); const ano = d.getFullYear();
-            document.getElementById('mesTitulo').innerText = `${d.toLocaleString('pt-br',{month:'long'})} ${ano}`;
-            const diasMes = new Date(ano, mes + 1, 0).getDate();
             const cal = document.getElementById('calendario'); cal.innerHTML = "";
+            const diasMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
             for(let i=1; i<=diasMes; i++) {
-                const key = `${ano}-${mes}-${i}`;
+                const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${i}`;
                 const div = document.createElement('div'); div.className = 'dia'; div.innerText = i;
-                if(memoriaCal[key]) { 
-                    div.classList.add('dia-ok'); 
-                    div.onclick = () => alert(`Dia ${i}:\nTotal Produzido: ${memoriaCal[key].p}\nMeta Definida: ${memoriaCal[key].m}`);
-                }
+                if(memoriaCal[key]) div.classList.add('dia-ok');
                 cal.appendChild(div);
             }
         }
 
         function fecharDia() {
-            const d = new Date(); const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-            if(confirm("Salvar produção de hoje no histórico?")) {
-                memoriaCal[key] = { p: document.getElementById('somaDia').innerText, m: document.getElementById('metaValor').value };
-                localStorage.setItem('borel_cal_v5', JSON.stringify(memoriaCal));
-                renderCal();
-            }
+            const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+            memoriaCal[key] = true; salvar(); renderCal(); alert("Dia salvo!");
         }
 
-        // --- SCANNER APRIMORADO ---
         async function processarImagem(e) {
-            const file = e.target.files[0]; if(!file) return;
+            const file = e.target.files[0];
             Tesseract.recognize(file, 'por').then(({ data: { text } }) => {
                 text.toUpperCase().split('\n').forEach(l => {
-                    // RegEx: Busca Número (Quantidade) e depois Palavra (Modelo)
-                    const match = l.match(/(\d+)\s+([A-Z]+)/);
-                    if(match) {
-                        const qtd = match[1];
-                        const modOrig = match[2];
-                        gerarCardProducao(modOrig, qtd, new Date().toLocaleTimeString([],{hour:'2-digit', minute:'2-digit'}));
-                    }
+                    const m = l.match(/(\d+)\s+([A-Z]+)/);
+                    if(m) gerarCard(m[2], m[1], new Date().toLocaleTimeString([],{hour:'2-digit', minute:'2-digit'}));
                 });
                 salvar();
             });
         }
 
-        // --- FERRAMENTAS ---
-        function toggleModal(id) { const m = document.getElementById(id); m.style.display = m.style.display==='block' ? 'none':'block'; }
-        function calcNum(n) { const d = document.getElementById('calc-display'); d.value = d.value==='0' ? n : d.value+n; }
+        function toggleCalc() { const m = document.getElementById('calc-modal'); m.style.display = m.style.display==='block'?'none':'block'; }
+        function calcNum(n) { const d = document.getElementById('calc-display'); d.value = d.value==='0'?n:d.value+n; }
         function calcOp(o) { document.getElementById('calc-display').value += o; }
         function calcClear() { document.getElementById('calc-display').value = '0'; }
         function calcResult() { try { document.getElementById('calc-display').value = eval(document.getElementById('calc-display').value); } catch(e){ calcClear(); } }
-
-        function limparHistorico() { if(confirm("Zerar produção de hoje?")) { historicoGeral=[]; document.getElementById('somaDia').innerText="0"; renderHistorico(); salvar(); } }
-        function zerarTudo() { if(confirm("Apagar TUDO e exigirá novo login. Confirmar?")) { localStorage.clear(); location.reload(); } }
+        function limparTudo() { if(confirm("Zerar hoje?")) { localStorage.removeItem('borel_h_v9'); location.reload(); } }
 
         window.onload = () => {
-            verificarLogin();
-            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v5') || "0";
-            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v5') || "";
-            document.getElementById('listaProducao').innerHTML = localStorage.getItem('borel_p_html_v5') || "";
-            renderHistorico(); renderCal(); atualizarProgresso();
+            const log = localStorage.getItem('borel_sessao');
+            if(log && (new Date().getTime() - log < 12*60*60*1000)) document.getElementById('tela-login').style.display = 'none';
+            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v9') || "0";
+            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v9') || "";
+            document.getElementById('listaProducao').innerHTML = localStorage.getItem('borel_p_v9') || "";
+            renderHistorico(); renderCal();
         };
     </script>
 </body>
