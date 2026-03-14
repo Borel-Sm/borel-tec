@@ -22,9 +22,9 @@
         .btn-mini { width: auto; padding: 8px 12px; font-size: 0.8rem; margin-top: 8px; margin-right: 5px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; }
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
         
-        /* CALENDARIO ESTILO BOTÃO */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; }
         .dia { background: #21262d; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; transition: 0.2s; }
+        /* Calendário agora com estilo de botão clicável */
         .dia-ok { background: #238636 !important; border-color: #39ff14 !important; cursor: pointer; font-weight: bold; box-shadow: 0 0 5px #238636; }
         .dia-ok:active { transform: scale(0.9); }
 
@@ -110,9 +110,9 @@
             "FLY":"FLY", "MEGA":"MEGA", "BELLA":"BELLA", "BOSS":"BOSS", "FAZANO":"FAZANO", "TIVOLI":"TIVOLI", "PARATY":"PARATY"
         };
 
-        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v13')) || [];
-        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v13')) || {};
-        let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v13')) || [];
+        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v14')) || [];
+        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v14')) || {};
+        let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v14')) || [];
 
         function autenticar() {
             if(document.getElementById('user').value === "BorelTec" && document.getElementById('pass').value === "Borel77") {
@@ -122,11 +122,11 @@
         }
 
         function salvar() {
-            localStorage.setItem('borel_h_v13', JSON.stringify(historicoGeral));
-            localStorage.setItem('borel_s_v13', document.getElementById('somaDia').innerText);
-            localStorage.setItem('borel_m_v13', document.getElementById('metaValor').value);
-            localStorage.setItem('borel_c_v13', JSON.stringify(memoriaCal));
-            localStorage.setItem('borel_ativas_v13', JSON.stringify(cargasAtivas));
+            localStorage.setItem('borel_h_v14', JSON.stringify(historicoGeral));
+            localStorage.setItem('borel_s_v14', document.getElementById('somaDia').innerText);
+            localStorage.setItem('borel_m_v14', document.getElementById('metaValor').value);
+            localStorage.setItem('borel_c_v14', JSON.stringify(memoriaCal));
+            localStorage.setItem('borel_ativas_v14', JSON.stringify(cargasAtivas));
         }
 
         function adicionarManual() {
@@ -182,7 +182,6 @@
             const modFinal = de_para[c.mod] || c.mod;
             document.getElementById('somaDia').innerText = parseInt(document.getElementById('somaDia').innerText) + c.qtd;
             
-            // AQUI ESTAVA O ERRO: salvando o início corretamente
             historicoGeral.push({ mod: modFinal, qtd: c.qtd, ini: c.ini, fim: fim });
             cargasAtivas = cargasAtivas.filter(x => x.id !== id);
             renderCargas(); renderHistorico(); salvar();
@@ -198,6 +197,7 @@
             });
         }
 
+        // CORREÇÃO: WhatsApp agora inclui a faixa completa (Início - Fim)
         function enviarZap() {
             const total = document.getElementById('somaDia').innerText;
             const meta = document.getElementById('metaValor').value || 0;
@@ -215,7 +215,7 @@
             const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
             memoriaCal[key] = total; 
             salvar(); renderCal();
-            alert("Salvo: " + total + " un.");
+            alert("Dia salvo: " + total + " un.");
         }
 
         function renderCal() {
@@ -246,6 +246,20 @@
             }
         }
 
+        async function processarImagem(e) {
+            const file = e.target.files[0];
+            Tesseract.recognize(file, 'por').then(({ data: { text } }) => {
+                text.toUpperCase().split('\n').forEach(l => {
+                    const m = l.match(/(\d+)\s+([A-Z]+)/);
+                    if(m) {
+                        const nova = { id: Date.now() + Math.random(), mod: m[2], qtd: parseInt(m[1]), ini: new Date().toLocaleTimeString([],{hour:'2-digit', minute:'2-digit'}), pausado: false };
+                        cargasAtivas.push(nova);
+                    }
+                });
+                renderCargas(); salvar();
+            });
+        }
+
         function toggleCalc() { const m = document.getElementById('calc-modal'); m.style.display = m.style.display==='block'?'none':'block'; }
         function calcNum(n) { const d = document.getElementById('calc-display'); d.value = d.value==='0'?n:d.value+n; }
         function calcOp(o) { document.getElementById('calc-display').value += o; }
@@ -255,8 +269,8 @@
         window.onload = () => {
             const log = localStorage.getItem('borel_sessao');
             if(log && (new Date().getTime() - log < 12*60*60*1000)) document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v13') || "0";
-            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v13') || "";
+            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v14') || "0";
+            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v14') || "";
             renderCargas(); renderHistorico(); renderCal();
         };
     </script>
