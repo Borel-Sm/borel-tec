@@ -74,12 +74,13 @@
         <div id="listaHistorico" style="max-height: 200px; overflow-y: auto; margin-bottom:10px;"></div>
         <button class="btn-green" onclick="enviarZap()">📤 WHATSAPP INTELIGENTE</button>
         <button class="btn-green" style="background:#8957e5; margin-top:10px" onclick="fecharDia()">💾 SALVAR NO CALENDÁRIO</button>
+        <button class="btn-red" onclick="limparHistorico()" style="background:#484f58; margin-top:10px">🗑️ LIMPAR HISTÓRICO</button>
     </div>
 
     <div class="card">
         <h3 style="color:#58a6ff">📅 PRODUÇÃO MENSAL</h3>
         <div class="cal-grid" id="calendario"></div>
-        <button class="btn-red" onclick="limparTudo()" style="background:#484f58">ZERAR HOJE</button>
+        <button class="btn-red" onclick="zerarTudo()" style="background:#484f58">ZERAR TUDO (HOJE)</button>
     </div>
 
     <div id="calc-modal" class="modal">
@@ -105,6 +106,10 @@
             "FLY":"FLY", "MEGA":"MEGA", "BELLA":"BELLA", "BOSS":"BOSS", "FAZANO":"FAZANO", "TIVOLI":"TIVOLI", "PARATY":"PARATY"
         };
 
+        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v11')) || [];
+        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v11')) || {};
+        let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v11')) || [];
+
         function autenticar() {
             if(document.getElementById('user').value === "BorelTec" && document.getElementById('pass').value === "Borel77") {
                 localStorage.setItem('borel_sessao', new Date().getTime());
@@ -112,62 +117,69 @@
             }
         }
 
-        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v10')) || [];
-        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v10')) || {};
-
         function salvar() {
-            localStorage.setItem('borel_h_v10', JSON.stringify(historicoGeral));
-            localStorage.setItem('borel_s_v10', document.getElementById('somaDia').innerText);
-            localStorage.setItem('borel_m_v10', document.getElementById('metaValor').value);
-            localStorage.setItem('borel_p_v10', document.getElementById('listaProducao').innerHTML);
-            localStorage.setItem('borel_c_v10', JSON.stringify(memoriaCal));
+            localStorage.setItem('borel_h_v11', JSON.stringify(historicoGeral));
+            localStorage.setItem('borel_s_v11', document.getElementById('somaDia').innerText);
+            localStorage.setItem('borel_m_v11', document.getElementById('metaValor').value);
+            localStorage.setItem('borel_c_v11', JSON.stringify(memoriaCal));
+            localStorage.setItem('borel_ativas_v11', JSON.stringify(cargasAtivas));
         }
 
         function adicionarManual() {
             const m = document.getElementById('modelo').value;
-            const q = document.getElementById('quantidade').value;
+            const q = parseInt(document.getElementById('quantidade').value);
             if(!q || q <= 0) return;
-            gerarCard(m, q, new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}));
-            document.getElementById('quantidade').value = ""; salvar();
+            const novaCarga = { id: Date.now(), mod: m, qtd: q, ini: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), pausado: false };
+            cargasAtivas.push(novaCarga);
+            document.getElementById('quantidade').value = "";
+            renderCargas(); salvar();
         }
 
-        function gerarCard(mod, qtd, ini) {
-            const modFinal = de_para[mod] || mod;
-            const div = document.createElement('div');
-            div.className = 'item';
-            div.innerHTML = `
-                <strong>${modFinal}</strong>: <span class="qtd-txt" onclick="editarQtd(this)">${qtd}</span> un.<br>
-                <small>Início: ${ini}</small><br>
-                <button class="btn-green btn-mini" onclick="concluir(this, '${modFinal}')">CONCLUIR</button>
-                <button class="btn-mini" style="background:#f1e05a; color:black" onclick="pausar(this)">PAUSAR</button>
-                <button class="btn-mini" style="background:#da3633; color:white" onclick="excluir(this)">EXCLUIR</button>
-            `;
-            document.getElementById('listaProducao').appendChild(div);
+        function renderCargas() {
+            const lista = document.getElementById('listaProducao');
+            lista.innerHTML = "";
+            cargasAtivas.forEach(c => {
+                const modFinal = de_para[c.mod] || c.mod;
+                const div = document.createElement('div');
+                div.className = `item ${c.pausado ? 'pausado' : ''}`;
+                div.innerHTML = `
+                    <strong>${modFinal}</strong>: <span class="qtd-txt" onclick="editarQtd(${c.id})">${c.qtd}</span> un.<br>
+                    <small>Início: ${c.ini}</small><br>
+                    <button class="btn-green btn-mini" onclick="concluir(${c.id})">CONCLUIR</button>
+                    <button class="btn-mini" style="background:#f1e05a; color:black" onclick="pausar(${c.id})">${c.pausado ? 'RETOMAR' : 'PAUSAR'}</button>
+                    <button class="btn-mini" style="background:#da3633; color:white" onclick="excluir(${c.id})">EXCLUIR</button>
+                `;
+                lista.appendChild(div);
+            });
         }
 
-        function editarQtd(span) {
-            const n = prompt("Nova quantidade:", span.innerText);
-            if(n && !isNaN(n)) { span.innerText = n; salvar(); }
+        function editarQtd(id) {
+            const c = cargasAtivas.find(x => x.id === id);
+            const n = prompt("Nova quantidade:", c.qtd);
+            if(n && !isNaN(n)) { c.qtd = parseInt(n); renderCargas(); salvar(); }
         }
 
-        function pausar(btn) {
-            const item = btn.closest('.item');
-            item.classList.toggle('pausado');
-            btn.innerText = item.classList.contains('pausado') ? 'RETOMAR' : 'PAUSAR';
-            salvar();
+        function pausar(id) {
+            const c = cargasAtivas.find(x => x.id === id);
+            c.pausado = !c.pausado;
+            renderCargas(); salvar();
         }
 
-        function excluir(btn) {
-            if(confirm("Excluir carga?")) { btn.closest('.item').remove(); salvar(); }
+        function excluir(id) {
+            if(confirm("Excluir carga?")) {
+                cargasAtivas = cargasAtivas.filter(x => x.id !== id);
+                renderCargas(); salvar();
+            }
         }
 
-        function concluir(btn, mod) {
-            const item = btn.closest('.item');
-            const qtd = parseInt(item.querySelector('.qtd-txt').innerText);
+        function concluir(id) {
+            const c = cargasAtivas.find(x => x.id === id);
             const fim = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            document.getElementById('somaDia').innerText = parseInt(document.getElementById('somaDia').innerText) + qtd;
-            historicoGeral.push({ mod, qtd, fim });
-            item.remove(); renderHistorico(); salvar();
+            const modFinal = de_para[c.mod] || c.mod;
+            document.getElementById('somaDia').innerText = parseInt(document.getElementById('somaDia').innerText) + c.qtd;
+            historicoGeral.push({ mod: modFinal, qtd: c.qtd, fim: fim });
+            cargasAtivas = cargasAtivas.filter(x => x.id !== id);
+            renderCargas(); renderHistorico(); salvar();
         }
 
         function renderHistorico() {
@@ -175,6 +187,22 @@
             historicoGeral.slice().reverse().forEach(i => {
                 lista.innerHTML += `<div style="border-bottom:1px solid #30363d; padding:5px">✅ ${i.mod}: ${i.qtd}un - ${i.fim}</div>`;
             });
+        }
+
+        function limparHistorico() {
+            if(confirm("Apagar histórico de itens concluídos?")) {
+                historicoGeral = [];
+                document.getElementById('somaDia').innerText = "0";
+                renderHistorico(); salvar();
+            }
+        }
+
+        function zerarTudo() {
+            if(confirm("Zerar toda a produção de hoje?")) {
+                historicoGeral = []; cargasAtivas = [];
+                document.getElementById('somaDia').innerText = "0";
+                renderHistorico(); renderCargas(); salvar();
+            }
         }
 
         function enviarZap() {
@@ -189,6 +217,11 @@
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
+        function fecharDia() {
+            const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+            memoriaCal[key] = true; salvar(); renderCal();
+        }
+
         function renderCal() {
             const cal = document.getElementById('calendario'); cal.innerHTML = "";
             const diasMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
@@ -200,19 +233,17 @@
             }
         }
 
-        function fecharDia() {
-            const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-            memoriaCal[key] = true; salvar(); renderCal();
-        }
-
         async function processarImagem(e) {
             const file = e.target.files[0];
             Tesseract.recognize(file, 'por').then(({ data: { text } }) => {
                 text.toUpperCase().split('\n').forEach(l => {
                     const m = l.match(/(\d+)\s+([A-Z]+)/);
-                    if(m) gerarCard(m[2], m[1], new Date().toLocaleTimeString([],{hour:'2-digit', minute:'2-digit'}));
+                    if(m) {
+                        const nova = { id: Date.now() + Math.random(), mod: m[2], qtd: parseInt(m[1]), ini: new Date().toLocaleTimeString([],{hour:'2-digit', minute:'2-digit'}), pausado: false };
+                        cargasAtivas.push(nova);
+                    }
                 });
-                salvar();
+                renderCargas(); salvar();
             });
         }
 
@@ -221,15 +252,13 @@
         function calcOp(o) { document.getElementById('calc-display').value += o; }
         function calcClear() { document.getElementById('calc-display').value = '0'; }
         function calcResult() { try { document.getElementById('calc-display').value = eval(document.getElementById('calc-display').value); } catch(e){ calcClear(); } }
-        function limparTudo() { if(confirm("Zerar hoje?")) { localStorage.removeItem('borel_h_v10'); location.reload(); } }
 
         window.onload = () => {
             const log = localStorage.getItem('borel_sessao');
             if(log && (new Date().getTime() - log < 12*60*60*1000)) document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v10') || "0";
-            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v10') || "";
-            document.getElementById('listaProducao').innerHTML = localStorage.getItem('borel_p_v10') || "";
-            renderHistorico(); renderCal();
+            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v11') || "0";
+            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v11') || "";
+            renderCargas(); renderHistorico(); renderCal();
         };
     </script>
 </body>
