@@ -7,9 +7,19 @@
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 110px 15px 20px 15px; background: #0d1117; }
-        #tela-login { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 40px 20px; background: #161b22; }
+        
+        /* TELA DE LOGIN */
+        #tela-login { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: #0d1117;
+            background-image: url('background.jpg'); 
+            background-size: cover; background-position: center; 
+            z-index: 9999; display: flex; align-items: center; justify-content: center; 
+        }
+        .login-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 40px 20px; background: rgba(22, 27, 34, 0.9); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .login-card input { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; box-sizing: border-box; }
+        
+        /* INTERFACE */
         .minha-logo { position: fixed; top: 15px; left: 15px; height: 50px; z-index: 1001; }
         .top-btns { position: fixed; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 1000; }
         .btn-top { background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 10px 15px; border-radius: 6px; font-weight: bold; }
@@ -22,10 +32,11 @@
         .btn-mini { width: auto; padding: 8px 12px; font-size: 0.8rem; margin-top: 8px; margin-right: 5px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; }
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
         
+        /* CALENDÁRIO */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; }
-        .dia { background: #21262d; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; transition: 0.2s; }
-        .dia-ok { background: #238636 !important; border-color: #39ff14 !important; cursor: pointer; font-weight: bold; box-shadow: 0 0 5px #238636; }
-        .dia-ok:active { transform: scale(0.9); }
+        .dia { background: #21262d; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; cursor: pointer; }
+        .dia-ok { background: #238636 !important; border-color: #39ff14 !important; font-weight: bold; }
+        .dia-meta { border-bottom: 3px solid #58a6ff !important; }
 
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #161b22; padding: 20px; border-radius: 12px; z-index: 2000; border: 2px solid #30363d; width: 280px; }
         #calc-display { width: 100%; height: 50px; background: #010409; color: #39ff14; text-align: right; font-size: 1.5rem; border: 1px solid #30363d; margin-bottom: 10px; padding: 10px; box-sizing: border-box; }
@@ -37,7 +48,7 @@
 
     <div id="tela-login">
         <div class="login-card">
-            <h3>BOREL TEC</h3>
+            <h3 style="color: white; margin-top: 0;">ACESSO RESTRITO</h3>
             <input type="text" id="user" placeholder="USUÁRIO">
             <input type="password" id="pass" placeholder="SENHA">
             <button class="btn-green" onclick="autenticar()">ACESSAR</button>
@@ -49,7 +60,7 @@
         <button class="btn-top" onclick="document.getElementById('camera-input').click()">📷 SCAN</button>
         <button class="btn-top" onclick="toggleCalc()">🧮 CALC</button>
     </div>
-    <input type="file" id="camera-input" accept="image/*" capture="camera" style="display:none" onchange="processarImagem(event)">
+    <input type="file" id="camera-input" accept="image/*" capture="camera" style="display:none">
 
     <div class="total-box">PRODUÇÃO HOJE: <span id="somaDia">0</span></div>
 
@@ -81,9 +92,9 @@
     </div>
 
     <div class="card">
-        <h3 style="color:#58a6ff">📅 MEMÓRIA DE PRODUÇÃO</h3>
+        <h3 style="color:#58a6ff">📅 AGENDA E MEMÓRIA</h3>
         <div class="cal-grid" id="calendario"></div>
-        <button class="btn-red" onclick="zerarCalendario()" style="background:#4a0000">ZERAR TUDO (MÊS)</button>
+        <button class="btn-red" onclick="zerarCalendario()" style="background:#4a0000; margin-top: 15px;">ZERAR TUDO (MÊS)</button>
     </div>
 
     <div id="calc-modal" class="modal">
@@ -102,16 +113,15 @@
     <script>
         const de_para = {
             "PARIS":"MALTA", "BELGA":"MALTA", "VIGOR":"MALTA", "LUNA":"MALTA", "MALTA":"MALTA",
-            "NOVITA":"RAVEL", "RAVEL":"RAVEL",
-            "AREZO":"ARMANI", "MALIBU":"ARMANI", "ARMANI":"ARMANI",
-            "SCOT":"SCOTT", "SCOTT":"SCOTT",
-            "DJON":"IMOLA", "IMOLA":"IMOLA",
+            "NOVITA":"RAVEL", "RAVEL":"RAVEL", "AREZO":"ARMANI", "MALIBU":"ARMANI", "ARMANI":"ARMANI",
+            "SCOT":"SCOTT", "SCOTT":"SCOTT", "DJON":"IMOLA", "IMOLA":"IMOLA",
             "FLY":"FLY", "MEGA":"MEGA", "BELLA":"BELLA", "BOSS":"BOSS", "FAZANO":"FAZANO", "TIVOLI":"TIVOLI", "PARATY":"PARATY"
         };
 
         let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v16')) || [];
         let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v16')) || {};
         let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v16')) || [];
+        let agendaMetas = JSON.parse(localStorage.getItem('borel_metas_agenda')) || {};
 
         function autenticar() {
             if(document.getElementById('user').value === "BorelTec" && document.getElementById('pass').value === "Borel77") {
@@ -126,6 +136,7 @@
             localStorage.setItem('borel_m_v16', document.getElementById('metaValor').value);
             localStorage.setItem('borel_c_v16', JSON.stringify(memoriaCal));
             localStorage.setItem('borel_ativas_v16', JSON.stringify(cargasAtivas));
+            localStorage.setItem('borel_metas_agenda', JSON.stringify(agendaMetas));
         }
 
         function adicionarManual() {
@@ -139,14 +150,13 @@
         }
 
         function renderCargas() {
-            const lista = document.getElementById('listaProducao');
-            lista.innerHTML = "";
+            const lista = document.getElementById('listaProducao'); lista.innerHTML = "";
             cargasAtivas.forEach(c => {
                 const modFinal = de_para[c.mod] || c.mod;
                 const div = document.createElement('div');
                 div.className = `item ${c.pausado ? 'pausado' : ''}`;
                 div.innerHTML = `
-                    <strong>${modFinal}</strong>: <span class="qtd-txt" onclick="editarQtd(${c.id})">${c.qtd}</span> un.<br>
+                    <strong>${modFinal}</strong>: <span onclick="editarQtd(${c.id})" style="text-decoration:underline; cursor:pointer">${c.qtd}</span> un.<br>
                     <small>⏰ Início: ${c.ini}</small><br>
                     <button class="btn-green btn-mini" onclick="concluir(${c.id})">CONCLUIR</button>
                     <button class="btn-mini" style="background:#f1e05a; color:black" onclick="pausar(${c.id})">${c.pausado ? 'RETOMAR' : 'PAUSAR'}</button>
@@ -178,10 +188,8 @@
         function concluir(id) {
             const c = cargasAtivas.find(x => x.id === id);
             const fim = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            const modFinal = de_para[c.mod] || c.mod;
             document.getElementById('somaDia').innerText = parseInt(document.getElementById('somaDia').innerText) + c.qtd;
-            
-            historicoGeral.push({ mod: modFinal, qtd: c.qtd, ini: c.ini, fim: fim });
+            historicoGeral.push({ mod: de_para[c.mod] || c.mod, qtd: c.qtd, ini: c.ini, fim: fim });
             cargasAtivas = cargasAtivas.filter(x => x.id !== id);
             renderCargas(); renderHistorico(); salvar();
         }
@@ -200,70 +208,47 @@
             const total = document.getElementById('somaDia').innerText;
             const meta = document.getElementById('metaValor').value || 0;
             let msg = `*RELATÓRIO BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n--------------------\n`;
-            historicoGeral.forEach(i => {
-                msg += `• *${i.mod}*: ${i.qtd}un (${i.ini} - ${i.fim})\n`;
-            });
+            historicoGeral.forEach(i => msg += `• *${i.mod}*: ${i.qtd}un (${i.ini} - ${i.fim})\n`);
             msg += `--------------------\n*TOTAL:* ${total}\n*META:* ${meta}\n`;
             msg += parseInt(total) >= parseInt(meta) ? "✅ *META ATINGIDA!*" : "❌ *PENDENTE*";
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
-        // LÓGICA RAIZ CORRIGIDA: Soma independente do que está na tela
         function fecharDia() {
             const totalNaTela = parseInt(document.getElementById('somaDia').innerText);
-            if(totalNaTela === 0) {
-                alert("Não há produção nova concluída para salvar.");
-                return;
-            }
-
+            if(totalNaTela === 0) return alert("Nada para salvar.");
             const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-            let valorJaSalvo = parseInt(memoriaCal[key]) || 0;
-
-            // Soma o que está na tela com o que já estava no cofre do calendário
-            memoriaCal[key] = valorJaSalvo + totalNaTela;
-            
-            alert("Produção de " + totalNaTela + " un. adicionada ao calendário!\nTotal acumulado hoje: " + memoriaCal[key]);
-            
-            // Após salvar no calendário, limpamos a tela automaticamente para evitar duplicidade
-            historicoGeral = [];
-            document.getElementById('somaDia').innerText = "0";
-            
-            renderHistorico(); 
-            salvar(); 
-            renderCal();
+            memoriaCal[key] = (memoriaCal[key] || 0) + totalNaTela;
+            alert("Salvo!");
+            historicoGeral = []; document.getElementById('somaDia').innerText = "0";
+            renderHistorico(); renderCal(); salvar();
         }
 
         function renderCal() {
             const cal = document.getElementById('calendario'); cal.innerHTML = "";
-            const diasMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+            const hoje = new Date();
+            const diasMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).getDate();
             for(let i=1; i<=diasMes; i++) {
-                const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${i}`;
+                const key = `${hoje.getFullYear()}-${hoje.getMonth()}-${i}`;
                 const div = document.createElement('div'); div.className = 'dia'; div.innerText = i;
-                if(memoriaCal[key]) {
-                    div.classList.add('dia-ok');
-                    div.onclick = () => alert("Dia " + i + ": " + memoriaCal[key] + " unidades salvas no cofre.");
-                }
+                if(memoriaCal[key]) div.classList.add('dia-ok');
+                if(agendaMetas[key]) div.classList.add('dia-meta');
+                div.onclick = () => {
+                    const m = prompt(`DIA ${i}\nProdução Salva: ${memoriaCal[key]||0}\nMeta Agendada: ${agendaMetas[key]||""}\nNova Meta:`, agendaMetas[key]||"");
+                    if(m !== null) { m==="" ? delete agendaMetas[key] : agendaMetas[key]=parseInt(m); renderCal(); salvar(); carregarMetaHoje(); }
+                };
                 cal.appendChild(div);
             }
         }
 
-        function limparHistorico() {
-            if(confirm("Limpar lista de cargas concluídas da tela? (Isso NÃO apaga o que já foi salvo no calendário)")) {
-                historicoGeral = []; 
-                document.getElementById('somaDia').innerText = "0";
-                renderHistorico(); salvar();
-            }
+        function carregarMetaHoje() {
+            const h = new Date();
+            const key = `${h.getFullYear()}-${h.getMonth()}-${h.getDate()}`;
+            if(agendaMetas[key]) document.getElementById('metaValor').value = agendaMetas[key];
         }
 
-        function zerarCalendario() {
-            if(confirm("ATENÇÃO: Isso apaga TODA a memória do calendário e o histórico da tela. Deseja continuar?")) {
-                memoriaCal = {};
-                historicoGeral = [];
-                document.getElementById('somaDia').innerText = "0";
-                salvar(); renderCal(); renderHistorico();
-            }
-        }
-
+        function limparHistorico() { if(confirm("Limpar tela?")) { historicoGeral=[]; document.getElementById('somaDia').innerText="0"; renderHistorico(); salvar(); } }
+        function zerarCalendario() { if(confirm("Zerar Mês?")) { memoriaCal={}; agendaMetas={}; salvar(); renderCal(); } }
         function toggleCalc() { const m = document.getElementById('calc-modal'); m.style.display = m.style.display==='block'?'none':'block'; }
         function calcNum(n) { const d = document.getElementById('calc-display'); d.value = d.value==='0'?n:d.value+n; }
         function calcOp(o) { document.getElementById('calc-display').value += o; }
@@ -275,7 +260,7 @@
             if(log && (new Date().getTime() - log < 12*60*60*1000)) document.getElementById('tela-login').style.display = 'none';
             document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v16') || "0";
             document.getElementById('metaValor').value = localStorage.getItem('borel_m_v16') || "";
-            renderCargas(); renderHistorico(); renderCal();
+            carregarMetaHoje(); renderCargas(); renderHistorico(); renderCal();
         };
     </script>
 </body>
