@@ -112,15 +112,15 @@
             }
         }
 
-        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v9')) || [];
-        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v9')) || {};
+        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v10')) || [];
+        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v10')) || {};
 
         function salvar() {
-            localStorage.setItem('borel_h_v9', JSON.stringify(historicoGeral));
-            localStorage.setItem('borel_s_v9', document.getElementById('somaDia').innerText);
-            localStorage.setItem('borel_m_v9', document.getElementById('metaValor').value);
-            localStorage.setItem('borel_p_v9', document.getElementById('listaProducao').innerHTML);
-            localStorage.setItem('borel_c_v9', JSON.stringify(memoriaCal));
+            localStorage.setItem('borel_h_v10', JSON.stringify(historicoGeral));
+            localStorage.setItem('borel_s_v10', document.getElementById('somaDia').innerText);
+            localStorage.setItem('borel_m_v10', document.getElementById('metaValor').value);
+            localStorage.setItem('borel_p_v10', document.getElementById('listaProducao').innerHTML);
+            localStorage.setItem('borel_c_v10', JSON.stringify(memoriaCal));
         }
 
         function adicionarManual() {
@@ -158,7 +158,7 @@
         }
 
         function excluir(btn) {
-            if(confirm("Excluir?")) { btn.closest('.item').remove(); salvar(); }
+            if(confirm("Excluir carga?")) { btn.closest('.item').remove(); salvar(); }
         }
 
         function concluir(btn, mod) {
@@ -180,20 +180,12 @@
         function enviarZap() {
             const total = parseInt(document.getElementById('somaDia').innerText);
             const meta = parseInt(document.getElementById('metaValor').value) || 0;
-            
-            // Relatório Inteligente: Agrupa por categoria
             let resumo = {};
-            historicoGeral.forEach(i => {
-                resumo[i.mod] = (resumo[i.mod] || 0) + i.qtd;
-            });
-
+            historicoGeral.forEach(i => { resumo[i.mod] = (resumo[i.mod] || 0) + i.qtd; });
             let msg = `*RELATÓRIO BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n--------------------\n`;
-            for (let mod in resumo) {
-                msg += `• ${mod}: ${resumo[mod]} un.\n`;
-            }
+            for (let mod in resumo) { msg += `• ${mod}: ${resumo[mod]} un.\n`; }
             msg += `--------------------\n*TOTAL:* ${total}\n*META:* ${meta}\n`;
             msg += total >= meta ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
-
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
@@ -210,7 +202,7 @@
 
         function fecharDia() {
             const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-            memoriaCal[key] = true; salvar(); renderCal(); alert("Dia salvo!");
+            memoriaCal[key] = true; salvar(); renderCal();
         }
 
         async function processarImagem(e) {
@@ -229,14 +221,14 @@
         function calcOp(o) { document.getElementById('calc-display').value += o; }
         function calcClear() { document.getElementById('calc-display').value = '0'; }
         function calcResult() { try { document.getElementById('calc-display').value = eval(document.getElementById('calc-display').value); } catch(e){ calcClear(); } }
-        function limparTudo() { if(confirm("Zerar hoje?")) { localStorage.removeItem('borel_h_v9'); location.reload(); } }
+        function limparTudo() { if(confirm("Zerar hoje?")) { localStorage.removeItem('borel_h_v10'); location.reload(); } }
 
         window.onload = () => {
             const log = localStorage.getItem('borel_sessao');
             if(log && (new Date().getTime() - log < 12*60*60*1000)) document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v9') || "0";
-            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v9') || "";
-            document.getElementById('listaProducao').innerHTML = localStorage.getItem('borel_p_v9') || "";
+            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v10') || "0";
+            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v10') || "";
+            document.getElementById('listaProducao').innerHTML = localStorage.getItem('borel_p_v10') || "";
             renderHistorico(); renderCal();
         };
     </script>
