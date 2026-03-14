@@ -21,37 +21,32 @@
             flex-direction: column; align-items: center; justify-content: center; 
         }
         
-        /* O MUDANÇA ESTÁ AQUI: Card com fundo.jpg */
+        /* CARD: Agora o card é posicionado para que a imagem preencha-o */
         .login-card {
-            /* Imagem de fundo no card */
-            background: url('fundo.jpg') no-repeat center center;
-            background-size: cover;
-            
-            padding: 40px 30px; 
+            position: relative; /* Permite que os elementos dentro dele sejam posicionados sobre a imagem */
             border-radius: 12px; 
             border: 2px solid #30363d; 
             text-align: center; 
             width: 85%; 
             max-width: 320px;
-            /* Sombra para dar profundidade */
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            /* Garante que o conteúdo fique visível sobre a imagem */
-            position: relative;
+            overflow: hidden; /* Garante que a imagem não saia do card */
         }
 
-        /* Overlay escuro opcional dentro do card para melhorar leitura dos inputs */
-        .login-card::before {
-            content: '';
+        /* IMAGEM NO CARD: Preenche o card por completo */
+        .login-card img {
+            width: 100%; height: 100%;
+            object-fit: cover; /* Faz a imagem preencher o espaço sem distorcer */
+            display: block; /* Remove o espaço em branco abaixo da imagem */
+        }
+
+        /* CONTEÚDO DO LOGIN: Posicionado sobre a imagem */
+        .login-content {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); /* Escurece 40% da imagem */
-            border-radius: 10px;
-            z-index: 1;
-        }
-
-        /* Garante que o conteúdo fique acima do overlay */
-        .login-card h3, .login-card input, .login-card button, .login-card p {
-            position: relative;
-            z-index: 2;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 40px 30px;
+            box-sizing: border-box; /* Garante que o padding não aumente o tamanho do conteúdo */
+            background: rgba(0,0,0,0.4); /* Escurece a imagem para melhorar leitura */
         }
 
         .login-card h3 {
@@ -59,6 +54,7 @@
             margin-top: 0;
             margin-bottom: 25px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            z-index: 2; /* Fica acima de tudo no conteúdo */
         }
 
         .login-card input {
@@ -67,11 +63,12 @@
             border: 1px solid #30363d; 
             color: #00ff00; text-align: center; box-sizing: border-box; outline: none;
             border-radius: 6px;
+            z-index: 2;
         }
 
-        .btn-green { background: #238636; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
-        .btn-red { background: #da3633; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
-        .btn-gray { background: #484f58; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 5px; }
+        .btn-green { background: #238636; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; z-index: 2; }
+        .btn-red { background: #da3633; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; z-index: 2; }
+        .btn-gray { background: #484f58; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 5px; z-index: 2; }
 
         /* A logo principal continua aqui, na tela de produção */
         .minha-logo { position: fixed; top: 15px; left: 15px; height: 50px; opacity: 1; z-index: 1001; }
@@ -98,11 +95,15 @@
 
     <div id="tela-login">
         <div class="login-card">
-            <h3>SISTEMA DE PRODUÇÃO</h3>
-            <input type="text" id="user" placeholder="USUÁRIO">
-            <input type="password" id="pass" placeholder="SENHA">
-            <button class="btn-green" onclick="autenticar()">ACESSAR</button>
-            <p id="erro" style="color: #f85149; display: none; margin-top: 15px;">Acesso Negado</p>
+            <img src="fundo.jpg" alt="Fundo do card">
+            
+            <div class="login-content">
+                <h3>SISTEMA DE PRODUÇÃO</h3>
+                <input type="text" id="user" placeholder="USUÁRIO">
+                <input type="password" id="pass" placeholder="SENHA">
+                <button class="btn-green" onclick="autenticar()">ACESSAR</button>
+                <p id="erro" style="color: #f85149; display: none; margin-top: 15px;">Acesso Negado</p>
+            </div>
         </div>
     </div>
 
