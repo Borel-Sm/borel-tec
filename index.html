@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borel Tec - Sistema Inteligente</title>
+    <title>Borel Tec - Sistema Oficial</title>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 110px 15px 20px 15px; background: #0d1117; }
@@ -22,7 +22,7 @@
         .btn-mini { width: auto; padding: 8px 12px; font-size: 0.8rem; margin-top: 8px; margin-right: 5px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; }
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; }
-        .dia { background: #21262d; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; }
+        .dia { background: #21262d; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; cursor: pointer; }
         .dia-ok { background: #238636 !important; border-color: #39ff14; }
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #161b22; padding: 20px; border-radius: 12px; z-index: 2000; border: 2px solid #30363d; width: 280px; }
         #calc-display { width: 100%; height: 50px; background: #010409; color: #39ff14; text-align: right; font-size: 1.5rem; border: 1px solid #30363d; margin-bottom: 10px; padding: 10px; box-sizing: border-box; }
@@ -70,9 +70,9 @@
     <div id="listaProducao"></div>
 
     <div class="card">
-        <h3>Histórico e Relatórios</h3>
+        <h3>Histórico Concluído</h3>
         <div id="listaHistorico" style="max-height: 200px; overflow-y: auto; margin-bottom:10px;"></div>
-        <button class="btn-green" onclick="enviarZap()">📤 WHATSAPP INTELIGENTE</button>
+        <button class="btn-green" onclick="enviarZap()">📤 WHATSAPP COM HORÁRIOS</button>
         <button class="btn-green" style="background:#8957e5; margin-top:10px" onclick="fecharDia()">💾 SALVAR NO CALENDÁRIO</button>
         <button class="btn-red" onclick="limparHistorico()" style="background:#484f58; margin-top:10px">🗑️ LIMPAR HISTÓRICO</button>
     </div>
@@ -80,7 +80,7 @@
     <div class="card">
         <h3 style="color:#58a6ff">📅 PRODUÇÃO MENSAL</h3>
         <div class="cal-grid" id="calendario"></div>
-        <button class="btn-red" onclick="zerarTudo()" style="background:#484f58">ZERAR TUDO (HOJE)</button>
+        <button class="btn-red" onclick="zerarTudo()" style="background:#4a0000">ZERAR TUDO HOJE</button>
     </div>
 
     <div id="calc-modal" class="modal">
@@ -106,9 +106,9 @@
             "FLY":"FLY", "MEGA":"MEGA", "BELLA":"BELLA", "BOSS":"BOSS", "FAZANO":"FAZANO", "TIVOLI":"TIVOLI", "PARATY":"PARATY"
         };
 
-        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v11')) || [];
-        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v11')) || {};
-        let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v11')) || [];
+        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v12')) || [];
+        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v12')) || {};
+        let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v12')) || [];
 
         function autenticar() {
             if(document.getElementById('user').value === "BorelTec" && document.getElementById('pass').value === "Borel77") {
@@ -118,11 +118,11 @@
         }
 
         function salvar() {
-            localStorage.setItem('borel_h_v11', JSON.stringify(historicoGeral));
-            localStorage.setItem('borel_s_v11', document.getElementById('somaDia').innerText);
-            localStorage.setItem('borel_m_v11', document.getElementById('metaValor').value);
-            localStorage.setItem('borel_c_v11', JSON.stringify(memoriaCal));
-            localStorage.setItem('borel_ativas_v11', JSON.stringify(cargasAtivas));
+            localStorage.setItem('borel_h_v12', JSON.stringify(historicoGeral));
+            localStorage.setItem('borel_s_v12', document.getElementById('somaDia').innerText);
+            localStorage.setItem('borel_m_v12', document.getElementById('metaValor').value);
+            localStorage.setItem('borel_c_v12', JSON.stringify(memoriaCal));
+            localStorage.setItem('borel_ativas_v12', JSON.stringify(cargasAtivas));
         }
 
         function adicionarManual() {
@@ -144,7 +144,7 @@
                 div.className = `item ${c.pausado ? 'pausado' : ''}`;
                 div.innerHTML = `
                     <strong>${modFinal}</strong>: <span class="qtd-txt" onclick="editarQtd(${c.id})">${c.qtd}</span> un.<br>
-                    <small>Início: ${c.ini}</small><br>
+                    <small>⏰ Início: ${c.ini}</small><br>
                     <button class="btn-green btn-mini" onclick="concluir(${c.id})">CONCLUIR</button>
                     <button class="btn-mini" style="background:#f1e05a; color:black" onclick="pausar(${c.id})">${c.pausado ? 'RETOMAR' : 'PAUSAR'}</button>
                     <button class="btn-mini" style="background:#da3633; color:white" onclick="excluir(${c.id})">EXCLUIR</button>
@@ -177,7 +177,7 @@
             const fim = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
             const modFinal = de_para[c.mod] || c.mod;
             document.getElementById('somaDia').innerText = parseInt(document.getElementById('somaDia').innerText) + c.qtd;
-            historicoGeral.push({ mod: modFinal, qtd: c.qtd, fim: fim });
+            historicoGeral.push({ mod: modFinal, qtd: c.qtd, ini: c.ini, fim: fim });
             cargasAtivas = cargasAtivas.filter(x => x.id !== id);
             renderCargas(); renderHistorico(); salvar();
         }
@@ -185,8 +185,48 @@
         function renderHistorico() {
             const lista = document.getElementById('listaHistorico'); lista.innerHTML = "";
             historicoGeral.slice().reverse().forEach(i => {
-                lista.innerHTML += `<div style="border-bottom:1px solid #30363d; padding:5px">✅ ${i.mod}: ${i.qtd}un - ${i.fim}</div>`;
+                lista.innerHTML += `<div style="border-bottom:1px solid #30363d; padding:5px; font-size:0.9rem">✅ ${i.mod}: ${i.qtd}un <br> <small>Início: ${i.ini} | Fim: ${i.fim}</small></div>`;
             });
+        }
+
+        function enviarZap() {
+            const total = parseInt(document.getElementById('somaDia').innerText);
+            const meta = parseInt(document.getElementById('metaValor').value) || 0;
+            let msg = `*RELATÓRIO BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n--------------------\n`;
+            historicoGeral.forEach(i => {
+                msg += `• ${i.mod}: ${i.qtd} un. (Fim: ${i.fim})\n`;
+            });
+            msg += `--------------------\n*TOTAL:* ${total}\n*META:* ${meta}\n`;
+            msg += total >= meta ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
+        }
+
+        function fecharDia() {
+            const total = document.getElementById('somaDia').innerText;
+            const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+            memoriaCal[key] = total; 
+            salvar(); renderCal();
+            alert("Dia salvo no calendário com " + total + " unidades!");
+        }
+
+        function verDia(dia, total) {
+            alert("Dia " + dia + ": " + total + " unidades produzidas.");
+        }
+
+        function renderCal() {
+            const cal = document.getElementById('calendario'); cal.innerHTML = "";
+            const diasMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+            for(let i=1; i<=diasMes; i++) {
+                const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${i}`;
+                const div = document.createElement('div'); 
+                div.className = 'dia'; 
+                div.innerText = i;
+                if(memoriaCal[key]) {
+                    div.classList.add('dia-ok');
+                    div.onclick = () => verDia(i, memoriaCal[key]);
+                }
+                cal.appendChild(div);
+            }
         }
 
         function limparHistorico() {
@@ -198,38 +238,10 @@
         }
 
         function zerarTudo() {
-            if(confirm("Zerar toda a produção de hoje?")) {
+            if(confirm("ATENÇÃO: Isso apaga as cargas ativas e o histórico. Continuar?")) {
                 historicoGeral = []; cargasAtivas = [];
                 document.getElementById('somaDia').innerText = "0";
                 renderHistorico(); renderCargas(); salvar();
-            }
-        }
-
-        function enviarZap() {
-            const total = parseInt(document.getElementById('somaDia').innerText);
-            const meta = parseInt(document.getElementById('metaValor').value) || 0;
-            let resumo = {};
-            historicoGeral.forEach(i => { resumo[i.mod] = (resumo[i.mod] || 0) + i.qtd; });
-            let msg = `*RELATÓRIO BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n--------------------\n`;
-            for (let mod in resumo) { msg += `• ${mod}: ${resumo[mod]} un.\n`; }
-            msg += `--------------------\n*TOTAL:* ${total}\n*META:* ${meta}\n`;
-            msg += total >= meta ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
-        }
-
-        function fecharDia() {
-            const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-            memoriaCal[key] = true; salvar(); renderCal();
-        }
-
-        function renderCal() {
-            const cal = document.getElementById('calendario'); cal.innerHTML = "";
-            const diasMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-            for(let i=1; i<=diasMes; i++) {
-                const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${i}`;
-                const div = document.createElement('div'); div.className = 'dia'; div.innerText = i;
-                if(memoriaCal[key]) div.classList.add('dia-ok');
-                cal.appendChild(div);
             }
         }
 
@@ -256,8 +268,8 @@
         window.onload = () => {
             const log = localStorage.getItem('borel_sessao');
             if(log && (new Date().getTime() - log < 12*60*60*1000)) document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v11') || "0";
-            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v11') || "";
+            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v12') || "0";
+            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v12') || "";
             renderCargas(); renderHistorico(); renderCal();
         };
     </script>
