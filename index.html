@@ -109,9 +109,9 @@
             "FLY":"FLY", "MEGA":"MEGA", "BELLA":"BELLA", "BOSS":"BOSS", "FAZANO":"FAZANO", "TIVOLI":"TIVOLI", "PARATY":"PARATY"
         };
 
-        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v15')) || [];
-        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v15')) || {};
-        let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v15')) || [];
+        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v16')) || [];
+        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v16')) || {};
+        let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v16')) || [];
 
         function autenticar() {
             if(document.getElementById('user').value === "BorelTec" && document.getElementById('pass').value === "Borel77") {
@@ -121,11 +121,11 @@
         }
 
         function salvar() {
-            localStorage.setItem('borel_h_v15', JSON.stringify(historicoGeral));
-            localStorage.setItem('borel_s_v15', document.getElementById('somaDia').innerText);
-            localStorage.setItem('borel_m_v15', document.getElementById('metaValor').value);
-            localStorage.setItem('borel_c_v15', JSON.stringify(memoriaCal));
-            localStorage.setItem('borel_ativas_v15', JSON.stringify(cargasAtivas));
+            localStorage.setItem('borel_h_v16', JSON.stringify(historicoGeral));
+            localStorage.setItem('borel_s_v16', document.getElementById('somaDia').innerText);
+            localStorage.setItem('borel_m_v16', document.getElementById('metaValor').value);
+            localStorage.setItem('borel_c_v16', JSON.stringify(memoriaCal));
+            localStorage.setItem('borel_ativas_v16', JSON.stringify(cargasAtivas));
         }
 
         function adicionarManual() {
@@ -208,30 +208,29 @@
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
-        // CORREÇÃO RAIZ: Agora ele soma com o que já existe no calendário
+        // LÓGICA RAIZ CORRIGIDA: Soma independente do que está na tela
         function fecharDia() {
-            const totalAtual = parseInt(document.getElementById('somaDia').innerText);
-            if(totalAtual === 0) {
-                alert("Nada para salvar! A produção atual está em 0.");
+            const totalNaTela = parseInt(document.getElementById('somaDia').innerText);
+            if(totalNaTela === 0) {
+                alert("Não há produção nova concluída para salvar.");
                 return;
             }
 
             const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-            let valorNoCalendario = parseInt(memoriaCal[key]) || 0;
+            let valorJaSalvo = parseInt(memoriaCal[key]) || 0;
 
-            if(valorNoCalendario > 0) {
-                if(confirm("Já existem " + valorNoCalendario + " un. salvas hoje. Deseja SOMAR mais " + totalAtual + " un.?")) {
-                    memoriaCal[key] = valorNoCalendario + totalAtual;
-                    alert("Somado com sucesso! Total hoje: " + memoriaCal[key]);
-                } else {
-                    return; // Cancela se o usuário não quiser somar
-                }
-            } else {
-                memoriaCal[key] = totalAtual;
-                alert("Salvo no calendário: " + totalAtual + " un.");
-            }
-
-            salvar(); renderCal();
+            // Soma o que está na tela com o que já estava no cofre do calendário
+            memoriaCal[key] = valorJaSalvo + totalNaTela;
+            
+            alert("Produção de " + totalNaTela + " un. adicionada ao calendário!\nTotal acumulado hoje: " + memoriaCal[key]);
+            
+            // Após salvar no calendário, limpamos a tela automaticamente para evitar duplicidade
+            historicoGeral = [];
+            document.getElementById('somaDia').innerText = "0";
+            
+            renderHistorico(); 
+            salvar(); 
+            renderCal();
         }
 
         function renderCal() {
@@ -242,25 +241,26 @@
                 const div = document.createElement('div'); div.className = 'dia'; div.innerText = i;
                 if(memoriaCal[key]) {
                     div.classList.add('dia-ok');
-                    div.onclick = () => alert("Dia " + i + ": " + memoriaCal[key] + " unidades.");
+                    div.onclick = () => alert("Dia " + i + ": " + memoriaCal[key] + " unidades salvas no cofre.");
                 }
                 cal.appendChild(div);
             }
         }
 
         function limparHistorico() {
-            if(confirm("Isso vai limpar a lista da tela para você começar uma carga nova. A produção já salva no calendário CONTINUARÁ LÁ. Confirmar?")) {
+            if(confirm("Limpar lista de cargas concluídas da tela? (Isso NÃO apaga o que já foi salvo no calendário)")) {
                 historicoGeral = []; 
                 document.getElementById('somaDia').innerText = "0";
                 renderHistorico(); salvar();
             }
         }
 
-        // ZERAR CALENDARIO: Só esse apaga o histórico do mês
         function zerarCalendario() {
-            if(confirm("PERIGO: Isso vai apagar TODA a memória do calendário deste mês. Tem certeza?")) {
+            if(confirm("ATENÇÃO: Isso apaga TODA a memória do calendário e o histórico da tela. Deseja continuar?")) {
                 memoriaCal = {};
-                salvar(); renderCal();
+                historicoGeral = [];
+                document.getElementById('somaDia').innerText = "0";
+                salvar(); renderCal(); renderHistorico();
             }
         }
 
@@ -273,8 +273,8 @@
         window.onload = () => {
             const log = localStorage.getItem('borel_sessao');
             if(log && (new Date().getTime() - log < 12*60*60*1000)) document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v15') || "0";
-            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v15') || "";
+            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v16') || "0";
+            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v16') || "";
             renderCargas(); renderHistorico(); renderCal();
         };
     </script>
