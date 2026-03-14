@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Borel Tec - Terminal Oficial</title>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 110px 15px 20px 15px; background: #0d1117; }
         
@@ -23,7 +22,6 @@
 
         .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         
-        /* Barra de Meta */
         .meta-container { background: #161b22; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #30363d; }
         .progress-bg { background: #30363d; height: 20px; border-radius: 10px; margin-top: 10px; overflow: hidden; }
         .progress-fill { background: #238636; height: 100%; width: 0%; transition: width 0.5s; }
@@ -31,12 +29,15 @@
         .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
 
-        .item { background: rgba(48, 54, 61, 0.5); border-left: 4px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 4px; }
         .btn-green { background: #238636; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; }
         .btn-red { background: #da3633; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; margin-top: 10px; }
 
-        /* Estilo do Calendário/Histórico */
-        .historico-dia { background: #0d1117; border: 1px solid #30363d; padding: 10px; margin-top: 5px; border-radius: 4px; font-size: 0.8rem; }
+        /* CALENDÁRIO */
+        .calendario-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; }
+        .dia-celula { background: #21262d; padding: 10px 2px; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; position: relative; }
+        .dia-com-producao { background: #238636 !important; border-color: #39ff14; cursor: pointer; }
+        .mes-titulo { text-align: center; margin-bottom: 10px; color: #58a6ff; font-weight: bold; text-transform: uppercase; }
+        .detalhe-dia { background: #1c2128; padding: 10px; margin-top: 10px; border-radius: 6px; border: 1px solid #58a6ff; display: none; }
     </style>
 </head>
 <body>
@@ -56,23 +57,20 @@
 
     <img src="logo.png" class="minha-logo">
     <div class="top-btns">
-        <button class="btn-top" onclick="document.getElementById('camera-input').click()">📷 SCAN</button>
-        <button class="btn-top" onclick="alert('Histórico salvo no final da página!')">📅 DATA</button>
+        <button class="btn-top" onclick="alert('Histórico no final da página')">📅 DATA</button>
     </div>
 
-    <input type="file" id="camera-input" accept="image/*" capture="camera" style="display:none" onchange="processarImagem(event)">
-
-    <div class="total-box">PRODUÇÃO: <span id="somaDia">0</span> CADEIRAS</div>
+    <div class="total-box">HOJE: <span id="somaDia">0</span> CADEIRAS</div>
 
     <div class="meta-container">
-        <label>Meta do Dia:</label>
-        <input type="number" id="metaValor" placeholder="Ex: 1900" onchange="atualizarMeta()" style="margin-bottom: 5px;">
-        <div style="font-size: 0.9rem;">Progresso: <span id="progressoTexto">0%</span></div>
+        <label>Meta Hoje:</label>
+        <input type="number" id="metaValor" placeholder="Ex: 1900" onchange="atualizarProgresso()">
+        <div style="font-size: 0.9rem;">Progresso Meta: <span id="progressoTexto">0%</span></div>
         <div class="progress-bg"><div id="barraFill" class="progress-fill"></div></div>
     </div>
 
     <div class="card">
-        <h3>Lançar Modelo</h3>
+        <h3>Lançar Carga</h3>
         <select id="modelo">
             <option value="ARMANI">ARMANI</option><option value="BELLA">BELLA</option>
             <option value="BOSS">BOSS</option><option value="FAZANO">FAZANO</option>
@@ -81,22 +79,23 @@
             <option value="PARATY">PARATY</option><option value="RAVEL">RAVEL</option>
             <option value="SCOTT">SCOTT</option><option value="TIVOLI">TIVOLI</option>
         </select>
-        <input type="number" id="quantidade" placeholder="Quantidade">
-        <button class="btn-green" style="background:#1f6feb" onclick="adicionarCarga()">INICIAR CARGA</button>
+        <input type="number" id="quantidade" placeholder="Qtd">
+        <button class="btn-green" onclick="adicionarCarga()">CONCLUIR AGORA</button>
     </div>
 
-    <div id="listaProducao"></div>
-    <div id="listaPendentes"></div>
-
     <div class="card">
-        <h3>Relatório e Memória</h3>
-        <div id="listaHistorico" style="max-height: 200px; overflow-y: auto;"></div>
-        <button class="btn-green" style="margin-top:15px;" onclick="enviarZap()">ENVIAR WHATSAPP</button>
-        <button class="btn-green" style="background:#8957e5; margin-top:10px;" onclick="fecharDia()">FECHAR DIA E SALVAR NO CALENDÁRIO</button>
+        <h3 style="color:#58a6ff">📅 MEMÓRIA DE PRODUÇÃO</h3>
+        <div id="mesAtual" class="mes-titulo"></div>
+        <div class="calendario-grid" id="calendario"></div>
         
-        <h4 style="margin-top:20px; color:#58a6ff">📅 Arquivo de Produção (Memória)</h4>
-        <div id="arquivoDias"></div>
-        <button class="btn-red" onclick="zerarTudo()">REINICIAR TUDO</button>
+        <div id="detalheDia" class="detalhe-dia">
+            <strong id="detData"></strong><br>
+            Produção: <span id="detProd"></span> un.<br>
+            Meta: <span id="detMeta"></span> un.
+        </div>
+        
+        <button class="btn-green" style="background:#8957e5; margin-top:20px;" onclick="salvarDia()">FECHAR E MEMORIZAR DIA</button>
+        <button class="btn-red" onclick="zerarTudo()">LIMPAR TUDO</button>
     </div>
 
     <script>
@@ -107,70 +106,79 @@
             else document.getElementById('erro').style.display = 'block';
         }
 
-        const salvar = () => {
-            localStorage.setItem('p', document.getElementById('listaProducao').innerHTML);
-            localStorage.setItem('s', document.getElementById('somaDia').innerText);
-            localStorage.setItem('h', document.getElementById('listaHistorico').innerHTML);
-            localStorage.setItem('m', document.getElementById('metaValor').value);
-            localStorage.setItem('a', document.getElementById('arquivoDias').innerHTML);
-            atualizarProgresso();
-        };
-
-        function atualizarMeta() { salvar(); }
+        let memoria = JSON.parse(localStorage.getItem('borel_memoria')) || {};
 
         function atualizarProgresso() {
             const total = parseInt(document.getElementById('somaDia').innerText);
             const meta = parseInt(document.getElementById('metaValor').value) || 0;
-            if (meta > 0) {
-                const porc = Math.min((total / meta) * 100, 100).toFixed(1);
-                document.getElementById('barraFill').style.width = porc + "%";
-                document.getElementById('progressoTexto').innerText = porc + "%";
-            }
+            const porc = meta > 0 ? Math.min((total / meta) * 100, 100).toFixed(1) : 0;
+            document.getElementById('barraFill').style.width = porc + "%";
+            document.getElementById('progressoTexto').innerText = porc + "%";
+            localStorage.setItem('s_borel', total);
+            localStorage.setItem('m_borel', meta);
         }
 
         function adicionarCarga() {
-            const m = document.getElementById('modelo').value;
-            const q = document.getElementById('quantidade').value;
+            const q = parseInt(document.getElementById('quantidade').value);
             if(!q || q <= 0) return;
-            const div = document.createElement('div');
-            div.className = 'item';
-            div.innerHTML = `<strong>${m}</strong>: ${q} un.<br>
-                <button class="btn-green" style="width:auto; margin-top:10px" onclick="concluir(this, '${m}', ${q})">CONCLUIR</button>`;
-            document.getElementById('listaProducao').appendChild(div);
-            document.getElementById('quantidade').value = ""; salvar();
-        }
-
-        function concluir(btn, mod, qtd) {
             const s = parseInt(document.getElementById('somaDia').innerText);
-            document.getElementById('somaDia').innerText = s + qtd;
-            const h = document.getElementById('listaHistorico');
-            const agora = new Date().toLocaleTimeString();
-            h.innerHTML = `<div class="historico-dia">✅ ${mod} (${qtd}un) - ${agora}</div>` + h.innerHTML;
-            btn.closest('.item').remove(); salvar();
+            document.getElementById('somaDia').innerText = s + q;
+            document.getElementById('quantidade').value = "";
+            atualizarProgresso();
         }
 
-        function fecharDia() {
-            const data = new Date().toLocaleDateString();
+        function salvarDia() {
+            const hoje = new Date();
+            const dataChave = `${hoje.getFullYear()}-${hoje.getMonth()}-${hoje.getDate()}`;
             const total = document.getElementById('somaDia').innerText;
-            const meta = document.getElementById('metaValor').value || "Não definida";
-            if(confirm(`Deseja salvar o dia ${data} com ${total} peças?`)) {
-                const registro = `<div class="historico-dia" style="border-left:4px solid #8957e5"><strong>${data}</strong> | Produção: ${total} | Meta: ${meta}</div>`;
-                document.getElementById('arquivoDias').innerHTML = registro + document.getElementById('arquivoDias').innerHTML;
+            const meta = document.getElementById('metaValor').value || "0";
+
+            if(confirm(`Memorizar dia ${hoje.toLocaleDateString()} com ${total} peças?`)) {
+                memoria[dataChave] = { prod: total, meta: meta };
+                localStorage.setItem('borel_memoria', JSON.stringify(memoria));
                 document.getElementById('somaDia').innerText = "0";
-                document.getElementById('listaHistorico').innerHTML = "";
-                salvar();
+                atualizarProgresso();
+                renderizarCalendario();
             }
         }
 
-        function zerarTudo() { if(confirm("Isso apagará TODO o histórico e arquivo. Confirmar?")) { localStorage.clear(); location.reload(); } }
+        function renderizarCalendario() {
+            const agora = new Date();
+            const mes = agora.getMonth();
+            const ano = agora.getFullYear();
+            const nomesMeses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+            
+            document.getElementById('mesAtual').innerText = nomesMeses[mes] + " " + ano;
+            const listaDias = new Date(ano, mes + 1, 0).getDate();
+            const cal = document.getElementById('calendario');
+            cal.innerHTML = "";
+
+            for (let i = 1; i <= listaDias; i++) {
+                const chave = `${ano}-${mes}-${i}`;
+                const div = document.createElement('div');
+                div.className = 'dia-celula';
+                div.innerText = i;
+                
+                if(memoria[chave]) {
+                    div.classList.add('dia-com-producao');
+                    div.onclick = () => {
+                        document.getElementById('detalheDia').style.display = 'block';
+                        document.getElementById('detData').innerText = `${i}/${mes+1}/${ano}`;
+                        document.getElementById('detProd').innerText = memoria[chave].prod;
+                        document.getElementById('detMeta').innerText = memoria[chave].meta;
+                    };
+                }
+                cal.appendChild(div);
+            }
+        }
+
+        function zerarTudo() { if(confirm("Apagar todos os dados salvos?")) { localStorage.clear(); location.reload(); } }
 
         window.onload = () => {
-            if(localStorage.getItem('p')) document.getElementById('listaProducao').innerHTML = localStorage.getItem('p');
-            if(localStorage.getItem('s')) document.getElementById('somaDia').innerText = localStorage.getItem('s');
-            if(localStorage.getItem('h')) document.getElementById('listaHistorico').innerHTML = localStorage.getItem('h');
-            if(localStorage.getItem('m')) document.getElementById('metaValor').value = localStorage.getItem('m');
-            if(localStorage.getItem('a')) document.getElementById('arquivoDias').innerHTML = localStorage.getItem('a');
+            document.getElementById('somaDia').innerText = localStorage.getItem('s_borel') || "0";
+            document.getElementById('metaValor').value = localStorage.getItem('m_borel') || "";
             atualizarProgresso();
+            renderizarCalendario();
         };
     </script>
 </body>
