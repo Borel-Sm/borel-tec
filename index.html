@@ -4,59 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Borel Tec - Terminal Oficial</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 110px 15px 20px 15px; background: #0d1117; }
         
-        /* Login */
+        /* LOGIN ESTILO CARD COM IMAGEM */
         #tela-login { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { position: relative; border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; }
-        .login-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .login-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 30px; box-sizing: border-box; background: rgba(0,0,0,0.4); }
-        .login-card h3 { color: #ffffff; margin-bottom: 25px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .login-card { position: relative; border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; height: 400px; }
+        .login-card img.fundo-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .login-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 30px; box-sizing: border-box; background: rgba(0,0,0,0.5); }
+        .login-card h3 { color: #ffffff; margin-bottom: 25px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin-top: 0; }
         .login-card input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(1, 4, 9, 0.8); border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; outline: none; }
 
-        /* Interface Principal */
+        /* INTERFACE */
         .minha-logo { position: fixed; top: 15px; left: 15px; height: 50px; z-index: 1001; }
+        .top-btns { position: fixed; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 1000; }
+        .btn-top { background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 10px 15px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; }
         .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         
+        /* META E PROGRESSO */
         .meta-container { background: #161b22; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #30363d; }
-        .progress-bg { background: #30363d; height: 20px; border-radius: 10px; margin-top: 10px; overflow: hidden; }
+        .progress-bg { background: #30363d; height: 18px; border-radius: 9px; margin-top: 10px; overflow: hidden; }
         .progress-fill { background: #238636; height: 100%; width: 0%; transition: width 0.5s; }
 
         .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
-        select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
+        select, input[type="number"], input[type="text"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
 
-        .item { background: rgba(48, 54, 61, 0.5); border-left: 4px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 4px; }
+        .item { background: rgba(48, 54, 61, 0.5); border-left: 4px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 4px; position: relative; }
         .btn-green { background: #238636; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; }
         .btn-red { background: #da3633; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; margin-top: 10px; }
 
-        /* Histórico */
-        .historico-item { background: #0d1117; border: 1px solid #30363d; padding: 10px; margin-bottom: 5px; border-radius: 4px; font-size: 0.85rem; }
+        /* CALENDARIO */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 10px; }
+        .dia { background: #21262d; padding: 8px 0; text-align: center; border-radius: 4px; font-size: 0.75rem; border: 1px solid #30363d; }
+        .dia-ok { background: #238636 !important; cursor: pointer; border-color: #39ff14; }
+
+        /* CALCULADORA MODAL */
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #161b22; padding: 20px; border-radius: 12px; z-index: 2000; border: 1px solid #30363d; width: 280px; }
+        #calc-display { width: 100%; height: 50px; background: #010409; color: #39ff14; text-align: right; font-size: 1.5rem; border: 1px solid #30363d; margin-bottom: 10px; padding: 5px; box-sizing: border-box; }
+        .grid-calc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .btn-c { padding: 15px; background: #21262d; color: white; border: 1px solid #30363d; border-radius: 4px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="tela-login">
         <div class="login-card">
-            <img src="fundo.jpg">
+            <img src="fundo.jpg" class="fundo-img">
             <div class="login-content">
                 <h3>SISTEMA DE PRODUÇÃO</h3>
                 <input type="text" id="user" placeholder="USUÁRIO">
                 <input type="password" id="pass" placeholder="SENHA">
                 <button class="btn-green" onclick="autenticar()">ACESSAR</button>
-                <p id="erro" style="color: #f85149; display: none; margin-top: 15px;">Acesso Negado</p>
+                <p id="erro" style="color: #f85149; display: none; margin-top: 10px;">Acesso Negado</p>
             </div>
         </div>
     </div>
 
     <img src="logo.png" class="minha-logo">
+    <div class="top-btns">
+        <button class="btn-top" onclick="document.getElementById('camera-input').click()">📷 SCAN</button>
+        <button class="btn-top" onclick="toggleModal('calc-modal')">🧮 CALC</button>
+    </div>
+    <input type="file" id="camera-input" accept="image/*" capture="camera" style="display:none" onchange="processarImagem(event)">
 
     <div class="total-box">HOJE: <span id="somaDia">0</span> CADEIRAS</div>
 
     <div class="meta-container">
-        <label>Meta Hoje:</label>
+        <label>Meta do Dia:</label>
         <input type="number" id="metaValor" placeholder="Ex: 2300" onchange="atualizarProgresso()">
-        <div style="font-size: 0.9rem;">Progresso: <span id="progressoTexto">0%</span></div>
+        <div style="font-size: 0.85rem;">Progresso Meta: <span id="progressoTexto">0%</span></div>
         <div class="progress-bg"><div id="barraFill" class="progress-fill"></div></div>
     </div>
 
@@ -71,53 +88,58 @@
             <option value="SCOTT">SCOTT</option><option value="TIVOLI">TIVOLI</option>
         </select>
         <input type="number" id="quantidade" placeholder="Qtd">
-        <button class="btn-green" onclick="adicionarCarga()">INICIAR CARGA</button>
+        <button class="btn-green" style="background:#1f6feb" onclick="adicionarCarga()">INICIAR CARGA</button>
     </div>
 
     <div id="listaProducao"></div>
 
     <div class="card">
-        <h3>Histórico do Dia</h3>
-        <div id="listaHistorico" style="max-height: 250px; overflow-y: auto; margin-bottom: 10px;"></div>
-        
+        <h3>Histórico e Relatório</h3>
+        <div id="listaHistorico" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px; font-size: 0.85rem;"></div>
         <button class="btn-green" onclick="enviarZap()">📤 ENVIAR RELATÓRIO WHATSAPP</button>
-        <button class="btn-red" style="background:#484f58" onclick="limparSomenteHistorico()">LIMPAR APENAS HISTÓRICO</button>
-        <button class="btn-red" onclick="zerarTudo()">REINICIAR TUDO (Sair)</button>
+        <button class="btn-green" style="background:#8957e5; margin-top:10px;" onclick="fecharDia()">💾 SALVAR DIA NO CALENDÁRIO</button>
+        <button class="btn-red" style="background:#484f58" onclick="limparHistorico()">LIMPAR APENAS HISTÓRICO</button>
+    </div>
+
+    <div class="card">
+        <h3 style="color:#58a6ff">📅 MEMÓRIA DE PRODUÇÃO</h3>
+        <div id="mesTitulo" style="text-align:center; font-weight:bold; color:#58a6ff; margin-bottom:10px"></div>
+        <div class="cal-grid" id="calendario"></div>
+        <button class="btn-red" onclick="zerarTudo()" style="margin-top:20px">REINICIAR TUDO (Sair)</button>
+    </div>
+
+    <div id="calc-modal" class="modal">
+        <input type="text" id="calc-display" readonly value="0">
+        <div class="grid-calc">
+            <button class="btn-c" style="background:#da3633; grid-column: span 2;" onclick="calcClear()">AC</button>
+            <button class="btn-c" onclick="calcOp('/')">/</button><button class="btn-c" onclick="calcOp('*')">x</button>
+            <button class="btn-c" onclick="calcNum('7')">7</button><button class="btn-c" onclick="calcNum('8')">8</button><button class="btn-c" onclick="calcNum('9')">9</button><button class="btn-c" onclick="calcOp('-')">-</button>
+            <button class="btn-c" onclick="calcNum('4')">4</button><button class="btn-c" onclick="calcNum('5')">5</button><button class="btn-c" onclick="calcNum('6')">6</button><button class="btn-c" onclick="calcOp('+')">+</button>
+            <button class="btn-c" onclick="calcNum('1')">1</button><button class="btn-c" onclick="calcNum('2')">2</button><button class="btn-c" onclick="calcNum('3')">3</button>
+            <button class="btn-c" style="background:#238636; grid-column: span 2;" onclick="calcResult()">=</button><button class="btn-c" onclick="calcNum('0')">0</button>
+            <button class="btn-c" style="grid-column: span 4; background:#484f58; margin-top:10px" onclick="toggleModal('calc-modal')">FECHAR</button>
+        </div>
     </div>
 
     <script>
-        // --- LÓGICA DE LOGIN (12 HORAS) ---
+        // --- LOGIN 12H ---
         function autenticar() {
-            const u = document.getElementById('user').value.trim();
-            const p = document.getElementById('pass').value.trim();
-            if(u === "BorelTec" && p === "Borel77") {
-                const agora = new Date().getTime();
-                localStorage.setItem('login_time', agora);
+            if(document.getElementById('user').value === "BorelTec" && document.getElementById('pass').value === "Borel77") {
+                localStorage.setItem('borel_login', new Date().getTime());
                 document.getElementById('tela-login').style.display = 'none';
-            } else {
-                document.getElementById('erro').style.display = 'block';
-            }
+            } else { document.getElementById('erro').style.display = 'block'; }
         }
 
-        function verificarLogin() {
-            const salvo = localStorage.getItem('login_time');
-            if (salvo) {
-                const agora = new Date().getTime();
-                const dozeHoras = 12 * 60 * 60 * 1000;
-                if (agora - salvo < dozeHoras) {
-                    document.getElementById('tela-login').style.display = 'none';
-                }
-            }
-        }
-
-        // --- PRODUÇÃO ---
-        let historicoDados = JSON.parse(localStorage.getItem('borel_h_dados')) || [];
+        // --- CORE DATA ---
+        let h_dados = JSON.parse(localStorage.getItem('borel_h_v4')) || [];
+        let memoria = JSON.parse(localStorage.getItem('borel_cal_v4')) || {};
+        const de_para = { "BELGA":"MALTA","VIGOR":"MALTA","MALTA":"MALTA","LUNA":"MALTA","PARIS":"MALTA","NOVITA":"RAVEL","RAVEL":"RAVEL","SCOT":"SCOTT","SCOTT":"SCOTT","FLY":"FLY","ARMANI":"ARMANI","AREZO":"ARMANI","MALIBU":"ARMANI","MEGA":"MEGA","IMOLA":"IMOLA","DJON":"IMOLA","BELLA":"BELLA","BOSS":"BOSS","FAZANO":"FAZANO","TIVOLI":"TIVOLI" };
 
         function salvar() {
-            localStorage.setItem('s_borel', document.getElementById('somaDia').innerText);
-            localStorage.setItem('m_borel', document.getElementById('metaValor').value);
-            localStorage.setItem('borel_h_dados', JSON.stringify(historicoDados));
-            localStorage.setItem('p_html', document.getElementById('listaProducao').innerHTML);
+            localStorage.setItem('borel_h_v4', JSON.stringify(h_dados));
+            localStorage.setItem('borel_s_v4', document.getElementById('somaDia').innerText);
+            localStorage.setItem('borel_m_v4', document.getElementById('metaValor').value);
+            localStorage.setItem('borel_p_html', document.getElementById('listaProducao').innerHTML);
             atualizarProgresso();
         }
 
@@ -133,89 +155,100 @@
             const m = document.getElementById('modelo').value;
             const q = document.getElementById('quantidade').value;
             if(!q || q <= 0) return;
-            
-            const ini = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const ini = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
             const div = document.createElement('div');
             div.className = 'item';
             div.innerHTML = `<strong>${m}</strong>: ${q} un. (Início: ${ini})<br>
-                <button class="btn-green" style="width:auto; margin-top:5px" onclick="concluirCarga(this, '${m}', ${q}, '${ini}')">CONCLUIR</button>`;
+                <button class="btn-green" style="width:auto; margin-top:5px; padding:8px" onclick="concluir(this,'${m}',${q},'${ini}')">CONCLUIR</button>`;
             document.getElementById('listaProducao').appendChild(div);
-            document.getElementById('quantidade').value = "";
-            salvar();
+            document.getElementById('quantidade').value = ""; salvar();
         }
 
-        function concluirCarga(btn, mod, qtd, horaInicio) {
-            const horaFim = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const totalAtual = parseInt(document.getElementById('somaDia').innerText);
-            document.getElementById('somaDia').innerText = totalAtual + qtd;
-            
-            const dado = { modelo: mod, quantidade: qtd, inicio: horaInicio, fim: horaFim, data: new Date().toLocaleDateString() };
-            historicoDados.push(dado);
-            
-            renderizarHistorico();
-            btn.closest('.item').remove();
-            salvar();
+        function concluir(btn, mod, qtd, ini) {
+            const fim = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            document.getElementById('somaDia').innerText = parseInt(document.getElementById('somaDia').innerText) + qtd;
+            h_dados.push({ mod, qtd, ini, fim, data: new Date().toLocaleDateString() });
+            btn.closest('.item').remove(); renderHist(); salvar();
         }
 
-        function renderizarHistorico() {
-            const lista = document.getElementById('listaHistorico');
-            lista.innerHTML = "";
-            historicoDados.slice().reverse().forEach(item => {
-                lista.innerHTML += `<div class="historico-item">
-                    ✅ <strong>${item.modelo}</strong>: ${item.quantidade}un<br>
-                    <small>🕒 ${item.inicio} às ${item.fim} | 📅 ${item.data}</small>
-                </div>`;
+        function renderHist() {
+            const l = document.getElementById('listaHistorico'); l.innerHTML = "";
+            h_dados.slice().reverse().forEach(i => {
+                l.innerHTML += `<div style="border-bottom:1px solid #30363d; padding:5px">✅ ${i.mod} (${i.qtd}un) <small>${i.ini}-${i.fim}</small></div>`;
             });
         }
 
-        // --- WHATSAPP E LIMPEZA ---
+        // --- WHATSAPP ---
         function enviarZap() {
             const total = document.getElementById('somaDia').innerText;
             const meta = document.getElementById('metaValor').value || 0;
-            const dataHoje = new Date().toLocaleDateString();
-            
-            let statusMeta = parseInt(total) >= parseInt(meta) ? "✅ *META CONCLUÍDA*" : "❌ *META NÃO CONCLUÍDA*";
-            
-            let texto = `*RELATÓRIO DE PRODUÇÃO - BOREL TEC*\n`;
-            texto += `📅 Data: ${dataHoje}\n`;
-            texto += `--------------------------------\n`;
-            
-            historicoDados.forEach(item => {
-                texto += `• ${item.modelo}: ${item.quantidade}un (${item.inicio} - ${item.fim})\n`;
-            });
-            
-            texto += `--------------------------------\n`;
-            texto += `*TOTAL PRODUZIDO:* ${total}\n`;
-            texto += `*META DO DIA:* ${meta}\n`;
-            texto += `\n${statusMeta}`;
-
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`);
+            let status = parseInt(total) >= parseInt(meta) ? "✅ *META CONCLUÍDA*" : "❌ *META NÃO CONCLUÍDA*";
+            let msg = `*RELATÓRIO BOREL TEC*\n📅 Data: ${new Date().toLocaleDateString()}\n--------------------\n`;
+            h_dados.forEach(i => msg += `• ${i.mod}: ${i.qtd}un (${i.ini}-${i.fim})\n`);
+            msg += `--------------------\n*TOTAL:* ${total}\n*META:* ${meta}\n\n${status}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
-        function limparSomenteHistorico() {
-            if(confirm("Deseja apagar o histórico e zerar a contagem de hoje?")) {
-                historicoDados = [];
-                document.getElementById('somaDia').innerText = "0";
-                document.getElementById('listaHistorico').innerHTML = "";
+        // --- CALENDARIO ---
+        function renderCal() {
+            const d = new Date(); const mes = d.getMonth(); const ano = d.getFullYear();
+            document.getElementById('mesTitulo').innerText = `${d.toLocaleString('pt-br',{month:'long'})} ${ano}`;
+            const diasMes = new Date(ano, mes + 1, 0).getDate();
+            const cal = document.getElementById('calendario'); cal.innerHTML = "";
+            for(let i=1; i<=diasMes; i++) {
+                const key = `${ano}-${mes}-${i}`;
+                const div = document.createElement('div'); div.className = 'dia'; div.innerText = i;
+                if(memoria[key]) { 
+                    div.classList.add('dia-ok'); 
+                    div.onclick = () => alert(`Dia ${i}:\nProduzido: ${memoria[key].p}\nMeta: ${memoria[key].m}`);
+                }
+                cal.appendChild(div);
+            }
+        }
+
+        function fecharDia() {
+            const d = new Date(); const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+            if(confirm("Salvar produção de hoje no histórico?")) {
+                memoria[key] = { p: document.getElementById('somaDia').innerText, m: document.getElementById('metaValor').value };
+                localStorage.setItem('borel_cal_v4', JSON.stringify(memoria));
+                renderCal();
+            }
+        }
+
+        // --- TOOLS ---
+        function toggleModal(id) { const m = document.getElementById(id); m.style.display = m.style.display==='block' ? 'none':'block'; }
+        function calcNum(n) { const d = document.getElementById('calc-display'); d.value = d.value==='0' ? n : d.value+n; }
+        function calcOp(o) { document.getElementById('calc-display').value += o; }
+        function calcClear() { document.getElementById('calc-display').value = '0'; }
+        function calcResult() { try { document.getElementById('calc-display').value = eval(document.getElementById('calc-display').value); } catch(e){ calcClear(); } }
+
+        async function processarImagem(e) {
+            const file = e.target.files[0]; if(!file) return;
+            Tesseract.recognize(file, 'por').then(({ data: { text } }) => {
+                text.toUpperCase().split('\n').forEach(l => {
+                    const m = l.match(/(\d+)\s+([A-Z]+)/);
+                    if(m && de_para[m[2]]) {
+                        const ini = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                        const div = document.createElement('div'); div.className = 'item';
+                        div.innerHTML = `<strong>${de_para[m[2]]}</strong>: ${m[1]} un. (Início: ${ini})<br>
+                            <button class="btn-green" style="width:auto; margin-top:5px; padding:8px" onclick="concluir(this,'${de_para[m[2]]}',${m[1]},'${ini}')">CONCLUIR</button>`;
+                        document.getElementById('listaProducao').appendChild(div);
+                    }
+                });
                 salvar();
-                // Não damos reload para não sair do login
-            }
+            });
         }
 
-        function zerarTudo() {
-            if(confirm("Isso apagará TUDO e exigirá novo login. Confirmar?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
+        function limparHistorico() { if(confirm("Zerar produção de hoje?")) { h_dados=[]; document.getElementById('somaDia').innerText="0"; renderHist(); salvar(); } }
+        function zerarTudo() { if(confirm("Apagar TUDO?")) { localStorage.clear(); location.reload(); } }
 
         window.onload = () => {
-            verificarLogin();
-            document.getElementById('somaDia').innerText = localStorage.getItem('s_borel') || "0";
-            document.getElementById('metaValor').value = localStorage.getItem('m_borel') || "";
-            document.getElementById('listaProducao').innerHTML = localStorage.getItem('p_html') || "";
-            renderizarHistorico();
-            atualizarProgresso();
+            const login = localStorage.getItem('borel_login');
+            if(login && (new Date().getTime() - login < 12*60*60*1000)) document.getElementById('tela-login').style.display='none';
+            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v4') || "0";
+            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v4') || "";
+            document.getElementById('listaProducao').innerHTML = localStorage.getItem('borel_p_html') || "";
+            renderHist(); renderCal(); atualizarProgresso();
         };
     </script>
 </body>
