@@ -6,97 +6,44 @@
     <title>Borel Tec - Terminal Oficial</title>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <style>
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            color: #ecf0f1; margin: 0; padding: 100px 15px 20px 15px;
-            /* Fundo geral fica escuro para destacar o card */
-            background: #0d1117; 
-            background-size: cover;
-        }
-
+        body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 110px 15px 20px 15px; background: #0d1117; }
+        
         /* Login */
-        #tela-login {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #0d1117; z-index: 9999; display: flex; 
-            flex-direction: column; align-items: center; justify-content: center; 
-        }
-        
-        /* CARD: Agora o card é posicionado para que a imagem preencha-o */
-        .login-card {
-            position: relative; /* Permite que os elementos dentro dele sejam posicionados sobre a imagem */
-            border-radius: 12px; 
-            border: 2px solid #30363d; 
-            text-align: center; 
-            width: 85%; 
-            max-width: 320px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            overflow: hidden; /* Garante que a imagem não saia do card */
-        }
+        #tela-login { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-card { position: relative; border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden; }
+        .login-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .login-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 30px; box-sizing: border-box; background: rgba(0,0,0,0.4); }
+        .login-card h3 { color: #ffffff; margin-bottom: 25px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .login-card input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(1, 4, 9, 0.8); border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; outline: none; }
 
-        /* IMAGEM NO CARD: Preenche o card por completo */
-        .login-card img {
-            width: 100%; height: 100%;
-            object-fit: cover; /* Faz a imagem preencher o espaço sem distorcer */
-            display: block; /* Remove o espaço em branco abaixo da imagem */
-        }
-
-        /* CONTEÚDO DO LOGIN: Posicionado sobre a imagem */
-        .login-content {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 40px 30px;
-            box-sizing: border-box; /* Garante que o padding não aumente o tamanho do conteúdo */
-            background: rgba(0,0,0,0.4); /* Escurece a imagem para melhorar leitura */
-        }
-
-        .login-card h3 {
-            color: #ffffff; /* Título branco para contrastar */
-            margin-top: 0;
-            margin-bottom: 25px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            z-index: 2; /* Fica acima de tudo no conteúdo */
-        }
-
-        .login-card input {
-            width: 100%; padding: 12px; margin: 10px 0; 
-            background: rgba(1, 4, 9, 0.8); /* Fundo semi-transparente nos inputs */
-            border: 1px solid #30363d; 
-            color: #00ff00; text-align: center; box-sizing: border-box; outline: none;
-            border-radius: 6px;
-            z-index: 2;
-        }
-
-        .btn-green { background: #238636; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; z-index: 2; }
-        .btn-red { background: #da3633; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; z-index: 2; }
-        .btn-gray { background: #484f58; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 5px; z-index: 2; }
-
-        /* A logo principal continua aqui, na tela de produção */
-        .minha-logo { position: fixed; top: 15px; left: 15px; height: 50px; opacity: 1; z-index: 1001; }
-        
+        /* Interface Principal */
+        .minha-logo { position: fixed; top: 15px; left: 15px; height: 50px; z-index: 1001; }
         .top-btns { position: fixed; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 1000; }
         .btn-top { background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 10px 15px; border-radius: 6px; font-weight: bold; }
 
-        .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; backdrop-filter: blur(5px); }
-        .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.4rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        
+        /* Barra de Meta */
+        .meta-container { background: #161b22; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #30363d; }
+        .progress-bg { background: #30363d; height: 20px; border-radius: 10px; margin-top: 10px; overflow: hidden; }
+        .progress-fill { background: #238636; height: 100%; width: 0%; transition: width 0.5s; }
 
+        .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
 
         .item { background: rgba(48, 54, 61, 0.5); border-left: 4px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 4px; }
-        .controles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
-        .info-data { font-size: 0.75rem; color: #8b949e; display: block; margin-top: 4px; }
+        .btn-green { background: #238636; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; }
+        .btn-red { background: #da3633; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; margin-top: 10px; }
 
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #161b22; padding: 20px; border-radius: 12px; z-index: 2000; border: 1px solid #30363d; width: 280px; }
-        #calc-display { width: 100%; height: 50px; background: #010409; color: #39ff14; text-align: right; font-size: 1.5rem; border: 1px solid #30363d; margin-bottom: 10px; padding: 5px; box-sizing: border-box; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .btn-c { padding: 15px; background: #21262d; color: white; border: 1px solid #30363d; border-radius: 4px; }
+        /* Estilo do Calendário/Histórico */
+        .historico-dia { background: #0d1117; border: 1px solid #30363d; padding: 10px; margin-top: 5px; border-radius: 4px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
     <div id="tela-login">
         <div class="login-card">
-            <img src="fundo.jpg" alt="Fundo do card">
-            
+            <img src="fundo.jpg">
             <div class="login-content">
                 <h3>SISTEMA DE PRODUÇÃO</h3>
                 <input type="text" id="user" placeholder="USUÁRIO">
@@ -108,18 +55,24 @@
     </div>
 
     <img src="logo.png" class="minha-logo">
-
     <div class="top-btns">
         <button class="btn-top" onclick="document.getElementById('camera-input').click()">📷 SCAN</button>
-        <button class="btn-top" onclick="toggleModal('calc-modal')">🧮 CALC</button>
+        <button class="btn-top" onclick="alert('Histórico salvo no final da página!')">📅 DATA</button>
     </div>
 
     <input type="file" id="camera-input" accept="image/*" capture="camera" style="display:none" onchange="processarImagem(event)">
 
-    <div class="total-box">HOJE: <span id="somaDia">0</span> CADEIRAS</div>
+    <div class="total-box">PRODUÇÃO: <span id="somaDia">0</span> CADEIRAS</div>
 
-    <div class="card" style="margin-top: 20px;">
-        <h3>Novo Lançamento</h3>
+    <div class="meta-container">
+        <label>Meta do Dia:</label>
+        <input type="number" id="metaValor" placeholder="Ex: 1900" onchange="atualizarMeta()" style="margin-bottom: 5px;">
+        <div style="font-size: 0.9rem;">Progresso: <span id="progressoTexto">0%</span></div>
+        <div class="progress-bg"><div id="barraFill" class="progress-fill"></div></div>
+    </div>
+
+    <div class="card">
+        <h3>Lançar Modelo</h3>
         <select id="modelo">
             <option value="ARMANI">ARMANI</option><option value="BELLA">BELLA</option>
             <option value="BOSS">BOSS</option><option value="FAZANO">FAZANO</option>
@@ -128,142 +81,96 @@
             <option value="PARATY">PARATY</option><option value="RAVEL">RAVEL</option>
             <option value="SCOTT">SCOTT</option><option value="TIVOLI">TIVOLI</option>
         </select>
-        <input type="number" id="quantidade" placeholder="Qtd">
+        <input type="number" id="quantidade" placeholder="Quantidade">
         <button class="btn-green" style="background:#1f6feb" onclick="adicionarCarga()">INICIAR CARGA</button>
     </div>
 
     <div id="listaProducao"></div>
-    
-    <div class="card" style="border-left: 5px solid #d29922;">
-        <h3>⏳ Em Pausa</h3>
-        <div id="listaPendentes"></div>
-    </div>
+    <div id="listaPendentes"></div>
 
     <div class="card">
-        <h3>Histórico do Dia</h3>
-        <div id="listaHistorico" style="max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-size: 0.85rem;"></div>
-        <button class="btn-green" style="margin-top:15px;" onclick="enviarZap()">ENVIAR RELATÓRIO</button>
-        <button class="btn-gray" onclick="limparHistorico()">LIMPAR APENAS HISTÓRICO</button>
-        <button class="btn-red" onclick="zerarTudo()">REINICIAR TUDO (ZERAR)</button>
-    </div>
-
-    <div id="calc-modal" class="modal">
-        <input type="text" id="calc-display" readonly value="0">
-        <div class="grid">
-            <button class="btn-c" style="background:#da3633; grid-column: span 2;" onclick="calcClear()">AC</button>
-            <button class="btn-c" onclick="calcOp('/')">/</button>
-            <button class="btn-c" onclick="calcOp('*')">x</button>
-            <button class="btn-c" onclick="calcNum('7')">7</button><button class="btn-c" onclick="calcNum('8')">8</button><button class="btn-c" onclick="calcNum('9')">9</button>
-            <button class="btn-c" onclick="calcOp('-')">-</button>
-            <button class="btn-c" onclick="calcNum('4')">4</button><button class="btn-c" onclick="calcNum('5')">5</button><button class="btn-c" onclick="calcNum('6')">6</button>
-            <button class="btn-c" onclick="calcOp('+')">+</button>
-            <button class="btn-c" onclick="calcNum('1')">1</button><button class="btn-c" onclick="calcNum('2')">2</button><button class="btn-c" onclick="calcNum('3')">3</button>
-            <button class="btn-c" style="background:#238636; grid-column: span 2;" onclick="calcResult()">=</button>
-            <button class="btn-c" onclick="calcNum('0')">0</button>
-            <button class="btn-c" style="width:100%; grid-column: span 4; background:#484f58" onclick="toggleModal('calc-modal')">FECHAR</button>
-        </div>
+        <h3>Relatório e Memória</h3>
+        <div id="listaHistorico" style="max-height: 200px; overflow-y: auto;"></div>
+        <button class="btn-green" style="margin-top:15px;" onclick="enviarZap()">ENVIAR WHATSAPP</button>
+        <button class="btn-green" style="background:#8957e5; margin-top:10px;" onclick="fecharDia()">FECHAR DIA E SALVAR NO CALENDÁRIO</button>
+        
+        <h4 style="margin-top:20px; color:#58a6ff">📅 Arquivo de Produção (Memória)</h4>
+        <div id="arquivoDias"></div>
+        <button class="btn-red" onclick="zerarTudo()">REINICIAR TUDO</button>
     </div>
 
     <script>
         function autenticar() {
             const u = document.getElementById('user').value.trim();
             const p = document.getElementById('pass').value.trim();
-            if(u === "BorelTec" && p === "Borel77") {
-                document.getElementById('tela-login').style.display = 'none';
-            } else {
-                document.getElementById('erro').style.display = 'block';
-                document.getElementById('pass').value = '';
-            }
+            if(u === "BorelTec" && p === "Borel77") document.getElementById('tela-login').style.display = 'none';
+            else document.getElementById('erro').style.display = 'block';
         }
-
-        const de_para = { "BELGA":"MALTA","VIGOR":"MALTA","MALTA":"MALTA","LUNA":"MALTA","PARIS":"MALTA","NOVITA":"RAVEL","RAVEL":"RAVEL","SCOT":"SCOTT","SCOTT":"SCOTT","FLY":"FLY","ARMANI":"ARMANI","AREZO":"ARMANI","MALIBU":"ARMANI","MEGA":"MEGA","IMOLA":"IMOLA","DJON":"IMOLA","BELLA":"BELLA","BOSS":"BOSS","FAZANO":"FAZANO","TIVOLI":"TIVOLI" };
 
         const salvar = () => {
             localStorage.setItem('p', document.getElementById('listaProducao').innerHTML);
-            localStorage.setItem('n', document.getElementById('listaPendentes').innerHTML);
             localStorage.setItem('s', document.getElementById('somaDia').innerText);
             localStorage.setItem('h', document.getElementById('listaHistorico').innerHTML);
+            localStorage.setItem('m', document.getElementById('metaValor').value);
+            localStorage.setItem('a', document.getElementById('arquivoDias').innerHTML);
+            atualizarProgresso();
         };
 
-        const obterHora = () => { 
-            const n = new Date(); 
-            return `${String(n.getDate()).padStart(2,'0')}/${String(n.getMonth()+1).padStart(2,'0')} ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`; 
-        };
+        function atualizarMeta() { salvar(); }
+
+        function atualizarProgresso() {
+            const total = parseInt(document.getElementById('somaDia').innerText);
+            const meta = parseInt(document.getElementById('metaValor').value) || 0;
+            if (meta > 0) {
+                const porc = Math.min((total / meta) * 100, 100).toFixed(1);
+                document.getElementById('barraFill').style.width = porc + "%";
+                document.getElementById('progressoTexto').innerText = porc + "%";
+            }
+        }
 
         function adicionarCarga() {
             const m = document.getElementById('modelo').value;
             const q = document.getElementById('quantidade').value;
             if(!q || q <= 0) return;
-            criarItem(document.getElementById('listaProducao'), m, q, false, obterHora());
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.innerHTML = `<strong>${m}</strong>: ${q} un.<br>
+                <button class="btn-green" style="width:auto; margin-top:10px" onclick="concluir(this, '${m}', ${q})">CONCLUIR</button>`;
+            document.getElementById('listaProducao').appendChild(div);
             document.getElementById('quantidade').value = ""; salvar();
         }
 
-        function criarItem(lista, mod, qtd, isP, inicio) {
-            const div = document.createElement('div');
-            div.className = 'item';
-            div.setAttribute('data-mod', mod); div.setAttribute('data-qtd', qtd); div.setAttribute('data-ini', inicio);
-            const btnP = isP ? `<button class="btn-green" style="width:auto; padding:8px" onclick="mover(this,false)">REATIVAR</button>` : `<button class="btn-gray" style="width:auto; padding:8px; margin:0" onclick="mover(this,true)">PAUSAR</button>`;
-            div.innerHTML = `<strong>${mod}</strong>: ${qtd} un.<br><span class="info-data">Início: ${inicio}</span>
-                <div class="controles"><button class="btn-green" style="padding:8px" onclick="concluir(this)">CONCLUIR</button>${btnP}<button style="background:#d29922; color:white; border:none; border-radius:4px; padding:8px" onclick="editar(this)">EDT</button></div>`;
-            lista.appendChild(div);
-        }
-
-        function concluir(btn) {
-            const item = btn.closest('.item');
-            const q = item.getAttribute('data-qtd');
-            const mod = item.getAttribute('data-mod');
-            const ini = item.getAttribute('data-ini');
-            const fim = obterHora();
+        function concluir(btn, mod, qtd) {
             const s = parseInt(document.getElementById('somaDia').innerText);
-            document.getElementById('somaDia').innerText = s + parseInt(q);
+            document.getElementById('somaDia').innerText = s + qtd;
             const h = document.getElementById('listaHistorico');
-            h.innerHTML = `<div style="border-bottom:1px solid #30363d; padding:8px 0">✅ ${mod} (${q}un)<br><span style="font-size:0.7rem; color:#8b949e">De: ${ini} até ${fim}</span></div>` + h.innerHTML;
-            item.remove(); salvar();
+            const agora = new Date().toLocaleTimeString();
+            h.innerHTML = `<div class="historico-dia">✅ ${mod} (${qtd}un) - ${agora}</div>` + h.innerHTML;
+            btn.closest('.item').remove(); salvar();
         }
 
-        function mover(btn, p) {
-            const item = btn.closest('.item');
-            criarItem(p ? document.getElementById('listaPendentes') : document.getElementById('listaProducao'), item.getAttribute('data-mod'), item.getAttribute('data-qtd'), p, item.getAttribute('data-ini'));
-            item.remove(); salvar();
-        }
-
-        function editar(btn) {
-            const item = btn.closest('.item');
-            const n = prompt("Corrigir Quantidade:", item.getAttribute('data-qtd'));
-            if(n > 0) { item.setAttribute('data-qtd', n); item.innerHTML = item.innerHTML.replace(/: .* un/, `: ${n} un`); salvar(); }
-        }
-
-        function limparHistorico() { if(confirm("Apagar o histórico?")) { document.getElementById('listaHistorico').innerHTML = ""; salvar(); } }
-        function zerarTudo() { if(confirm("ZERAR TUDO?")) { localStorage.clear(); location.reload(); } }
-        function toggleModal(id) { const m = document.getElementById(id); m.style.display = m.style.display === 'block' ? 'none' : 'block'; }
-
-        async function processarImagem(event) {
-            const file = event.target.files[0]; if(!file) return;
-            Tesseract.recognize(file, 'por').then(({ data: { text } }) => {
-                const linhas = text.toUpperCase().split('\n');
-                linhas.forEach(l => {
-                    const m = l.match(/(\d+)\s+([A-Z]+)/);
-                    if(m && de_para[m[2]]) criarItem(document.getElementById('listaProducao'), de_para[m[2]], m[1], false, obterHora());
-                });
+        function fecharDia() {
+            const data = new Date().toLocaleDateString();
+            const total = document.getElementById('somaDia').innerText;
+            const meta = document.getElementById('metaValor').value || "Não definida";
+            if(confirm(`Deseja salvar o dia ${data} com ${total} peças?`)) {
+                const registro = `<div class="historico-dia" style="border-left:4px solid #8957e5"><strong>${data}</strong> | Produção: ${total} | Meta: ${meta}</div>`;
+                document.getElementById('arquivoDias').innerHTML = registro + document.getElementById('arquivoDias').innerHTML;
+                document.getElementById('somaDia').innerText = "0";
+                document.getElementById('listaHistorico').innerHTML = "";
                 salvar();
-            });
+            }
         }
 
-        function enviarZap() {
-            let t = "*RELATÓRIO BOREL TEC*\n*Total:* " + document.getElementById('somaDia').innerText + " unidades\n";
-            window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(t));
-        }
-
-        function calcNum(n) { const d = document.getElementById('calc-display'); d.value = d.value === '0' ? n : d.value + n; }
-        function calcOp(o) { document.getElementById('calc-display').value += o; }
-        function calcClear() { document.getElementById('calc-display').value = '0'; }
-        function calcResult() { try { document.getElementById('calc-display').value = eval(document.getElementById('calc-display').value); } catch(e) { calcClear(); } }
+        function zerarTudo() { if(confirm("Isso apagará TODO o histórico e arquivo. Confirmar?")) { localStorage.clear(); location.reload(); } }
 
         window.onload = () => {
             if(localStorage.getItem('p')) document.getElementById('listaProducao').innerHTML = localStorage.getItem('p');
-            if(localStorage.getItem('n')) document.getElementById('listaPendentes').innerHTML = localStorage.getItem('n');
             if(localStorage.getItem('s')) document.getElementById('somaDia').innerText = localStorage.getItem('s');
             if(localStorage.getItem('h')) document.getElementById('listaHistorico').innerHTML = localStorage.getItem('h');
+            if(localStorage.getItem('m')) document.getElementById('metaValor').value = localStorage.getItem('m');
+            if(localStorage.getItem('a')) document.getElementById('arquivoDias').innerHTML = localStorage.getItem('a');
+            atualizarProgresso();
         };
     </script>
 </body>
