@@ -5,64 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Borel Tec - Sistema Oficial</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 110px 15px 20px 15px; background: #0d1117; }
+        body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 120px 15px 20px 15px; background: #0d1117; }
         
-        #tela-login { 
+        /* TELAS DE ACESSO */
+        #tela-acesso { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background-color: #0d1117;
-            background-image: url('background.jpg'); 
-            background-size: cover; background-position: center; 
+            background: #0d1117 url('background.jpg') center/cover; 
             z-index: 9999; display: flex; align-items: center; justify-content: center; 
         }
-        .login-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 40px 20px; background: rgba(22, 27, 34, 0.9); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .login-card input { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; box-sizing: border-box; }
+        .acesso-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 30px 20px; background: rgba(22, 27, 34, 0.95); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         
-        .minha-logo { position: fixed; top: 15px; left: 15px; height: 50px; z-index: 1001; }
-        .top-btns { position: fixed; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 1000; }
-        .btn-top { background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 10px 15px; border-radius: 6px; font-weight: bold; }
+        .input-group { position: relative; width: 100%; margin: 10px 0; }
+        .input-group input { width: 100%; padding: 12px; background: #0d1117; border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; box-sizing: border-box; }
+        .toggle-pass { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8b949e; font-size: 1.2rem; }
+        
+        /* CABEÇALHO E MENU */
+        .minha-logo { position: fixed; top: 15px; left: 15px; height: 45px; z-index: 1001; }
+        .top-btns { position: fixed; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 1000; align-items: center; }
+        .btn-top { background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 8px 12px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; }
+        .user-info { color: #8b949e; font-size: 0.75rem; text-align: right; }
+
+        /* COMPONENTES PADRÃO */
         .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.2rem; margin-top: 10px; border: 1px solid #39ff14; }
         .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
         .item { background: rgba(48, 54, 61, 0.5); border-left: 4px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 4px; }
-        .item.pausado { border-left-color: #f1e05a; opacity: 0.5; }
+        .item.pausado { border-left-color: #f1e05a; opacity: 0.7; }
         .btn-green { background: #238636; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; }
         .btn-red { background: #da3633; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; margin-top: 10px; }
-        .btn-mini { width: auto; padding: 8px 12px; font-size: 0.8rem; margin-top: 8px; margin-right: 5px; border-radius: 4px; border: none; font-weight: bold; }
+        .btn-mini { width: auto; padding: 8px 10px; font-size: 0.75rem; margin-top: 8px; margin-right: 4px; border-radius: 4px; border: none; font-weight: bold; }
+        
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
         
-        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-        .dia-semana { text-align: center; font-size: 0.7rem; color: #8b949e; font-weight: bold; padding-bottom: 5px; }
-        .dia { background: #21262d; padding: 12px 0; text-align: center; border-radius: 4px; font-size: 0.85rem; border: 1px solid #30363d; cursor: pointer; position: relative; }
-        .dia-vazio { opacity: 0; pointer-events: none; }
-        .dia-ok { background: #238636 !important; border-color: #39ff14 !important; font-weight: bold; }
-        .dia-meta { border-bottom: 3px solid #58a6ff !important; }
+        .dia { background: #21262d; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; cursor: pointer; }
+        .dia-ok { background: #238636 !important; border-color: #39ff14 !important; }
         .hoje { border: 2px solid #58a6ff !important; }
     </style>
 </head>
 <body>
 
-    <div id="tela-login">
-        <div class="login-card">
-            <h3 style="color: white; margin-top: 0;">ACESSO RESTRITO</h3>
-            <input type="text" id="user" placeholder="USUÁRIO">
-            <input type="password" id="pass" placeholder="SENHA">
-            <button class="btn-green" onclick="autenticar()">ACESSAR</button>
+    <div id="tela-acesso">
+        <div id="box-login" class="acesso-card">
+            <h3 style="color: white; margin-bottom: 20px;">ACESSO RESTRITO</h3>
+            <div class="input-group"><input type="text" id="user-login" placeholder="USUÁRIO"></div>
+            <div class="input-group">
+                <input type="password" id="pass-login" placeholder="SENHA">
+                <span class="toggle-pass" onclick="verSenha('pass-login')">👁️</span>
+            </div>
+            <button class="btn-green" onclick="fazerLogin()">ACESSAR</button>
+            <p style="font-size: 0.8rem; margin-top: 15px; color: #8b949e;">Não tem conta? <a href="#" onclick="trocarTela('box-reg')" style="color:#58a6ff">Registrar</a></p>
+        </div>
+
+        <div id="box-reg" class="acesso-card" style="display:none">
+            <h3 style="color: white; margin-bottom: 20px;">NOVO REGISTRO</h3>
+            <div class="input-group"><input type="text" id="reg-nome" placeholder="NOME COMPLETO"></div>
+            <div class="input-group"><input type="text" id="reg-user" placeholder="USUÁRIO"></div>
+            <div class="input-group">
+                <input type="password" id="reg-pass" placeholder="SENHA">
+                <span class="toggle-pass" onclick="verSenha('reg-pass')">👁️</span>
+            </div>
+            <div class="input-group">
+                <input type="password" id="reg-pass2" placeholder="CONFIRMAR SENHA">
+                <span class="toggle-pass" onclick="verSenha('reg-pass2')">👁️</span>
+            </div>
+            <button class="btn-green" style="background:#1f6feb" onclick="registrarUsuario()">CRIAR CONTA</button>
+            <p style="font-size: 0.8rem; margin-top: 15px; color: #8b949e;"><a href="#" onclick="trocarTela('box-login')" style="color:#8b949e">Voltar ao Login</a></p>
         </div>
     </div>
 
     <img src="logo.png" class="minha-logo">
     <div class="top-btns">
-        <button class="btn-top" onclick="toggleCalc()">🧮 CALC</button>
+        <div class="user-info"><span id="nome-logado"></span></div>
+        <button class="btn-top" onclick="fazerLogout()" style="color:#da3633">SAIR</button>
     </div>
 
-    <div class="card" style="margin-top: 10px;">
-        <div class="cal-header">
+    <div class="card" style="margin-top: 5px;">
+        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:10px">
             <button class="btn-mini" onclick="mudarMes(-1)" style="background:#30363d; color:white"><</button>
-            <h3 id="mesAno" style="color:#58a6ff; margin:0; font-size:1rem"></h3>
+            <h3 id="mesAno" style="color:#58a6ff; margin:0; font-size:0.9rem"></h3>
             <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d; color:white">></button>
         </div>
         <div class="cal-grid" id="calendario"></div>
-        <button class="btn-red" onclick="zerarCalendario()" style="background:#4a0000; margin-top: 15px; font-size: 0.7rem; padding: 5px;">ZERAR TUDO (CALENDÁRIO)</button>
     </div>
 
     <div class="total-box">PRODUÇÃO HOJE: <span id="somaDia">0</span></div>
@@ -78,45 +101,86 @@
             <option value="TIVOLI">TIVOLI</option><option value="PARATY">PARATY</option>
         </select>
         <input type="number" id="quantidade" placeholder="Quantidade">
-        <button class="btn-green" style="background:#1f6feb" onclick="adicionarManual()">INICIAR CARGA</button>
+        <button class="btn-green" style="background:#1f6feb" onclick="adicionarCarga()">INICIAR CARGA</button>
     </div>
 
     <div id="listaProducao"></div>
 
     <div class="card">
-        <h3>Histórico Concluído (Pendente de Envio)</h3>
-        <div id="listaHistorico" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px;"></div>
-        
-        <button class="btn-green" style="background:#238636; border: 2px solid #39ff14;" onclick="finalizarRelatorioCalendario()">✅ SALVAR NO CALENDÁRIO E ENVIAR RELATÓRIO</button>
-        <button class="btn-red" onclick="limparHistorico()" style="background:#484f58">🗑️ APENAS LIMPAR LISTA</button>
+        <h3>Histórico Concluído</h3>
+        <div id="listaHistorico" style="max-height: 150px; overflow-y: auto;"></div>
+        <button class="btn-green" style="margin-top:15px; border: 2px solid #39ff14;" onclick="finalizar()">✅ SALVAR E ENVIAR WHATSAPP</button>
     </div>
 
     <script>
-        let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v16')) || [];
-        let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v16')) || [];
-        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v16')) || {};
-        let agendaMetas = JSON.parse(localStorage.getItem('borel_metas_agenda')) || {};
+        // BANCO DE DADOS LOCAL
+        let usuarios = JSON.parse(localStorage.getItem('bt_users')) || [];
+        let logado = JSON.parse(localStorage.getItem('bt_logado')) || null;
+        
+        let historicoGeral = JSON.parse(localStorage.getItem('bt_h')) || [];
+        let cargasAtivas = JSON.parse(localStorage.getItem('bt_at')) || [];
+        let memoriaCal = JSON.parse(localStorage.getItem('bt_c')) || {};
+        let agendaMetas = JSON.parse(localStorage.getItem('bt_m')) || {};
         let dataAtual = new Date();
 
-        function autenticar() {
-            if(document.getElementById('user').value === "BorelTec" && document.getElementById('pass').value === "Borel77") {
-                localStorage.setItem('borel_sessao', new Date().getTime());
-                document.getElementById('tela-login').style.display = 'none';
-            }
+        // --- SISTEMA DE ACESSO ---
+        function verSenha(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === "password" ? "text" : "password";
         }
 
+        function trocarTela(id) {
+            document.getElementById('box-login').style.display = 'none';
+            document.getElementById('box-reg').style.display = 'none';
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function registrarUsuario() {
+            const nome = document.getElementById('reg-nome').value;
+            const user = document.getElementById('reg-user').value;
+            const p1 = document.getElementById('reg-pass').value;
+            const p2 = document.getElementById('reg-pass2').value;
+
+            if(!nome || !user || !p1) return alert("Preencha tudo!");
+            if(p1 !== p2) return alert("As senhas não conferem!");
+            if(usuarios.find(u => u.user === user)) return alert("Usuário já existe!");
+
+            usuarios.push({ nome, user, pass: p1 });
+            localStorage.setItem('bt_users', JSON.stringify(usuarios));
+            alert("Conta criada! Agora faça login.");
+            trocarTela('box-login');
+        }
+
+        function fazerLogin() {
+            const u = document.getElementById('user-login').value;
+            const p = document.getElementById('pass-login').value;
+            const conta = usuarios.find(x => x.user === u && x.pass === p);
+
+            if(conta) {
+                logado = conta;
+                localStorage.setItem('bt_logado', JSON.stringify(logado));
+                document.getElementById('tela-acesso').style.display = 'none';
+                document.getElementById('nome-logado').innerText = logado.nome;
+            } else { alert("Usuário ou senha incorretos!"); }
+        }
+
+        function fazerLogout() {
+            localStorage.removeItem('bt_logado');
+            location.reload();
+        }
+
+        // --- LÓGICA DE PRODUÇÃO ---
         function salvar() {
-            localStorage.setItem('borel_h_v16', JSON.stringify(historicoGeral));
-            localStorage.setItem('borel_ativas_v16', JSON.stringify(cargasAtivas));
-            localStorage.setItem('borel_c_v16', JSON.stringify(memoriaCal));
-            localStorage.setItem('borel_metas_agenda', JSON.stringify(agendaMetas));
+            localStorage.setItem('bt_h', JSON.stringify(historicoGeral));
+            localStorage.setItem('bt_at', JSON.stringify(cargasAtivas));
+            localStorage.setItem('bt_c', JSON.stringify(memoriaCal));
+            localStorage.setItem('bt_m', JSON.stringify(agendaMetas));
         }
 
-        function adicionarManual() {
+        function adicionarCarga() {
             const q = parseInt(document.getElementById('quantidade').value);
-            if(!q || q <= 0) return;
-            const nova = { id: Date.now(), mod: document.getElementById('modelo').value, qtd: q, ini: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), pausado: false };
-            cargasAtivas.push(nova);
+            if(!q) return;
+            cargasAtivas.push({ id: Date.now(), mod: document.getElementById('modelo').value, qtd: q, ini: agora(), pausado: false });
             document.getElementById('quantidade').value = "";
             renderCargas(); salvar();
         }
@@ -127,112 +191,94 @@
                 const div = document.createElement('div');
                 div.className = `item ${c.pausado ? 'pausado' : ''}`;
                 div.innerHTML = `<strong>${c.mod}</strong>: ${c.qtd} un. <br><small>⏰ Início: ${c.ini}</small><br>
-                    <button class="btn-green btn-mini" onclick="concluir(${c.id})">CONCLUIR</button>
-                    <button class="btn-mini" style="background:#f1e05a; color:black" onclick="pausar(${c.id})">${c.pausado ? 'RETOMAR' : 'PAUSAR'}</button>
-                    <button class="btn-mini" style="background:#da3633; color:white" onclick="excluir(${c.id})">EXCLUIR</button>`;
+                    <button class="btn-green btn-mini" onclick="concluir(${c.id})">OK</button>
+                    <button class="btn-mini" style="background:#f1e05a; color:black" onclick="pausar(${c.id})">⏸️</button>
+                    <button class="btn-mini" style="background:#58a6ff; color:white" onclick="editarCarga(${c.id})">✏️</button>
+                    <button class="btn-mini" style="background:#da3633; color:white" onclick="excluir(${c.id})">🗑️</button>`;
                 lista.appendChild(div);
             });
         }
 
-        function pausar(id) {
+        function editarCarga(id) {
             const c = cargasAtivas.find(x => x.id === id);
-            c.pausado = !c.pausado;
-            renderCargas(); salvar();
-        }
-
-        function excluir(id) {
-            if(confirm("Excluir carga?")) {
-                cargasAtivas = cargasAtivas.filter(x => x.id !== id);
-                renderCargas(); salvar();
+            const feito = parseInt(prompt(`CARGA TOTAL: ${c.qtd} ${c.mod}\nDIGITE O VALOR QUE JÁ FOI FEITO:`));
+            
+            if(feito && feito > 0 && feito < c.qtd) {
+                const restante = c.qtd - feito;
+                // Move o que foi feito para o histórico
+                historicoGeral.push({ mod: c.mod, qtd: feito, ini: c.ini, fim: agora() });
+                // Atualiza a carga ativa com o que falta e pausa
+                c.qtd = restante;
+                c.pausado = true;
+                renderCargas(); renderHistorico(); salvar();
+                alert(`Sucesso! ${feito} un enviadas ao histórico. ${restante} un ficaram pausadas.`);
+            } else if (feito >= c.qtd) {
+                alert("Para o valor total, use o botão OK.");
             }
         }
 
         function concluir(id) {
             const c = cargasAtivas.find(x => x.id === id);
-            const agora = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            historicoGeral.push({ mod: c.mod, qtd: c.qtd, ini: c.ini, fim: agora });
+            historicoGeral.push({ mod: c.mod, qtd: c.qtd, ini: c.ini, fim: agora() });
             cargasAtivas = cargasAtivas.filter(x => x.id !== id);
             renderCargas(); renderHistorico(); salvar();
         }
 
-        function finalizarRelatorioCalendario() {
-            const keyHoje = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-            const metaHoje = agendaMetas[keyHoje] || 0;
+        function finalizar() {
+            const key = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
+            let totalSessao = 0;
+            historicoGeral.forEach(i => totalSessao += i.qtd);
             
-            // 1. Soma o que foi produzido agora
-            let somaAgora = 0;
-            historicoGeral.forEach(i => somaAgora += i.qtd);
+            memoriaCal[key] = (memoriaCal[key] || 0) + totalSessao;
+            document.getElementById('somaDia').innerText = memoriaCal[key];
             
-            // 2. Atualiza o Calendário somando o novo com o antigo
-            const totalAntigo = memoriaCal[keyHoje] || 0;
-            const totalOficial = totalAntigo + somaAgora;
-            memoriaCal[keyHoje] = totalOficial;
+            let msg = `*RELATÓRIO BOREL TEC*\n👤 Operador: ${logado.nome}\n📅 ${new Date().toLocaleDateString()}\n---\n`;
+            msg += `📊 TOTAL NO CALENDÁRIO: ${memoriaCal[key]} un.\n🎯 META: ${agendaMetas[key] || 0}\n`;
+            msg += memoriaCal[key] >= (agendaMetas[key]||0) ? "✅ META ATINGIDA!" : "❌ META PENDENTE";
 
-            // 3. Atualiza a Caixa Verde do Topo com o valor oficial do calendário
-            document.getElementById('somaDia').innerText = totalOficial;
-
-            // 4. Monta o Relatório baseado no que está gravado no Calendário
-            let msg = `*RELATÓRIO OFICIAL BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n---\n`;
-            msg += `📊 *TOTAL GRAVADO NO CALENDÁRIO:* ${totalOficial} un.\n`;
-            msg += `🎯 *META PROGRAMADA:* ${metaHoje} un.\n---\n`;
-            msg += totalOficial >= metaHoje ? "✅ *STATUS: META ATINGIDA!*" : "❌ *STATUS: META PENDENTE*";
-
-            // 5. Limpa a lista de espera e salva
-            historicoGeral = []; 
-            renderHistorico(); renderCal(); salvar();
-
-            // 6. Envia
+            historicoGeral = []; renderHistorico(); renderCal(); salvar();
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
+        // --- AUXILIARES ---
+        function agora() { return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+        function pausar(id) { const c = cargasAtivas.find(x => x.id === id); c.pausado = !c.pausado; renderCargas(); salvar(); }
+        function excluir(id) { if(confirm("Excluir?")) { cargasAtivas = cargasAtivas.filter(x => x.id !== id); renderCargas(); salvar(); } }
+        function trocarMes(d) { dataAtual.setMonth(dataAtual.getMonth()+d); renderCal(); }
+        
         function renderHistorico() {
-            const lista = document.getElementById('listaHistorico'); lista.innerHTML = "";
+            const h = document.getElementById('listaHistorico'); h.innerHTML = "";
             historicoGeral.slice().reverse().forEach(i => {
-                lista.innerHTML += `<div style="border-bottom:1px solid #30363d; padding:8px; font-size:0.85rem">
-                    <b>✅ ${i.mod}: ${i.qtd}un</b> <small style="color:#8b949e">(${i.ini} - ${i.fim})</small>
-                </div>`;
+                h.innerHTML += `<div style="font-size:0.8rem; border-bottom:1px solid #30363d; padding:5px"><b>${i.mod}</b>: ${i.qtd}un <span style="color:#8b949e">(${i.ini}-${i.fim})</span></div>`;
             });
-        }
-
-        function mudarMes(direcao) {
-            dataAtual.setMonth(dataAtual.getMonth() + direcao);
-            renderCal();
         }
 
         function renderCal() {
             const cal = document.getElementById('calendario'); cal.innerHTML = "";
-            const mes = dataAtual.getMonth();
-            const ano = dataAtual.getFullYear();
+            const mes = dataAtual.getMonth(), ano = dataAtual.getFullYear();
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
             document.getElementById('mesAno').innerText = `${meses[mes]} ${ano}`;
-            const primeiroDia = new Date(ano, mes, 1).getDay();
             const diasNoMes = new Date(ano, mes + 1, 0).getDate();
-            ["D","S","T","Q","Q","S","S"].forEach(d => cal.innerHTML += `<div class="dia-semana">${d}</div>`);
-            for(let i = 0; i < primeiroDia; i++) cal.innerHTML += `<div class="dia dia-vazio"></div>`;
             for(let i = 1; i <= diasNoMes; i++) {
-                const key = `${ano}-${mes}-${i}`;
+                const k = `${ano}-${mes}-${i}`;
                 const div = document.createElement('div');
-                div.className = 'dia';
+                div.className = `dia ${memoriaCal[k]?'dia-ok':''} ${i===new Date().getDate() && mes===new Date().getMonth()?'hoje':''}`;
                 div.innerText = i;
-                if(memoriaCal[key]) div.classList.add('dia-ok');
-                if(agendaMetas[key]) div.classList.add('dia-meta');
-                if(i === new Date().getDate() && mes === new Date().getMonth() && ano === new Date().getFullYear()) div.classList.add('hoje');
                 div.onclick = () => {
-                    const m = prompt(`DIA ${i} de ${meses[mes]}\nProdução Salva: ${memoriaCal[key]||0}\nNova Meta:`, agendaMetas[key]||"");
-                    if(m !== null) { m==="" ? delete agendaMetas[key] : agendaMetas[key]=parseInt(m); renderCal(); salvar(); }
+                    const m = prompt(`Meta para o dia ${i}:`, agendaMetas[k] || "");
+                    if(m !== null) { agendaMetas[k] = parseInt(m); renderCal(); salvar(); }
                 };
                 cal.appendChild(div);
             }
         }
 
-        function zerarCalendario() { if(confirm("Zerar TODA a memória do calendário?")) { memoriaCal={}; agendaMetas={}; salvar(); renderCal(); } }
-        function limparHistorico() { if(confirm("Limpar lista de espera sem salvar?")) { historicoGeral=[]; renderHistorico(); salvar(); } }
-        function toggleCalc() { alert("Calculadora em manutenção."); }
-
         window.onload = () => {
-            const keyHoje = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-            if(localStorage.getItem('borel_sessao')) document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('somaDia').innerText = memoriaCal[keyHoje] || "0";
+            if(logado) {
+                document.getElementById('tela-acesso').style.display = 'none';
+                document.getElementById('nome-logado').innerText = logado.nome;
+            }
+            const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+            document.getElementById('somaDia').innerText = memoriaCal[key] || "0";
             renderCargas(); renderHistorico(); renderCal();
         };
     </script>
