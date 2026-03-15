@@ -21,7 +21,7 @@
         .btn-mini { width: auto; padding: 8px 12px; font-size: 0.8rem; margin-top: 8px; margin-right: 5px; border-radius: 4px; border: none; font-weight: bold; }
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
         
-        /* CALENDÁRIO VIVO */
+        /* CALENDÁRIO */
         .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
         .dia-semana { text-align: center; font-size: 0.7rem; color: #8b949e; font-weight: bold; padding-bottom: 5px; }
@@ -58,9 +58,12 @@
     <div class="card">
         <h3>Lançar Carga</h3>
         <select id="modelo">
-            <option value="MALTA">MALTA</option><option value="TIVOLI">TIVOLI</option>
+            <option value="MALTA">MALTA</option><option value="RAVEL">RAVEL</option>
             <option value="ARMANI">ARMANI</option><option value="IMOLA">IMOLA</option>
-            <option value="RAVEL">RAVEL</option><option value="SCOTT">SCOTT</option>
+            <option value="SCOTT">SCOTT</option><option value="FLY">FLY</option>
+            <option value="MEGA">MEGA</option><option value="BELLA">BELLA</option>
+            <option value="BOSS">BOSS</option><option value="FAZANO">FAZANO</option>
+            <option value="TIVOLI">TIVOLI</option><option value="PARATY">PARATY</option>
         </select>
         <input type="number" id="quantidade" placeholder="Quantidade">
         <button class="btn-green" style="background:#1f6feb" onclick="adicionarManual()">INICIAR CARGA</button>
@@ -70,7 +73,7 @@
 
     <div class="card">
         <h3>Histórico Concluído</h3>
-        <div id="listaHistorico"></div>
+        <div id="listaHistorico" style="max-height: 200px; overflow-y: auto;"></div>
         <button class="btn-green" style="margin-top:10px" onclick="enviarZap()">📤 ENVIAR PARA WHATSAPP</button>
         <button class="btn-green" style="background:#8957e5; margin-top:10px" onclick="fecharDia()">💾 SALVAR NO CALENDÁRIO</button>
         <button class="btn-red" onclick="limparHistorico()">🗑️ LIMPAR LISTA</button>
@@ -86,12 +89,16 @@
     </div>
 
     <script>
-        const de_para = { "TIVOLI":"TIVOLI", "MALTA":"MALTA", "RAVEL":"RAVEL", "SCOTT":"SCOTT" };
+        const de_para = { 
+            "MALTA":"MALTA", "RAVEL":"RAVEL", "ARMANI":"ARMANI", "IMOLA":"IMOLA", 
+            "SCOTT":"SCOTT", "FLY":"FLY", "MEGA":"MEGA", "BELLA":"BELLA", 
+            "BOSS":"BOSS", "FAZANO":"FAZANO", "TIVOLI":"TIVOLI", "PARATY":"PARATY" 
+        };
+
         let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v16')) || [];
         let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v16')) || [];
         let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v16')) || {};
         let agendaMetas = JSON.parse(localStorage.getItem('borel_metas_agenda')) || {};
-
         let dataAtual = new Date();
 
         function autenticar() {
@@ -112,7 +119,7 @@
 
         function adicionarManual() {
             const q = parseInt(document.getElementById('quantidade').value);
-            if(!q) return;
+            if(!q || q <= 0) return;
             const nova = { id: Date.now(), mod: document.getElementById('modelo').value, qtd: q, ini: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), pausado: false };
             cargasAtivas.push(nova);
             document.getElementById('quantidade').value = "";
@@ -147,8 +154,9 @@
 
         function concluir(id) {
             const c = cargasAtivas.find(x => x.id === id);
+            const agora = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
             document.getElementById('somaDia').innerText = parseInt(document.getElementById('somaDia').innerText) + c.qtd;
-            historicoGeral.push({ mod: c.mod, qtd: c.qtd, ini: c.ini, fim: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+            historicoGeral.push({ mod: c.mod, qtd: c.qtd, ini: c.ini, fim: agora });
             cargasAtivas = cargasAtivas.filter(x => x.id !== id);
             renderCargas(); renderHistorico(); salvar();
         }
@@ -157,7 +165,7 @@
             const lista = document.getElementById('listaHistorico'); lista.innerHTML = "";
             historicoGeral.slice().reverse().forEach(i => {
                 lista.innerHTML += `<div style="border-bottom:1px solid #30363d; padding:8px; font-size:0.85rem">
-                    <b>✅ ${i.mod}: ${i.qtd}un</b> <small>(${i.ini} - ${i.fim})</small>
+                    <b>✅ ${i.mod}: ${i.qtd}un</b> <small style="color:#8b949e">(${i.ini} - ${i.fim})</small>
                 </div>`;
             });
         }
@@ -166,14 +174,15 @@
             const total = document.getElementById('somaDia').innerText;
             const meta = document.getElementById('metaValor').value || 0;
             let msg = `*RELATÓRIO BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n---\n`;
-            historicoGeral.forEach(i => msg += `• ${i.mod}: ${i.qtd}un\n`);
-            msg += `---\n*TOTAL:* ${total} | *META:* ${meta}`;
+            historicoGeral.forEach(i => msg += `• *${i.mod}*: ${i.qtd}un (${i.ini} - ${i.fim})\n`);
+            msg += `---\n*TOTAL:* ${total} | *META:* ${meta}\n`;
+            msg += parseInt(total) >= parseInt(meta) ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
         function fecharDia() {
             const total = parseInt(document.getElementById('somaDia').innerText);
-            if(total === 0) return alert("Sem produção.");
+            if(total === 0) return alert("Sem produção para salvar.");
             const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
             memoriaCal[key] = (memoriaCal[key] || 0) + total;
             historicoGeral = []; document.getElementById('somaDia').innerText = "0";
@@ -190,37 +199,29 @@
             const mes = dataAtual.getMonth();
             const ano = dataAtual.getFullYear();
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
-            
             document.getElementById('mesAno').innerText = `${meses[mes]} ${ano}`;
-
             const primeiroDia = new Date(ano, mes, 1).getDay();
             const diasNoMes = new Date(ano, mes + 1, 0).getDate();
-
-            const diasSemana = ["D","S","T","Q","Q","S","S"];
-            diasSemana.forEach(d => cal.innerHTML += `<div class="dia-semana">${d}</div>`);
-
+            ["D","S","T","Q","Q","S","S"].forEach(d => cal.innerHTML += `<div class="dia-semana">${d}</div>`);
             for(let i = 0; i < primeiroDia; i++) cal.innerHTML += `<div class="dia dia-vazio"></div>`;
-
             for(let i = 1; i <= diasNoMes; i++) {
                 const key = `${ano}-${mes}-${i}`;
                 const div = document.createElement('div');
                 div.className = 'dia';
                 div.innerText = i;
-                
                 if(memoriaCal[key]) div.classList.add('dia-ok');
                 if(agendaMetas[key]) div.classList.add('dia-meta');
                 if(i === new Date().getDate() && mes === new Date().getMonth() && ano === new Date().getFullYear()) div.classList.add('hoje');
-
                 div.onclick = () => {
-                    const m = prompt(`DIA ${i} de ${meses[mes]}\nProdução: ${memoriaCal[key]||0}\nMeta Atual: ${agendaMetas[key]||""}\nNova Meta:`, agendaMetas[key]||"");
+                    const m = prompt(`DIA ${i} de ${meses[mes]}\nProdução: ${memoriaCal[key]||0}\nNova Meta:`, agendaMetas[key]||"");
                     if(m !== null) { agendaMetas[key] = m; renderCal(); salvar(); }
                 };
                 cal.appendChild(div);
             }
         }
 
-        function limparHistorico() { if(confirm("Limpar?")) { historicoGeral=[]; renderHistorico(); salvar(); } }
-        function toggleCalc() { alert("Calculadora em breve!"); }
+        function limparHistorico() { if(confirm("Limpar lista de hoje?")) { historicoGeral=[]; renderHistorico(); salvar(); } }
+        function toggleCalc() { alert("Calculadora em manutenção."); }
 
         window.onload = () => {
             if(localStorage.getItem('borel_sessao')) document.getElementById('tela-login').style.display = 'none';
@@ -231,4 +232,3 @@
     </script>
 </body>
 </html>
-
