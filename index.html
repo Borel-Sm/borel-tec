@@ -20,7 +20,7 @@
         .minha-logo { position: fixed; top: 15px; left: 15px; height: 50px; z-index: 1001; }
         .top-btns { position: fixed; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 1000; }
         .btn-top { background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 10px 15px; border-radius: 6px; font-weight: bold; }
-        .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.2rem; }
+        .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.2rem; margin-top: 10px; }
         .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
         .item { background: rgba(48, 54, 61, 0.5); border-left: 4px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 4px; }
         .item.pausado { border-left-color: #f1e05a; opacity: 0.5; }
@@ -55,12 +55,17 @@
         <button class="btn-top" onclick="toggleCalc()">🧮 CALC</button>
     </div>
 
-    <div class="total-box">PRODUÇÃO HOJE: <span id="somaDia">0</span></div>
-
-    <div class="card" style="margin-top:15px">
-        <label>Meta do Dia:</label>
-        <input type="number" id="metaValor" placeholder="Ex: 2300" onchange="salvar()">
+    <div class="card" style="margin-top: 10px;">
+        <div class="cal-header">
+            <button class="btn-mini" onclick="mudarMes(-1)" style="background:#30363d; color:white"><</button>
+            <h3 id="mesAno" style="color:#58a6ff; margin:0; font-size:1rem"></h3>
+            <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d; color:white">></button>
+        </div>
+        <div class="cal-grid" id="calendario"></div>
+        <button class="btn-red" onclick="zerarCalendario()" style="background:#4a0000; margin-top: 15px; font-size: 0.7rem; padding: 5px;">ZERAR TUDO (CALENDÁRIO)</button>
     </div>
+
+    <div class="total-box">PRODUÇÃO HOJE: <span id="somaDia">0</span></div>
 
     <div class="card">
         <h3>Lançar Carga</h3>
@@ -83,18 +88,7 @@
         <div id="listaHistorico" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px;"></div>
         
         <button class="btn-green" style="background:#238636; border: 2px solid #39ff14;" onclick="finalizarRelatorio()">✅ FINALIZAR E ENVIAR RELATÓRIO</button>
-        
         <button class="btn-red" onclick="limparHistorico()" style="background:#484f58">🗑️ APENAS LIMPAR LISTA</button>
-    </div>
-
-    <div class="card">
-        <div class="cal-header">
-            <button class="btn-mini" onclick="mudarMes(-1)" style="background:#30363d; color:white"><</button>
-            <h3 id="mesAno" style="color:#58a6ff; margin:0; font-size:1rem"></h3>
-            <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d; color:white">></button>
-        </div>
-        <div class="cal-grid" id="calendario"></div>
-        <button class="btn-red" onclick="zerarCalendario()" style="background:#4a0000; margin-top: 15px;">ZERAR TUDO (CALENDÁRIO)</button>
     </div>
 
     <script>
@@ -114,7 +108,6 @@
         function salvar() {
             localStorage.setItem('borel_h_v16', JSON.stringify(historicoGeral));
             localStorage.setItem('borel_s_v16', document.getElementById('somaDia').innerText);
-            localStorage.setItem('borel_m_v16', document.getElementById('metaValor').value);
             localStorage.setItem('borel_ativas_v16', JSON.stringify(cargasAtivas));
             localStorage.setItem('borel_c_v16', JSON.stringify(memoriaCal));
             localStorage.setItem('borel_metas_agenda', JSON.stringify(agendaMetas));
@@ -148,6 +141,13 @@
             renderCargas(); salvar();
         }
 
+        function excluir(id) {
+            if(confirm("Excluir carga?")) {
+                cargasAtivas = cargasAtivas.filter(x => x.id !== id);
+                renderCargas(); salvar();
+            }
+        }
+
         function concluir(id) {
             const c = cargasAtivas.find(x => x.id === id);
             const agora = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
@@ -161,23 +161,20 @@
             const total = document.getElementById('somaDia').innerText;
             if(parseInt(total) === 0) return alert("Sem produção para salvar.");
             
-            // 1. Prepara Mensagem do WhatsApp
-            const meta = document.getElementById('metaValor').value || 0;
+            const keyHoje = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+            const metaHoje = agendaMetas[keyHoje] || 0;
+
             let msg = `*RELATÓRIO BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n---\n`;
             historicoGeral.forEach(i => msg += `• *${i.mod}*: ${i.qtd}un (${i.ini} - ${i.fim})\n`);
-            msg += `---\n*TOTAL:* ${total} | *META:* ${meta}\n`;
-            msg += parseInt(total) >= parseInt(meta) ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
+            msg += `---\n*TOTAL:* ${total} | *META:* ${metaHoje}\n`;
+            msg += parseInt(total) >= parseInt(metaHoje) ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
 
-            // 2. Salva no Calendário
-            const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-            memoriaCal[key] = (memoriaCal[key] || 0) + parseInt(total);
+            memoriaCal[keyHoje] = (memoriaCal[keyHoje] || 0) + parseInt(total);
             
-            // 3. Limpa Tudo e Salva
             historicoGeral = []; 
             document.getElementById('somaDia').innerText = "0";
             renderHistorico(); renderCal(); salvar();
 
-            // 4. Abre WhatsApp
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
@@ -214,7 +211,7 @@
                 if(agendaMetas[key]) div.classList.add('dia-meta');
                 if(i === new Date().getDate() && mes === new Date().getMonth() && ano === new Date().getFullYear()) div.classList.add('hoje');
                 div.onclick = () => {
-                    const m = prompt(`DIA ${i} de ${meses[mes]}\nProdução: ${memoriaCal[key]||0}\nNova Meta:`, agendaMetas[key]||"");
+                    const m = prompt(`DIA ${i} de ${meses[mes]}\nProdução Salva: ${memoriaCal[key]||0}\nNova Meta:`, agendaMetas[key]||"");
                     if(m !== null) { m==="" ? delete agendaMetas[key] : agendaMetas[key]=parseInt(m); renderCal(); salvar(); }
                 };
                 cal.appendChild(div);
@@ -226,10 +223,8 @@
         function toggleCalc() { alert("Calculadora em manutenção."); }
 
         window.onload = () => {
-            const sessao = localStorage.getItem('borel_sessao');
-            if(sessao) document.getElementById('tela-login').style.display = 'none';
+            if(localStorage.getItem('borel_sessao')) document.getElementById('tela-login').style.display = 'none';
             document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v16') || "0";
-            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v16') || "";
             renderCargas(); renderHistorico(); renderCal();
         };
     </script>
