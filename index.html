@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borel Tec - Central de Comando v9.3</title>
+    <title>Borel Tec - Central de Comando v9.4</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 150px 15px 20px 15px; background: #0d1117; }
         
@@ -22,13 +22,6 @@
         .nav-link { color: #8b949e; text-decoration: none; font-size: 0.75rem; font-weight: bold; cursor: pointer; padding: 5px 8px; border-radius: 5px; white-space: nowrap; }
         .nav-link.danger { color: #f85149; }
         .nav-link.admin { color: #39ff14; border: 1px solid #39ff14; }
-
-        /* PAINEL ADMIN */
-        #painel-admin { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 10001; padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        .admin-user-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
-        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
-        .badge-meta { background: #238636; color: white; }
-        .badge-pendente { background: #d97706; color: white; }
 
         /* GERAL */
         .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 20px; border: 1px solid #39ff14; }
@@ -57,33 +50,12 @@
 </head>
 <body>
 
-    <div id="painel-admin">
-        <div style="display:flex; justify-content: space-between; align-items:center; position: sticky; top: 0; background: #0d1117; padding-bottom: 10px; z-index: 10;">
-            <h2 style="color: #39ff14;">CENTRAL DE COMANDO</h2>
-            <button class="btn-mini" style="background:#30363d" onclick="fecharAdmin()">VOLTAR</button>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-            <button class="btn-mini" style="background: #238636;" onclick="exportarDados()">💾 BACKUP GERAL</button>
-            <button class="btn-mini" style="background: #1f6feb;" onclick="location.reload()">🔄 ATUALIZAR STATUS</button>
-        </div>
-        <div id="lista-usuarios-admin"></div>
-    </div>
-
     <div id="tela-acesso">
         <div id="box-login" class="acesso-card">
-            <h3 style="color: white;">ACESSO BOREL TEC</h3>
+            <h3 style="color: white;">ACESSO RESTRITO</h3>
             <div class="input-group"><input type="text" id="user-login" placeholder="USUÁRIO"></div>
-            <div class="input-group"><input type="password" id="pass-login" placeholder="SENHA"><span class="toggle-pass" onclick="verSenha('pass-login')">👁️</span></div>
+            <div class="input-group"><input type="password" id="pass-login" placeholder="SENHA"></div>
             <button class="btn-green" onclick="fazerLogin()">ENTRAR NO SISTEMA</button>
-            <p style="font-size: 0.8rem; margin-top: 15px; color: #8b949e;">Novo aqui? <a href="#" onclick="trocarTela('box-reg')" style="color:#58a6ff">Criar Conta</a></p>
-        </div>
-        <div id="box-reg" class="acesso-card" style="display:none">
-            <h3 style="color: white;">Criar Conta</h3>
-            <div class="input-group"><input type="text" id="reg-nome" placeholder="SEU NOME"></div>
-            <div class="input-group"><input type="text" id="reg-user" placeholder="USUÁRIO"></div>
-            <div class="input-group"><input type="password" id="reg-pass" placeholder="SENHA"><span class="toggle-pass" onclick="verSenha('reg-pass')">👁️</span></div>
-            <button class="btn-green" style="background:#1f6feb" onclick="registrarUsuario()">CADASTRAR</button>
-            <p onclick="trocarTela('box-login')" style="cursor:pointer; font-size:0.8rem; color:#8b949e; margin-top:10px">Voltar para Login</p>
         </div>
     </div>
 
@@ -93,9 +65,7 @@
     </div>
 
     <div class="nav-bar">
-        <span id="btn-admin" class="nav-link admin" style="display:none" onclick="abrirAdmin()">CENTRAL ADMIN</span>
         <span class="nav-link" onclick="confirmarSair()">SAIR</span>
-        <span class="nav-link danger" onclick="confirmarExcluir()">DELETAR MINHA CONTA</span>
     </div>
 
     <div id="modal-calc">
@@ -124,7 +94,6 @@
             <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d">></button>
         </div>
         <div class="cal-grid" id="calendario"></div>
-        <button class="btn-mini" onclick="zerarCalendarioMes()" style="background:#da3633; width:100%; margin-top:15px; opacity: 0.8;">🗑️ ZERAR TUDO DESTE MÊS</button>
     </div>
 
     <div class="card">
@@ -139,32 +108,26 @@
     <div id="listaProducao"></div>
 
     <div class="card">
-        <h3>Histórico Concluído</h3>
+        <h3>Histórico da Sessão</h3>
         <div id="listaHistorico" style="max-height: 250px; overflow-y: auto; background:#0d1117; padding:10px; border-radius:6px"></div>
-        <button class="btn-green" style="margin-top:15px; border: 2px solid #39ff14;" onclick="enviarRelatorioWhatsApp()">📲 ENVIAR RELATÓRIO WHATSAPP</button>
-        <button class="btn-mini" onclick="limparHistoricoSessao()" style="background:#30363d; width:100%; margin-top:10px">🗑️ APENAS LIMPAR LISTA</button>
+        <button class="btn-green" style="margin-top:15px; border: 2px solid #39ff14;" onclick="enviarRelatorioWhatsApp()">📲 ENVIAR RELATÓRIO DO DIA (WHATSAPP)</button>
+        <button class="btn-mini" onclick="limparHistoricoSessao()" style="background:#30363d; width:100%; margin-top:10px">🗑️ LIMPAR LISTA VISUAL</button>
     </div>
 
     <script>
-        const V_KEY = 'v9';
-        let usuarios = JSON.parse(localStorage.getItem(`bt_u_${V_KEY}`)) || [];
+        const V_KEY = 'v9_4';
+        let usuarios = JSON.parse(localStorage.getItem(`bt_u_${V_KEY}`)) || [{nome: 'Jean', user: 'admin', pass: '123'}];
         let logado = JSON.parse(localStorage.getItem(`bt_l_${V_KEY}`)) || null;
         let historicoSessao = [], cargasAtivas = [], memoriaCal = {}, agendaMetas = {};
         let dataAtual = new Date();
-
-        if (!usuarios.find(u => u.user === 'BorelAdmin')) {
-            usuarios.push({ nome: 'Borel Master', user: 'BorelAdmin', pass: 'BorelAdmin', dataCriacao: new Date().toLocaleString() });
-            localStorage.setItem(`bt_u_${V_KEY}`, JSON.stringify(usuarios));
-        }
 
         function carregarDadosUsuario() {
             if(!logado) return;
             const u = logado.user;
             historicoSessao = JSON.parse(localStorage.getItem(`bt_hs_${u}`)) || [];
             cargasAtivas = JSON.parse(localStorage.getItem(`bt_at_${u}`)) || [];
-            memoriaCal = JSON.parse(localStorage.getItem(`bt_c_${u}`)) || {};
+            memoriaCal = JSON.parse(localStorage.getItem(`bt_c_${u}`)) || {}; // AGORA ARMAZENA OBJETOS
             agendaMetas = JSON.parse(localStorage.getItem(`bt_m_${u}`)) || {};
-            if(logado.user === 'BorelAdmin') document.getElementById('btn-admin').style.display = 'block';
             render();
         }
 
@@ -177,73 +140,11 @@
             localStorage.setItem(`bt_m_${u}`, JSON.stringify(agendaMetas));
         }
 
-        function zerarCalendarioMes() {
-            if(confirm("Deseja apagar TODA a produção e metas deste mês?")) {
-                const mes = dataAtual.getMonth(), ano = dataAtual.getFullYear();
-                for (let k in memoriaCal) if (k.startsWith(`${ano}-${mes}-`)) delete memoriaCal[k];
-                for (let k in agendaMetas) if (k.startsWith(`${ano}-${mes}-`)) delete agendaMetas[k];
-                render();
-            }
-        }
-
-        function abrirAdmin() {
-            document.getElementById('painel-admin').style.display = 'block';
-            const lista = document.getElementById('lista-usuarios-admin');
-            lista.innerHTML = "";
-            const hojeKey = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-            usuarios.forEach(u => {
-                if(u.user === 'BorelAdmin') return;
-                const uAtivas = JSON.parse(localStorage.getItem(`bt_at_${u.user}`)) || [];
-                const uCal = JSON.parse(localStorage.getItem(`bt_c_${u.user}`)) || {};
-                const uMetas = JSON.parse(localStorage.getItem(`bt_m_${u.user}`)) || {};
-                const prodHoje = uCal[hojeKey] || 0, metaHoje = uMetas[hojeKey] || 0;
-                const statusMeta = metaHoje > 0 ? (prodHoje >= metaHoje ? '<span class="badge badge-meta">META OK</span>' : '<span class="badge badge-pendente">PENDENTE</span>') : '---';
-                const div = document.createElement('div');
-                div.className = 'admin-user-card';
-                div.innerHTML = `<div style="display:flex; justify-content:space-between"><strong>👤 ${u.nome} (@${u.user})</strong><span>Senha: <code style="color:#39ff14">${u.pass}</code></span></div>
-                    <div style="margin: 10px 0; font-size: 0.8rem; color: #8b949e;">📅 Criado: ${u.dataCriacao || 'N/A'}<br>📈 Prod. Hoje: <b>${prodHoje}</b> | Meta: <b>${metaHoje}</b> ${statusMeta}</div>
-                    <div style="background:#0d1117; padding:8px; border-radius:5px; font-size: 0.75rem;"><b>📦 CARGAS ATIVAS AGORA:</b><br>${uAtivas.length > 0 ? uAtivas.map(c => `• ${c.mod} (${c.qtd}un)`).join('<br>') : '<span style="color:#555">Nenhuma carga em produção</span>'}</div>
-                    <button class="btn-mini" style="background:#da3633; width:100%; margin-top:10px" onclick="adminExcluirUsuario('${u.user}')">DELETAR CONTA PERMANENTEMENTE</button>`;
-                lista.appendChild(div);
-            });
-        }
-
-        function fecharAdmin() { document.getElementById('painel-admin').style.display = 'none'; }
-        function adminExcluirUsuario(userAlvo) {
-            if(confirm(`⚠️ EXCLUIR @${userAlvo}?`)) {
-                usuarios = usuarios.filter(x => x.user !== userAlvo);
-                localStorage.setItem(`bt_u_${V_KEY}`, JSON.stringify(usuarios));
-                localStorage.removeItem(`bt_hs_${userAlvo}`); localStorage.removeItem(`bt_at_${userAlvo}`);
-                localStorage.removeItem(`bt_c_${userAlvo}`); localStorage.removeItem(`bt_m_${userAlvo}`);
-                abrirAdmin();
-            }
-        }
-
-        function verSenha(id) { const i = document.getElementById(id); i.type = i.type === "password" ? "text" : "password"; }
-        function trocarTela(id) { document.getElementById('box-login').style.display = 'none'; document.getElementById('box-reg').style.display = 'none'; document.getElementById(id).style.display = 'block'; }
-        function registrarUsuario() {
-            const n = document.getElementById('reg-nome').value, u = document.getElementById('reg-user').value, p = document.getElementById('reg-pass').value;
-            if(!n || !u || !p) return alert("Preencha tudo!");
-            usuarios.push({nome: n, user: u, pass: p, dataCriacao: new Date().toLocaleString()});
-            localStorage.setItem(`bt_u_${V_KEY}`, JSON.stringify(usuarios));
-            alert("Conta criada!"); trocarTela('box-login');
-        }
-
         function fazerLogin() {
             const u = document.getElementById('user-login').value, p = document.getElementById('pass-login').value;
             const conta = usuarios.find(x => x.user === u && x.pass === p);
-            if(conta) { logado = conta; localStorage.setItem(`bt_l_${V_KEY}`, JSON.stringify(logado)); location.reload(); } else alert("Dados inválidos!");
+            if(conta) { logado = conta; localStorage.setItem(`bt_l_${V_KEY}`, JSON.stringify(logado)); location.reload(); } else alert("Erro!");
         }
-
-        function confirmarSair() { if(confirm("Sair?")) { localStorage.removeItem(`bt_l_${V_KEY}`); location.reload(); } }
-        function confirmarExcluir() { if(confirm("DELETAR CONTA?")) { adminExcluirUsuario(logado.user); localStorage.removeItem(`bt_l_${V_KEY}`); location.reload(); } }
-
-        function abrirCalc() { document.getElementById('modal-calc').style.display = 'flex'; }
-        function fecharCalc() { document.getElementById('modal-calc').style.display = 'none'; }
-        function limparCalc() { document.getElementById('display').value = '0'; }
-        function addChar(c) { const d = document.getElementById('display'); if(d.value === '0') d.value = c; else d.value += c; }
-        function apagarUltimo() { const d = document.getElementById('display'); d.value = d.value.slice(0, -1); if(d.value === '') d.value = '0'; }
-        function calcularResultado() { try { document.getElementById('display').value = eval(document.getElementById('display').value); } catch(e) { limparCalc(); } }
 
         function adicionarCarga() {
             const q = parseInt(document.getElementById('quantidade').value);
@@ -252,16 +153,19 @@
             document.getElementById('quantidade').value = ""; render();
         }
 
-        // LÓGICA DE CONCLUIR COM PERGUNTA E SOMA DIRETA
         function concluir(id) {
             if(confirm("Você deseja concluir essa carga?")) {
                 const idx = cargasAtivas.findIndex(x => x.id === id);
                 const c = cargasAtivas[idx];
-                historicoSessao.push({ mod: c.mod, qtd: c.qtd, ini: c.ini, fim: agora(), data: c.data });
+                const item = { mod: c.mod, qtd: c.qtd, ini: c.ini, fim: agora(), data: new Date().toLocaleDateString() };
                 
-                // Soma no calendário na hora
+                // 1. Histórico da Sessão
+                historicoSessao.push(item);
+                
+                // 2. Histórico do Dia (Calendário) - SALVANDO DETALHADO
                 const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
-                memoriaCal[k] = (memoriaCal[k] || 0) + c.qtd;
+                if(!memoriaCal[k]) memoriaCal[k] = [];
+                memoriaCal[k].push(item);
                 
                 cargasAtivas.splice(idx, 1);
                 render();
@@ -275,29 +179,11 @@
 
         function editarCarga(id) {
             const c = cargasAtivas.find(x => x.id === id);
-            const restante = parseInt(prompt(`RESTANTE PARA ${c.mod}:`, c.qtd));
-            if(!isNaN(restante) && restante >= 0 && restante < c.qtd) {
-                const feito = c.qtd - restante;
-                historicoSessao.push({ mod: c.mod, qtd: feito, ini: c.ini, fim: agora(), data: c.data });
-                const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
-                memoriaCal[k] = (memoriaCal[k] || 0) + feito;
-                c.qtd = restante; c.pausado = true; render();
-            }
+            const novaQtd = parseInt(prompt(`Editar quantidade para ${c.mod}:`, c.qtd));
+            if(!isNaN(novaQtd)) { c.qtd = novaQtd; render(); }
         }
 
         function excluirCarga(id) { if(confirm("Excluir?")) { cargasAtivas = cargasAtivas.filter(x => x.id !== id); render(); } }
-
-        function enviarRelatorioWhatsApp() {
-            const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
-            const total = memoriaCal[k] || 0;
-            let det = "";
-            historicoSessao.forEach(i => { det += `🔹 ${i.mod}: ${i.qtd} un. (${i.ini} às ${i.fim})\n`; });
-            let msg = `*RELATÓRIO BOREL TEC*\n👤 *Op:* ${logado.nome}\n📅 *Data:* ${new Date().toLocaleDateString()}\n---\n*PRODUÇÃO:*\n${det}\n---\n📊 *TOTAL DIA:* ${total} un.`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
-        }
-
-        function agora() { return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
-        function limparHistoricoSessao() { if(confirm("Limpar lista?")) { historicoSessao = []; render(); } }
 
         function render() {
             salvarDadosUsuario();
@@ -305,24 +191,33 @@
             cargasAtivas.forEach(c => {
                 const div = document.createElement('div');
                 div.className = `item ${c.pausado ? 'pausado' : ''}`;
-                div.innerHTML = `<strong>${c.mod}</strong>: <span style="color:#00ff00">${c.qtd} un.</span><br><small>⏰ ${c.ini}</small><br>
+                div.innerHTML = `<strong>${c.mod}</strong>: <span style="color:#00ff00">${c.qtd} un.</span><br><small>⏰ Início: ${c.ini}</small><br>
                     <button class="btn-mini" style="background:#238636" onclick="concluir(${c.id})">OK</button>
                     <button class="btn-mini" style="background:#f1e05a; color:black" onclick="alternarPausa(${c.id})">⏸️</button>
                     <button class="btn-mini" style="background:#58a6ff" onclick="editarCarga(${c.id})">✏️</button>
                     <button class="btn-mini" style="background:#da3633" onclick="excluirCarga(${c.id})">🗑️</button>`;
                 lista.appendChild(div);
             });
+
             const h = document.getElementById('listaHistorico'); h.innerHTML = "";
-            historicoSessao.slice().reverse().forEach(i => { h.innerHTML += `<div style="font-size:0.8rem; border-bottom:1px solid #30363d; padding:5px">✅ <b>${i.mod}</b>: ${i.qtd}un <small style="color:#8b949e">🕒 ${i.ini} às ${i.fim}</small></div>`; });
+            historicoSessao.slice().reverse().forEach(i => { 
+                h.innerHTML += `<div style="font-size:0.8rem; border-bottom:1px solid #30363d; padding:5px">✅ <b>${i.mod}</b>: ${i.qtd}un <small style="color:#8b949e">🕒 ${i.ini} às ${i.fim}</small></div>`; 
+            });
+
             const key = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
-            document.getElementById('somaDia').innerText = memoriaCal[key] || "0";
+            const totalDia = (memoriaCal[key] || []).reduce((acc, curr) => acc + curr.qtd, 0);
+            document.getElementById('somaDia').innerText = totalDia;
             renderCal();
         }
 
-        function mudarMes(d) { dataAtual.setMonth(dataAtual.getMonth() + d); renderCal(); }
         function interagirComDia(dia, mes, ano) {
             const k = `${ano}-${mes}-${dia}`;
-            const meta = prompt(`DIA ${dia}/${mes+1} - META:`, agendaMetas[k] || 0);
+            const producao = memoriaCal[k] || [];
+            let resumo = producao.length > 0 
+                ? producao.map(p => `• ${p.qtd} ${p.mod} (${p.ini} às ${p.fim})`).join('\n')
+                : "Nenhuma carga registrada.";
+            
+            const meta = prompt(`DIA ${dia}/${mes+1}\n\nHISTÓRICO:\n${resumo}\n\nDEFINIR NOVA META:`, agendaMetas[k] || 0);
             if(meta !== null) { agendaMetas[k] = parseInt(meta) || 0; render(); }
         }
 
@@ -331,11 +226,15 @@
             const mes = dataAtual.getMonth(), ano = dataAtual.getFullYear();
             const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
             document.getElementById('mesAno').innerText = `${meses[mes]} ${ano}`;
+            
             const diasNoMes = new Date(ano, mes + 1, 0).getDate();
             for(let i = 1; i <= diasNoMes; i++) {
                 const k = `${ano}-${mes}-${i}`;
-                const meta = agendaMetas[k] || 0, prod = memoriaCal[k] || 0;
-                let classeExtra = meta > 0 ? (prod >= meta ? "dia-concluido" : "dia-programado") : "";
+                const meta = agendaMetas[k] || 0;
+                const prodLista = memoriaCal[k] || [];
+                const prodTotal = prodLista.reduce((acc, curr) => acc + curr.qtd, 0);
+                
+                let classeExtra = meta > 0 ? (prodTotal >= meta ? "dia-concluido" : "dia-programado") : "";
                 const div = document.createElement('div');
                 div.className = `dia ${classeExtra} ${i===new Date().getDate() && mes===new Date().getMonth()?'hoje':''}`;
                 div.innerText = i;
@@ -344,12 +243,33 @@
             }
         }
 
-        function exportarDados() {
-            const backup = { storage: {...localStorage} };
-            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a"); a.href = url; a.download = `Backup_BorelTec.json`; a.click();
+        function enviarRelatorioWhatsApp() {
+            const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
+            const producao = memoriaCal[k] || [];
+            const meta = agendaMetas[k] || 0;
+            const total = producao.reduce((acc, curr) => acc + curr.qtd, 0);
+            
+            if(producao.length === 0) return alert("Não há dados para enviar hoje.");
+
+            let det = "";
+            producao.forEach(i => { det += `🔹 ${i.mod}: ${i.qtd} un. (${i.ini} às ${i.fim})\n`; });
+            
+            const statusMeta = total >= meta && meta > 0 ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
+            let msg = `*RELATÓRIO BOREL TEC*\n👤 *Op:* ${logado.nome}\n📅 *Data:* ${new Date().toLocaleDateString()}\n---\n*PRODUÇÃO DETALHADA:*\n${det}\n---\n📊 *TOTAL:* ${total} un.\n🎯 *META:* ${meta}\n${statusMeta}`;
+            
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
+
+        function agora() { return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+        function mudarMes(d) { dataAtual.setMonth(dataAtual.getMonth() + d); renderCal(); }
+        function limparHistoricoSessao() { if(confirm("Limpar lista visual?")) { historicoSessao = []; render(); } }
+        function abrirCalc() { document.getElementById('modal-calc').style.display = 'flex'; }
+        function fecharCalc() { document.getElementById('modal-calc').style.display = 'none'; }
+        function limparCalc() { document.getElementById('display').value = '0'; }
+        function addChar(c) { const d = document.getElementById('display'); if(d.value === '0') d.value = c; else d.value += c; }
+        function apagarUltimo() { const d = document.getElementById('display'); d.value = d.value.slice(0, -1); if(d.value === '') d.value = '0'; }
+        function calcularResultado() { try { document.getElementById('display').value = eval(document.getElementById('display').value); } catch(e) { limparCalc(); } }
+        function confirmarSair() { if(confirm("Sair?")) { localStorage.removeItem(`bt_l_${V_KEY}`); location.reload(); } }
 
         window.onload = () => { if(logado) { document.getElementById('tela-acesso').style.display = 'none'; document.getElementById('nome-logado').innerText = logado.nome; carregarDadosUsuario(); } };
     </script>
