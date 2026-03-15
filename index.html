@@ -84,10 +84,10 @@
     <div id="listaProducao"></div>
 
     <div class="card">
-        <h3>Histórico Concluído</h3>
+        <h3>Histórico Concluído (Pendente de Envio)</h3>
         <div id="listaHistorico" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px;"></div>
         
-        <button class="btn-green" style="background:#238636; border: 2px solid #39ff14;" onclick="finalizarRelatorio()">✅ FINALIZAR E ENVIAR RELATÓRIO</button>
+        <button class="btn-green" style="background:#238636; border: 2px solid #39ff14;" onclick="finalizarRelatorioCalendario()">✅ SALVAR NO CALENDÁRIO E ENVIAR RELATÓRIO</button>
         <button class="btn-red" onclick="limparHistorico()" style="background:#484f58">🗑️ APENAS LIMPAR LISTA</button>
     </div>
 
@@ -107,7 +107,6 @@
 
         function salvar() {
             localStorage.setItem('borel_h_v16', JSON.stringify(historicoGeral));
-            localStorage.setItem('borel_s_v16', document.getElementById('somaDia').innerText);
             localStorage.setItem('borel_ativas_v16', JSON.stringify(cargasAtivas));
             localStorage.setItem('borel_c_v16', JSON.stringify(memoriaCal));
             localStorage.setItem('borel_metas_agenda', JSON.stringify(agendaMetas));
@@ -151,41 +150,38 @@
         function concluir(id) {
             const c = cargasAtivas.find(x => x.id === id);
             const agora = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            // O valor NÃO sobe para o topo ainda, apenas entra no histórico
             historicoGeral.push({ mod: c.mod, qtd: c.qtd, ini: c.ini, fim: agora });
             cargasAtivas = cargasAtivas.filter(x => x.id !== id);
             renderCargas(); renderHistorico(); salvar();
         }
 
-        function finalizarRelatorio() {
-            if(historicoGeral.length === 0) return alert("Não há cargas concluídas para finalizar.");
-            
+        function finalizarRelatorioCalendario() {
             const keyHoje = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
             const metaHoje = agendaMetas[keyHoje] || 0;
             
-            // Calcula o total do que está no histórico agora
-            let sessaoTotal = 0;
-            historicoGeral.forEach(i => sessaoTotal += i.qtd);
+            // 1. Soma o que foi produzido agora
+            let somaAgora = 0;
+            historicoGeral.forEach(i => somaAgora += i.qtd);
             
-            // Atualiza o total oficial do dia na memória
-            const totalAnterior = memoriaCal[keyHoje] || 0;
-            const novoTotalOficial = totalAnterior + sessaoTotal;
-            memoriaCal[keyHoje] = novoTotalOficial;
+            // 2. Atualiza o Calendário somando o novo com o antigo
+            const totalAntigo = memoriaCal[keyHoje] || 0;
+            const totalOficial = totalAntigo + somaAgora;
+            memoriaCal[keyHoje] = totalOficial;
 
-            // Sobe o valor para a caixa verde (PRODUÇÃO HOJE)
-            document.getElementById('somaDia').innerText = novoTotalOficial;
+            // 3. Atualiza a Caixa Verde do Topo com o valor oficial do calendário
+            document.getElementById('somaDia').innerText = totalOficial;
 
-            // Prepara Mensagem do WhatsApp
-            let msg = `*RELATÓRIO BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n---\n`;
-            historicoGeral.forEach(i => msg += `• *${i.mod}*: ${i.qtd}un (${i.ini} - ${i.fim})\n`);
-            msg += `---\n*TOTAL HOJE:* ${novoTotalOficial} | *META:* ${metaHoje}\n`;
-            msg += novoTotalOficial >= metaHoje ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
+            // 4. Monta o Relatório baseado no que está gravado no Calendário
+            let msg = `*RELATÓRIO OFICIAL BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n---\n`;
+            msg += `📊 *TOTAL GRAVADO NO CALENDÁRIO:* ${totalOficial} un.\n`;
+            msg += `🎯 *META PROGRAMADA:* ${metaHoje} un.\n---\n`;
+            msg += totalOficial >= metaHoje ? "✅ *STATUS: META ATINGIDA!*" : "❌ *STATUS: META PENDENTE*";
 
-            // Limpa o histórico e salva tudo
+            // 5. Limpa a lista de espera e salva
             historicoGeral = []; 
             renderHistorico(); renderCal(); salvar();
 
-            // Abre WhatsApp
+            // 6. Envia
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
@@ -230,13 +226,12 @@
         }
 
         function zerarCalendario() { if(confirm("Zerar TODA a memória do calendário?")) { memoriaCal={}; agendaMetas={}; salvar(); renderCal(); } }
-        function limparHistorico() { if(confirm("Limpar lista de hoje sem salvar?")) { historicoGeral=[]; renderHistorico(); salvar(); } }
+        function limparHistorico() { if(confirm("Limpar lista de espera sem salvar?")) { historicoGeral=[]; renderHistorico(); salvar(); } }
         function toggleCalc() { alert("Calculadora em manutenção."); }
 
         window.onload = () => {
             const keyHoje = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
             if(localStorage.getItem('borel_sessao')) document.getElementById('tela-login').style.display = 'none';
-            // Carrega o total que já estava salvo no calendário para hoje
             document.getElementById('somaDia').innerText = memoriaCal[keyHoje] || "0";
             renderCargas(); renderHistorico(); renderCal();
         };
