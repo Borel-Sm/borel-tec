@@ -6,9 +6,18 @@
     <title>Borel Tec - Sistema Oficial</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 110px 15px 20px 15px; background: #0d1117; }
-        #tela-login { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 40px 20px; background: rgba(22, 27, 34, 0.9); border-radius: 12px; }
+        
+        /* TELA DE LOGIN COM BACKGROUND RESTAURADO */
+        #tela-login { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: #0d1117;
+            background-image: url('background.jpg'); 
+            background-size: cover; background-position: center; 
+            z-index: 9999; display: flex; align-items: center; justify-content: center; 
+        }
+        .login-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 40px 20px; background: rgba(22, 27, 34, 0.9); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .login-card input { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; box-sizing: border-box; }
+        
         .minha-logo { position: fixed; top: 15px; left: 15px; height: 50px; z-index: 1001; }
         .top-btns { position: fixed; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 1000; }
         .btn-top { background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 10px 15px; border-radius: 6px; font-weight: bold; }
@@ -76,7 +85,7 @@
         <div id="listaHistorico" style="max-height: 200px; overflow-y: auto;"></div>
         <button class="btn-green" style="margin-top:10px" onclick="enviarZap()">📤 ENVIAR PARA WHATSAPP</button>
         <button class="btn-green" style="background:#8957e5; margin-top:10px" onclick="fecharDia()">💾 SALVAR NO CALENDÁRIO</button>
-        <button class="btn-red" onclick="limparHistorico()">🗑️ LIMPAR LISTA</button>
+        <button class="btn-red" onclick="limparHistorico()" style="background:#484f58">🗑️ LIMPAR LISTA</button>
     </div>
 
     <div class="card">
@@ -86,6 +95,7 @@
             <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d; color:white">></button>
         </div>
         <div class="cal-grid" id="calendario"></div>
+        <button class="btn-red" onclick="zerarCalendario()" style="background:#4a0000; margin-top: 15px;">ZERAR TUDO (MEMÓRIA)</button>
     </div>
 
     <script>
@@ -133,7 +143,7 @@
                 div.className = `item ${c.pausado ? 'pausado' : ''}`;
                 div.innerHTML = `<strong>${c.mod}</strong>: ${c.qtd} un. <br><small>⏰ Início: ${c.ini}</small><br>
                     <button class="btn-green btn-mini" onclick="concluir(${c.id})">CONCLUIR</button>
-                    <button class="btn-mini" style="background:#f1e05a; color:black" onclick="pausar(${c.id})">PAUSAR</button>
+                    <button class="btn-mini" style="background:#f1e05a; color:black" onclick="pausar(${c.id})">${c.pausado ? 'RETOMAR' : 'PAUSAR'}</button>
                     <button class="btn-mini" style="background:#da3633; color:white" onclick="excluir(${c.id})">EXCLUIR</button>`;
                 lista.appendChild(div);
             });
@@ -213,18 +223,20 @@
                 if(agendaMetas[key]) div.classList.add('dia-meta');
                 if(i === new Date().getDate() && mes === new Date().getMonth() && ano === new Date().getFullYear()) div.classList.add('hoje');
                 div.onclick = () => {
-                    const m = prompt(`DIA ${i} de ${meses[mes]}\nProdução: ${memoriaCal[key]||0}\nNova Meta:`, agendaMetas[key]||"");
-                    if(m !== null) { agendaMetas[key] = m; renderCal(); salvar(); }
+                    const m = prompt(`DIA ${i} de ${meses[mes]}\nProdução: ${memoriaCal[key]||0}\nMeta Agendada: ${agendaMetas[key]||""}\nNova Meta:`, agendaMetas[key]||"");
+                    if(m !== null) { m==="" ? delete agendaMetas[key] : agendaMetas[key]=parseInt(m); renderCal(); salvar(); }
                 };
                 cal.appendChild(div);
             }
         }
 
+        function zerarCalendario() { if(confirm("Zerar TODA a memória de metas e produções do calendário?")) { memoriaCal={}; agendaMetas={}; salvar(); renderCal(); } }
         function limparHistorico() { if(confirm("Limpar lista de hoje?")) { historicoGeral=[]; renderHistorico(); salvar(); } }
         function toggleCalc() { alert("Calculadora em manutenção."); }
 
         window.onload = () => {
-            if(localStorage.getItem('borel_sessao')) document.getElementById('tela-login').style.display = 'none';
+            const sessao = localStorage.getItem('borel_sessao');
+            if(sessao && (new Date().getTime() - sessao < 12*60*60*1000)) document.getElementById('tela-login').style.display = 'none';
             document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v16') || "0";
             document.getElementById('metaValor').value = localStorage.getItem('borel_m_v16') || "";
             renderCargas(); renderHistorico(); renderCal();
