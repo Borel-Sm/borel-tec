@@ -20,7 +20,7 @@
         .minha-logo { position: fixed; top: 15px; left: 15px; height: 50px; z-index: 1001; }
         .top-btns { position: fixed; top: 15px; right: 15px; display: flex; gap: 8px; z-index: 1000; }
         .btn-top { background: #21262d; color: #58a6ff; border: 1px solid #30363d; padding: 10px 15px; border-radius: 6px; font-weight: bold; }
-        .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.2rem; margin-top: 10px; }
+        .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.2rem; margin-top: 10px; border: 1px solid #39ff14; }
         .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
         .item { background: rgba(48, 54, 61, 0.5); border-left: 4px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 4px; }
         .item.pausado { border-left-color: #f1e05a; opacity: 0.5; }
@@ -151,30 +151,41 @@
         function concluir(id) {
             const c = cargasAtivas.find(x => x.id === id);
             const agora = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            document.getElementById('somaDia').innerText = parseInt(document.getElementById('somaDia').innerText) + c.qtd;
+            // O valor NÃO sobe para o topo ainda, apenas entra no histórico
             historicoGeral.push({ mod: c.mod, qtd: c.qtd, ini: c.ini, fim: agora });
             cargasAtivas = cargasAtivas.filter(x => x.id !== id);
             renderCargas(); renderHistorico(); salvar();
         }
 
         function finalizarRelatorio() {
-            const total = document.getElementById('somaDia').innerText;
-            if(parseInt(total) === 0) return alert("Sem produção para salvar.");
+            if(historicoGeral.length === 0) return alert("Não há cargas concluídas para finalizar.");
             
             const keyHoje = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
             const metaHoje = agendaMetas[keyHoje] || 0;
+            
+            // Calcula o total do que está no histórico agora
+            let sessaoTotal = 0;
+            historicoGeral.forEach(i => sessaoTotal += i.qtd);
+            
+            // Atualiza o total oficial do dia na memória
+            const totalAnterior = memoriaCal[keyHoje] || 0;
+            const novoTotalOficial = totalAnterior + sessaoTotal;
+            memoriaCal[keyHoje] = novoTotalOficial;
 
+            // Sobe o valor para a caixa verde (PRODUÇÃO HOJE)
+            document.getElementById('somaDia').innerText = novoTotalOficial;
+
+            // Prepara Mensagem do WhatsApp
             let msg = `*RELATÓRIO BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n---\n`;
             historicoGeral.forEach(i => msg += `• *${i.mod}*: ${i.qtd}un (${i.ini} - ${i.fim})\n`);
-            msg += `---\n*TOTAL:* ${total} | *META:* ${metaHoje}\n`;
-            msg += parseInt(total) >= parseInt(metaHoje) ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
+            msg += `---\n*TOTAL HOJE:* ${novoTotalOficial} | *META:* ${metaHoje}\n`;
+            msg += novoTotalOficial >= metaHoje ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
 
-            memoriaCal[keyHoje] = (memoriaCal[keyHoje] || 0) + parseInt(total);
-            
+            // Limpa o histórico e salva tudo
             historicoGeral = []; 
-            document.getElementById('somaDia').innerText = "0";
             renderHistorico(); renderCal(); salvar();
 
+            // Abre WhatsApp
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
@@ -223,8 +234,10 @@
         function toggleCalc() { alert("Calculadora em manutenção."); }
 
         window.onload = () => {
+            const keyHoje = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
             if(localStorage.getItem('borel_sessao')) document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v16') || "0";
+            // Carrega o total que já estava salvo no calendário para hoje
+            document.getElementById('somaDia').innerText = memoriaCal[keyHoje] || "0";
             renderCargas(); renderHistorico(); renderCal();
         };
     </script>
