@@ -21,13 +21,15 @@
         .btn-mini { width: auto; padding: 8px 12px; font-size: 0.8rem; margin-top: 8px; margin-right: 5px; border-radius: 4px; border: none; font-weight: bold; }
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
         
-        /* CALENDÁRIO VISÍVEL */
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; min-height: 100px; }
-        .dia { background: #21262d; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; cursor: pointer; }
+        /* CALENDÁRIO VIVO */
+        .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        .dia-semana { text-align: center; font-size: 0.7rem; color: #8b949e; font-weight: bold; padding-bottom: 5px; }
+        .dia { background: #21262d; padding: 12px 0; text-align: center; border-radius: 4px; font-size: 0.85rem; border: 1px solid #30363d; cursor: pointer; position: relative; }
+        .dia-vazio { opacity: 0; pointer-events: none; }
         .dia-ok { background: #238636 !important; border-color: #39ff14 !important; font-weight: bold; }
         .dia-meta { border-bottom: 3px solid #58a6ff !important; }
-
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #161b22; padding: 20px; border-radius: 12px; z-index: 2000; border: 2px solid #30363d; width: 280px; }
+        .hoje { border: 2px solid #58a6ff !important; }
     </style>
 </head>
 <body>
@@ -58,6 +60,7 @@
         <select id="modelo">
             <option value="MALTA">MALTA</option><option value="TIVOLI">TIVOLI</option>
             <option value="ARMANI">ARMANI</option><option value="IMOLA">IMOLA</option>
+            <option value="RAVEL">RAVEL</option><option value="SCOTT">SCOTT</option>
         </select>
         <input type="number" id="quantidade" placeholder="Quantidade">
         <button class="btn-green" style="background:#1f6feb" onclick="adicionarManual()">INICIAR CARGA</button>
@@ -74,16 +77,22 @@
     </div>
 
     <div class="card">
-        <h3 style="color:#58a6ff">📅 AGENDA DE METAS</h3>
+        <div class="cal-header">
+            <button class="btn-mini" onclick="mudarMes(-1)" style="background:#30363d; color:white"><</button>
+            <h3 id="mesAno" style="color:#58a6ff; margin:0; font-size:1rem"></h3>
+            <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d; color:white">></button>
+        </div>
         <div class="cal-grid" id="calendario"></div>
     </div>
 
     <script>
-        const de_para = { "TIVOLI":"TIVOLI", "MALTA":"MALTA" };
+        const de_para = { "TIVOLI":"TIVOLI", "MALTA":"MALTA", "RAVEL":"RAVEL", "SCOTT":"SCOTT" };
         let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v16')) || [];
         let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v16')) || [];
         let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v16')) || {};
         let agendaMetas = JSON.parse(localStorage.getItem('borel_metas_agenda')) || {};
+
+        let dataAtual = new Date();
 
         function autenticar() {
             if(document.getElementById('user').value === "BorelTec" && document.getElementById('pass').value === "Borel77") {
@@ -106,6 +115,7 @@
             if(!q) return;
             const nova = { id: Date.now(), mod: document.getElementById('modelo').value, qtd: q, ini: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), pausado: false };
             cargasAtivas.push(nova);
+            document.getElementById('quantidade').value = "";
             renderCargas(); salvar();
         }
 
@@ -114,12 +124,25 @@
             cargasAtivas.forEach(c => {
                 const div = document.createElement('div');
                 div.className = `item ${c.pausado ? 'pausado' : ''}`;
-                div.innerHTML = `<strong>${c.mod}</strong>: ${c.qtd} un. <br><small>⏰ ${c.ini}</small><br>
+                div.innerHTML = `<strong>${c.mod}</strong>: ${c.qtd} un. <br><small>⏰ Início: ${c.ini}</small><br>
                     <button class="btn-green btn-mini" onclick="concluir(${c.id})">CONCLUIR</button>
-                    <button class="btn-mini" style="background:#f1e05a" onclick="pausar(${c.id})">PAUSAR</button>
+                    <button class="btn-mini" style="background:#f1e05a; color:black" onclick="pausar(${c.id})">PAUSAR</button>
                     <button class="btn-mini" style="background:#da3633; color:white" onclick="excluir(${c.id})">EXCLUIR</button>`;
                 lista.appendChild(div);
             });
+        }
+
+        function pausar(id) {
+            const c = cargasAtivas.find(x => x.id === id);
+            c.pausado = !c.pausado;
+            renderCargas(); salvar();
+        }
+
+        function excluir(id) {
+            if(confirm("Excluir carga?")) {
+                cargasAtivas = cargasAtivas.filter(x => x.id !== id);
+                renderCargas(); salvar();
+            }
         }
 
         function concluir(id) {
@@ -128,6 +151,24 @@
             historicoGeral.push({ mod: c.mod, qtd: c.qtd, ini: c.ini, fim: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
             cargasAtivas = cargasAtivas.filter(x => x.id !== id);
             renderCargas(); renderHistorico(); salvar();
+        }
+
+        function renderHistorico() {
+            const lista = document.getElementById('listaHistorico'); lista.innerHTML = "";
+            historicoGeral.slice().reverse().forEach(i => {
+                lista.innerHTML += `<div style="border-bottom:1px solid #30363d; padding:8px; font-size:0.85rem">
+                    <b>✅ ${i.mod}: ${i.qtd}un</b> <small>(${i.ini} - ${i.fim})</small>
+                </div>`;
+            });
+        }
+
+        function enviarZap() {
+            const total = document.getElementById('somaDia').innerText;
+            const meta = document.getElementById('metaValor').value || 0;
+            let msg = `*RELATÓRIO BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n---\n`;
+            historicoGeral.forEach(i => msg += `• ${i.mod}: ${i.qtd}un\n`);
+            msg += `---\n*TOTAL:* ${total} | *META:* ${meta}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
         function fecharDia() {
@@ -139,25 +180,53 @@
             renderHistorico(); renderCal(); salvar();
         }
 
+        function mudarMes(direcao) {
+            dataAtual.setMonth(dataAtual.getMonth() + direcao);
+            renderCal();
+        }
+
         function renderCal() {
             const cal = document.getElementById('calendario'); cal.innerHTML = "";
-            const diasMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-            for(let i=1; i<=diasMes; i++) {
-                const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${i}`;
-                const div = document.createElement('div'); div.className = 'dia'; div.innerText = i;
+            const mes = dataAtual.getMonth();
+            const ano = dataAtual.getFullYear();
+            const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
+            
+            document.getElementById('mesAno').innerText = `${meses[mes]} ${ano}`;
+
+            const primeiroDia = new Date(ano, mes, 1).getDay();
+            const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+
+            const diasSemana = ["D","S","T","Q","Q","S","S"];
+            diasSemana.forEach(d => cal.innerHTML += `<div class="dia-semana">${d}</div>`);
+
+            for(let i = 0; i < primeiroDia; i++) cal.innerHTML += `<div class="dia dia-vazio"></div>`;
+
+            for(let i = 1; i <= diasNoMes; i++) {
+                const key = `${ano}-${mes}-${i}`;
+                const div = document.createElement('div');
+                div.className = 'dia';
+                div.innerText = i;
+                
                 if(memoriaCal[key]) div.classList.add('dia-ok');
                 if(agendaMetas[key]) div.classList.add('dia-meta');
+                if(i === new Date().getDate() && mes === new Date().getMonth() && ano === new Date().getFullYear()) div.classList.add('hoje');
+
                 div.onclick = () => {
-                    const m = prompt("Meta para o dia " + i + ":", agendaMetas[key] || "");
+                    const m = prompt(`DIA ${i} de ${meses[mes]}\nProdução: ${memoriaCal[key]||0}\nMeta Atual: ${agendaMetas[key]||""}\nNova Meta:`, agendaMetas[key]||"");
                     if(m !== null) { agendaMetas[key] = m; renderCal(); salvar(); }
                 };
                 cal.appendChild(div);
             }
         }
 
+        function limparHistorico() { if(confirm("Limpar?")) { historicoGeral=[]; renderHistorico(); salvar(); } }
+        function toggleCalc() { alert("Calculadora em breve!"); }
+
         window.onload = () => {
             if(localStorage.getItem('borel_sessao')) document.getElementById('tela-login').style.display = 'none';
-            renderCargas(); renderCal();
+            document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v16') || "0";
+            document.getElementById('metaValor').value = localStorage.getItem('borel_m_v16') || "";
+            renderCargas(); renderHistorico(); renderCal();
         };
     </script>
 </body>
