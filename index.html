@@ -7,7 +7,6 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 110px 15px 20px 15px; background: #0d1117; }
         
-        /* TELA DE LOGIN COM BACKGROUND RESTAURADO */
         #tela-login { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background-color: #0d1117;
@@ -30,7 +29,6 @@
         .btn-mini { width: auto; padding: 8px 12px; font-size: 0.8rem; margin-top: 8px; margin-right: 5px; border-radius: 4px; border: none; font-weight: bold; }
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
         
-        /* CALENDÁRIO */
         .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
         .dia-semana { text-align: center; font-size: 0.7rem; color: #8b949e; font-weight: bold; padding-bottom: 5px; }
@@ -82,10 +80,11 @@
 
     <div class="card">
         <h3>Histórico Concluído</h3>
-        <div id="listaHistorico" style="max-height: 200px; overflow-y: auto;"></div>
-        <button class="btn-green" style="margin-top:10px" onclick="enviarZap()">📤 ENVIAR PARA WHATSAPP</button>
-        <button class="btn-green" style="background:#8957e5; margin-top:10px" onclick="fecharDia()">💾 SALVAR NO CALENDÁRIO</button>
-        <button class="btn-red" onclick="limparHistorico()" style="background:#484f58">🗑️ LIMPAR LISTA</button>
+        <div id="listaHistorico" style="max-height: 200px; overflow-y: auto; margin-bottom: 10px;"></div>
+        
+        <button class="btn-green" style="background:#238636; border: 2px solid #39ff14;" onclick="finalizarRelatorio()">✅ FINALIZAR E ENVIAR RELATÓRIO</button>
+        
+        <button class="btn-red" onclick="limparHistorico()" style="background:#484f58">🗑️ APENAS LIMPAR LISTA</button>
     </div>
 
     <div class="card">
@@ -95,16 +94,10 @@
             <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d; color:white">></button>
         </div>
         <div class="cal-grid" id="calendario"></div>
-        <button class="btn-red" onclick="zerarCalendario()" style="background:#4a0000; margin-top: 15px;">ZERAR TUDO (MEMÓRIA)</button>
+        <button class="btn-red" onclick="zerarCalendario()" style="background:#4a0000; margin-top: 15px;">ZERAR TUDO (CALENDÁRIO)</button>
     </div>
 
     <script>
-        const de_para = { 
-            "MALTA":"MALTA", "RAVEL":"RAVEL", "ARMANI":"ARMANI", "IMOLA":"IMOLA", 
-            "SCOTT":"SCOTT", "FLY":"FLY", "MEGA":"MEGA", "BELLA":"BELLA", 
-            "BOSS":"BOSS", "FAZANO":"FAZANO", "TIVOLI":"TIVOLI", "PARATY":"PARATY" 
-        };
-
         let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v16')) || [];
         let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v16')) || [];
         let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v16')) || {};
@@ -155,13 +148,6 @@
             renderCargas(); salvar();
         }
 
-        function excluir(id) {
-            if(confirm("Excluir carga?")) {
-                cargasAtivas = cargasAtivas.filter(x => x.id !== id);
-                renderCargas(); salvar();
-            }
-        }
-
         function concluir(id) {
             const c = cargasAtivas.find(x => x.id === id);
             const agora = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
@@ -171,6 +157,30 @@
             renderCargas(); renderHistorico(); salvar();
         }
 
+        function finalizarRelatorio() {
+            const total = document.getElementById('somaDia').innerText;
+            if(parseInt(total) === 0) return alert("Sem produção para salvar.");
+            
+            // 1. Prepara Mensagem do WhatsApp
+            const meta = document.getElementById('metaValor').value || 0;
+            let msg = `*RELATÓRIO BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n---\n`;
+            historicoGeral.forEach(i => msg += `• *${i.mod}*: ${i.qtd}un (${i.ini} - ${i.fim})\n`);
+            msg += `---\n*TOTAL:* ${total} | *META:* ${meta}\n`;
+            msg += parseInt(total) >= parseInt(meta) ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
+
+            // 2. Salva no Calendário
+            const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+            memoriaCal[key] = (memoriaCal[key] || 0) + parseInt(total);
+            
+            // 3. Limpa Tudo e Salva
+            historicoGeral = []; 
+            document.getElementById('somaDia').innerText = "0";
+            renderHistorico(); renderCal(); salvar();
+
+            // 4. Abre WhatsApp
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
+        }
+
         function renderHistorico() {
             const lista = document.getElementById('listaHistorico'); lista.innerHTML = "";
             historicoGeral.slice().reverse().forEach(i => {
@@ -178,25 +188,6 @@
                     <b>✅ ${i.mod}: ${i.qtd}un</b> <small style="color:#8b949e">(${i.ini} - ${i.fim})</small>
                 </div>`;
             });
-        }
-
-        function enviarZap() {
-            const total = document.getElementById('somaDia').innerText;
-            const meta = document.getElementById('metaValor').value || 0;
-            let msg = `*RELATÓRIO BOREL TEC*\n📅 ${new Date().toLocaleDateString()}\n---\n`;
-            historicoGeral.forEach(i => msg += `• *${i.mod}*: ${i.qtd}un (${i.ini} - ${i.fim})\n`);
-            msg += `---\n*TOTAL:* ${total} | *META:* ${meta}\n`;
-            msg += parseInt(total) >= parseInt(meta) ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
-        }
-
-        function fecharDia() {
-            const total = parseInt(document.getElementById('somaDia').innerText);
-            if(total === 0) return alert("Sem produção para salvar.");
-            const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-            memoriaCal[key] = (memoriaCal[key] || 0) + total;
-            historicoGeral = []; document.getElementById('somaDia').innerText = "0";
-            renderHistorico(); renderCal(); salvar();
         }
 
         function mudarMes(direcao) {
@@ -223,20 +214,20 @@
                 if(agendaMetas[key]) div.classList.add('dia-meta');
                 if(i === new Date().getDate() && mes === new Date().getMonth() && ano === new Date().getFullYear()) div.classList.add('hoje');
                 div.onclick = () => {
-                    const m = prompt(`DIA ${i} de ${meses[mes]}\nProdução: ${memoriaCal[key]||0}\nMeta Agendada: ${agendaMetas[key]||""}\nNova Meta:`, agendaMetas[key]||"");
+                    const m = prompt(`DIA ${i} de ${meses[mes]}\nProdução: ${memoriaCal[key]||0}\nNova Meta:`, agendaMetas[key]||"");
                     if(m !== null) { m==="" ? delete agendaMetas[key] : agendaMetas[key]=parseInt(m); renderCal(); salvar(); }
                 };
                 cal.appendChild(div);
             }
         }
 
-        function zerarCalendario() { if(confirm("Zerar TODA a memória de metas e produções do calendário?")) { memoriaCal={}; agendaMetas={}; salvar(); renderCal(); } }
-        function limparHistorico() { if(confirm("Limpar lista de hoje?")) { historicoGeral=[]; renderHistorico(); salvar(); } }
+        function zerarCalendario() { if(confirm("Zerar TODA a memória do calendário?")) { memoriaCal={}; agendaMetas={}; salvar(); renderCal(); } }
+        function limparHistorico() { if(confirm("Limpar lista de hoje sem salvar?")) { historicoGeral=[]; renderHistorico(); salvar(); } }
         function toggleCalc() { alert("Calculadora em manutenção."); }
 
         window.onload = () => {
             const sessao = localStorage.getItem('borel_sessao');
-            if(sessao && (new Date().getTime() - sessao < 12*60*60*1000)) document.getElementById('tela-login').style.display = 'none';
+            if(sessao) document.getElementById('tela-login').style.display = 'none';
             document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v16') || "0";
             document.getElementById('metaValor').value = localStorage.getItem('borel_m_v16') || "";
             renderCargas(); renderHistorico(); renderCal();
