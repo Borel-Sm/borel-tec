@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borel Tec - Master Admin v9.3</title>
+    <title>Borel Tec - Sistema Raiz v9.4</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 150px 15px 20px 15px; background: #0d1117; }
+        
+        /* ACESSO RESTRITO */
+        #tela-acesso { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .acesso-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 30px 20px; background: rgba(22, 27, 34, 0.95); border-top: 4px solid #39ff14; }
+        .input-group input { width: 100%; padding: 12px; background: #0d1117; border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; box-sizing: border-box; font-weight: bold; margin: 10px 0; }
         
         /* HEADER E NAV */
         .header-tools { position: fixed; top: 0; left: 0; width: 100%; height: 70px; background: #161b22; border-bottom: 1px solid #30363d; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; box-sizing: border-box; }
@@ -14,22 +19,31 @@
         /* ADMIN - TELA CHEIA */
         #painel-admin { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 10001; padding: 20px; box-sizing: border-box; overflow-y: auto; }
         .admin-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #39ff14; }
-        
-        /* DETALHES DO USUÁRIO (CARD EXPANSÍVEL) */
-        .detalhes-usuario { display: none; background: #0d1117; margin-top: 10px; padding: 10px; border-radius: 6px; border: 1px solid #30363d; max-height: 300px; overflow-y: auto; font-size: 0.8rem; }
-        .linha-hist { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #21262d; }
-        
+        .detalhes-usuario { display: none; background: #0d1117; margin-top: 10px; padding: 10px; border-radius: 6px; border: 1px solid #30363d; max-height: 250px; overflow-y: auto; font-size: 0.75rem; }
+        .linha-hist { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #21262d; }
+
         /* GERAL */
         .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 20px; border: 1px solid #39ff14; }
         .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
         .btn-green { background: linear-gradient(180deg, #2ea44f 0%, #238636 100%); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; }
-        .btn-mini { padding: 8px 12px; font-size: 0.75rem; border-radius: 6px; border: none; font-weight: bold; color: white; cursor: pointer; margin: 5px 2px; }
-        .nav-link.admin { color: #39ff14; border: 1px solid #39ff14; padding: 5px 10px; border-radius: 4px; }
-        
-        /* ACESSO */
-        #tela-acesso { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .acesso-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 30px 20px; background: rgba(22, 27, 34, 0.95); border-top: 4px solid #39ff14; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px; box-sizing: border-box; }
+        .btn-mini { padding: 8px 12px; font-size: 0.75rem; border-radius: 6px; border: none; font-weight: bold; color: white; cursor: pointer; margin: 2px; }
+        .nav-link.admin { color: #39ff14; border: 1px solid #39ff14; padding: 5px 8px; border-radius: 4px; font-size: 0.7rem; }
+
+        /* CALENDÁRIO */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .dia { background: #21262d; padding: 12px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; color: #8b949e; cursor: pointer;}
+        .dia-concluido { background: #059669 !important; color: white !important; }
+        .hoje { border: 2px solid #58a6ff !important; color: white; }
+
+        /* CALCULADORA */
+        #modal-calc { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; }
+        .calc-body { background: #161b22; border: 2px solid #58a6ff; padding: 20px; border-radius: 15px; width: 280px; }
+        .calc-display { width: 100%; height: 50px; background: #0d1117; border: 1px solid #30363d; color: #39ff14; text-align: right; font-size: 1.5rem; padding: 10px; box-sizing: border-box; border-radius: 6px; margin-bottom: 15px; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .btn-c { background: #21262d; border: 1px solid #30363d; color: white; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        .item { background: #1c2128; border-left: 5px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #30363d; }
+        select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -37,11 +51,11 @@
     <div id="painel-admin">
         <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:20px;">
             <h2 style="color: #39ff14; margin:0">CENTRAL MASTER</h2>
-            <button class="btn-mini" style="background:#30363d" onclick="fecharAdmin()">SAIR</button>
+            <button class="btn-mini" style="background:#30363d" onclick="fecharAdmin()">VOLTAR</button>
         </div>
         
-        <div id="estatisticas-gerais" class="card" style="background: #161b22; border-color: #f1e05a;">
-            <h4 style="margin:0; color:#f1e05a">📊 RANKING E TOTAIS</h4>
+        <div class="card" style="background: #161b22; border-color: #f1e05a;">
+            <h4 style="margin:0 0 10px 0; color:#f1e05a">🏆 RANKING PRIVADO (PROD. TOTAL)</h4>
             <div id="ranking-privado"></div>
         </div>
 
@@ -51,96 +65,107 @@
     <div id="tela-acesso">
         <div id="box-login" class="acesso-card">
             <h3 style="color: white;">ACESSO RESTRITO</h3>
-            <input type="text" id="user-login" placeholder="USUÁRIO">
-            <input type="password" id="pass-login" placeholder="SENHA">
-            <button class="btn-green" onclick="fazerLogin()">ENTRAR</button>
-            <p style="font-size: 0.8rem; color: #8b949e;">Novo aqui? <a href="#" onclick="trocarTela('box-reg')" style="color:#58a6ff">Cadastrar</a></p>
+            <div class="input-group"><input type="text" id="user-login" placeholder="USUÁRIO"></div>
+            <div class="input-group"><input type="password" id="pass-login" placeholder="SENHA"></div>
+            <button class="btn-green" onclick="fazerLogin()">ENTRAR NO SISTEMA</button>
+            <p style="font-size: 0.8rem; color: #8b949e;">Novo aqui? <a href="#" onclick="trocarTela('box-reg')" style="color:#58a6ff">Criar Conta</a></p>
         </div>
         <div id="box-reg" class="acesso-card" style="display:none">
             <h3 style="color: white;">Novo Operador</h3>
-            <input type="text" id="reg-nome" placeholder="NOME COMPLETO">
-            <input type="text" id="reg-user" placeholder="USUÁRIO LOGIN">
-            <input type="password" id="reg-pass" placeholder="SENHA">
-            <button class="btn-green" onclick="registrarUsuario()">CRIAR CONTA</button>
-            <p onclick="trocarTela('box-login')" style="cursor:pointer; font-size:0.8rem; color:#8b949e;">Voltar</p>
+            <div class="input-group"><input type="text" id="reg-nome" placeholder="NOME COMPLETO"></div>
+            <div class="input-group"><input type="text" id="reg-user" placeholder="USUÁRIO LOGIN"></div>
+            <div class="input-group"><input type="password" id="reg-pass" placeholder="SENHA"></div>
+            <button class="btn-green" onclick="registrarUsuario()">CADASTRAR</button>
+            <p onclick="trocarTela('box-login')" style="cursor:pointer; font-size:0.8rem; color:#8b949e; margin-top:10px">Voltar</p>
         </div>
     </div>
 
     <div class="header-tools">
-        <div id="nome-logado" style="color: #58a6ff; font-weight: bold;"></div>
-        <button class="btn-mini" style="background:#21262d; border:1px solid #30363d" onclick="location.reload()">🔄</button>
+        <button class="btn-mini" style="background:#21262d; border:1px solid #58a6ff; color:#58a6ff" onclick="abrirCalc()">🧮 CALC</button>
+        <div id="nome-logado" style="color: #58a6ff; font-weight: bold; font-size: 0.8rem;"></div>
     </div>
 
     <div class="nav-bar">
-        <span id="btn-admin" class="nav-link admin" style="display:none" onclick="abrirAdmin()">⚙️ PAINEL ADMIN</span>
+        <span id="btn-admin" class="nav-link admin" style="display:none" onclick="abrirAdmin()">⚙️ ADMIN</span>
         <span class="nav-link" onclick="confirmarSair()">SAIR</span>
+        <span class="nav-link" style="color:#f85149" onclick="confirmarExcluirMinhaConta()">DELETAR CONTA</span>
     </div>
 
-    <div class="total-box">MINHA PRODUÇÃO HOJE: <span id="somaDia">0</span></div>
+    <div id="modal-calc">
+        <div class="calc-body">
+            <input type="text" class="calc-display" id="display" readonly value="0">
+            <div class="calc-grid" id="teclado"></div>
+            <button class="btn-green" style="margin-top:15px; background:#30363d" onclick="fecharCalc()">FECHAR</button>
+        </div>
+    </div>
+
+    <div class="total-box">PRODUÇÃO HOJE: <span id="somaDia">0</span></div>
 
     <div class="card">
-        <h3 style="margin-top:0">Nova Carga</h3>
+        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:10px">
+            <button class="btn-mini" onclick="mudarMes(-1)" style="background:#30363d"><</button>
+            <span id="mesAno" style="font-weight:bold; color:#58a6ff"></span>
+            <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d">></button>
+        </div>
+        <div class="cal-grid" id="calendario"></div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0">Lançar Carga</h3>
         <select id="modelo">
-            <option value="MALTA">MALTA</option><option value="RAVEL">RAVEL</option><option value="ARMANI">ARMANI</option><option value="IMOLA">IMOLA</option>
+            <option value="MALTA">MALTA</option><option value="RAVEL">RAVEL</option><option value="ARMANI">ARMANI</option><option value="IMOLA">IMOLA</option><option value="MEGA">MEGA</option>
         </select>
-        <input type="number" id="quantidade" placeholder="Qtd espumas">
-        <button class="btn-green" onclick="adicionarCarga()">INICIAR CARGA</button>
+        <input type="number" id="quantidade" placeholder="Quantidade">
+        <button class="btn-green" onclick="adicionarCarga()">INICIAR AGORA</button>
     </div>
 
     <div id="listaProducao"></div>
 
     <div class="card">
-        <h3>Sessão Atual</h3>
-        <div id="listaHistorico"></div>
-        <button class="btn-green" style="margin-top:15px;" onclick="finalizarRelatorio()">✅ SALVAR NO CALENDÁRIO</button>
+        <h3>Histórico da Sessão</h3>
+        <div id="listaHistorico" style="max-height: 150px; overflow-y: auto; font-size: 0.8rem;"></div>
+        <button class="btn-green" style="margin-top:15px; border: 2px solid #39ff14;" onclick="finalizarRelatorio()">✅ SALVAR E SINCRONIZAR</button>
     </div>
 
     <script>
-        const V_KEY = 'v9_3';
+        const V_KEY = 'v9_4_raiz';
         let usuarios = JSON.parse(localStorage.getItem(`bt_u_${V_KEY}`)) || [];
         let logado = JSON.parse(localStorage.getItem(`bt_l_${V_KEY}`)) || null;
-        let historicoSessao = [], cargasAtivas = [], memoriaCal = {};
+        let historicoSessao = [], cargasAtivas = [], memoriaCal = {}, agendaMetas = {};
+        let dataAtual = new Date();
 
-        // Criar Admin
+        // Admin
         if (!usuarios.find(u => u.user === 'BorelAdmin')) {
             usuarios.push({ nome: 'Jean Master', user: 'BorelAdmin', pass: 'BorelAdmin' });
             localStorage.setItem(`bt_u_${V_KEY}`, JSON.stringify(usuarios));
         }
 
-        // --- FUNÇÕES MASTER ADMIN ---
+        // --- ADMIN MASTER ---
         function abrirAdmin() {
             document.getElementById('painel-admin').style.display = 'block';
-            renderRankingMaster();
+            renderRanking();
             renderListaUsuarios();
         }
+        function fecharAdmin() { document.getElementById('painel-admin').style.display = 'none'; }
 
-        function renderRankingMaster() {
+        function renderRanking() {
             const container = document.getElementById('ranking-privado');
             let dados = [];
             usuarios.forEach(u => {
                 if(u.user === 'BorelAdmin') return;
                 const uCal = JSON.parse(localStorage.getItem(`bt_c_${u.user}`)) || {};
-                const totalGeral = Object.values(uCal).reduce((a, b) => a + b, 0);
-                dados.push({ nome: u.nome, total: totalGeral });
+                const total = Object.values(uCal).reduce((a, b) => a + b, 0);
+                dados.push({ nome: u.nome, total: total });
             });
             dados.sort((a, b) => b.total - a.total);
-            
-            container.innerHTML = dados.map((d, i) => `
-                <div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #21262d">
-                    <span>${i+1}º ${d.nome}</span>
-                    <b style="color:#39ff14">${d.total} un.</b>
-                </div>
-            `).join('') || "Sem dados";
+            container.innerHTML = dados.map((d, i) => `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #21262d"><span>${i+1}º ${d.nome}</span><b style="color:#39ff14">${d.total} un.</b></div>`).join('');
         }
 
         function renderListaUsuarios() {
             const lista = document.getElementById('lista-usuarios-admin');
             lista.innerHTML = "";
-
             usuarios.forEach(u => {
                 if(u.user === 'BorelAdmin') return;
-                
-                // Pegar histórico real do LocalStorage do usuário
                 const uHis = JSON.parse(localStorage.getItem(`bt_hs_full_${u.user}`)) || [];
                 const uCal = JSON.parse(localStorage.getItem(`bt_c_${u.user}`)) || {};
                 const totalGeral = Object.values(uCal).reduce((a, b) => a + b, 0);
@@ -148,51 +173,44 @@
                 const div = document.createElement('div');
                 div.className = 'admin-card';
                 div.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center">
-                        <div>
-                            <b style="font-size:1.1rem">${u.nome}</b><br>
-                            <small style="color:#8b949e">@${u.user} | Senha: ${u.pass}</small>
-                        </div>
-                        <div style="text-align:right">
-                            <span style="color:#39ff14; font-weight:bold">${totalGeral}</span><br>
-                            <small>PEÇAS TOTAL</small>
-                        </div>
+                    <div style="display:flex; justify-content:space-between">
+                        <b>${u.nome} (@${u.user})</b>
+                        <b style="color:#39ff14">${totalGeral} total</b>
                     </div>
-                    
-                    <button class="btn-mini" style="background:#1f6feb; width:48%" onclick="toggleHist('${u.user}')">VER HISTÓRICO</button>
-                    <button class="btn-mini" style="background:#da3633; width:48%" onclick="adminExcluir('${u.user}')">EXCLUIR</button>
-                    
-                    <div id="hist-${u.user}" class="detalhes-usuario">
-                        <h4 style="margin:0 0 10px 0; border-bottom:1px solid #30363d">LOG DE PRODUÇÃO</h4>
-                        ${uHis.length > 0 ? uHis.slice().reverse().map(h => `
-                            <div class="linha-hist">
-                                <span><b>${h.data}</b> - ${h.mod}</span>
-                                <span>${h.qtd} un (${h.ini}-${h.fim})</span>
-                            </div>
-                        `).join('') : 'Nenhum registro detalhado.'}
-                    </div>
-                `;
+                    <small style="color:#8b949e">Senha: ${u.pass}</small><br>
+                    <button class="btn-mini" style="background:#1f6feb" onclick="document.getElementById('det-${u.user}').style.display='block'">DETALHES</button>
+                    <button class="btn-mini" style="background:#da3633" onclick="adminExcluir('${u.user}')">EXCLUIR</button>
+                    <div id="det-${u.user}" class="detalhes-usuario" onclick="this.style.display='none'">
+                        <strong>LOG DE CARGAS:</strong>
+                        ${uHis.slice().reverse().map(h => `<div class="linha-hist"><span>${h.data} ${h.mod}</span><span>${h.qtd}un (${h.ini}-${h.fim})</span></div>`).join('') || 'Vazio'}
+                    </div>`;
                 lista.appendChild(div);
             });
         }
 
-        function toggleHist(user) {
-            const el = document.getElementById(`hist-${user}`);
-            el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        function adminExcluir(u) { if(confirm(`Remover @${u}?`)){ usuarios = usuarios.filter(x => x.user !== u); localStorage.setItem(`bt_u_${V_KEY}`, JSON.stringify(usuarios)); abrirAdmin(); }}
+
+        // --- OPERADOR ---
+        function carregarDados() {
+            if(!logado) return;
+            const u = logado.user;
+            historicoSessao = JSON.parse(localStorage.getItem(`bt_hs_${u}`)) || [];
+            cargasAtivas = JSON.parse(localStorage.getItem(`bt_at_${u}`)) || [];
+            memoriaCal = JSON.parse(localStorage.getItem(`bt_c_${u}`)) || {};
+            agendaMetas = JSON.parse(localStorage.getItem(`bt_m_${u}`)) || {};
+            if(u === 'BorelAdmin') document.getElementById('btn-admin').style.display = 'block';
+            render();
         }
 
-        function fecharAdmin() { document.getElementById('painel-admin').style.display = 'none'; }
-
-        function adminExcluir(u) {
-            if(confirm(`Remover permanentemente @${u}?`)) {
-                usuarios = usuarios.filter(x => x.user !== u);
-                localStorage.setItem(`bt_u_${V_KEY}`, JSON.stringify(usuarios));
-                renderListaUsuarios();
-                renderRankingMaster();
-            }
+        function salvarDados() {
+            if(!logado) return;
+            const u = logado.user;
+            localStorage.setItem(`bt_hs_${u}`, JSON.stringify(historicoSessao));
+            localStorage.setItem(`bt_at_${u}`, JSON.stringify(cargasAtivas));
+            localStorage.setItem(`bt_c_${u}`, JSON.stringify(memoriaCal));
+            localStorage.setItem(`bt_m_${u}`, JSON.stringify(agendaMetas));
         }
 
-        // --- LÓGICA DO OPERADOR ---
         function adicionarCarga() {
             const q = parseInt(document.getElementById('quantidade').value);
             if(!q) return;
@@ -208,51 +226,56 @@
 
         function finalizarRelatorio() {
             const u = logado.user;
-            const hoje = new Date().toLocaleDateString();
-            const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-            
+            const key = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
             let soma = 0;
-            // Pegar histórico mestre do usuário para o admin ver
             let masterHist = JSON.parse(localStorage.getItem(`bt_hs_full_${u}`)) || [];
-            
-            historicoSessao.forEach(i => {
-                soma += i.qtd;
-                masterHist.push(i); // Salva no histórico completo
-            });
-
+            historicoSessao.forEach(i => { soma += i.qtd; masterHist.push(i); });
             memoriaCal[key] = (memoriaCal[key] || 0) + soma;
             localStorage.setItem(`bt_hs_full_${u}`, JSON.stringify(masterHist));
-            
-            historicoSessao = [];
-            salvarDados(); render();
-            alert("Produção sincronizada com sucesso!");
+            historicoSessao = []; salvarDados(); render();
+            alert("Sincronizado!");
         }
 
         function render() {
             salvarDados();
             const l = document.getElementById('listaProducao'); l.innerHTML = "";
             cargasAtivas.forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'item';
+                const div = document.createElement('div'); div.className = 'item';
                 div.innerHTML = `<b>${c.mod}</b>: ${c.qtd} un <button class="btn-mini" style="background:#238636; float:right" onclick="concluir(${c.id})">OK</button>`;
                 l.appendChild(div);
             });
             const h = document.getElementById('listaHistorico'); h.innerHTML = "";
-            historicoSessao.forEach(i => h.innerHTML += `<div style="font-size:0.8rem">✅ ${i.mod}: ${i.qtd}un (${i.ini}-${i.fim})</div>`);
-            const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+            historicoSessao.forEach(i => h.innerHTML += `<div>✅ ${i.mod}: ${i.qtd}un (${i.ini}-${i.fim})</div>`);
+            const key = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
             document.getElementById('somaDia').innerText = memoriaCal[key] || "0";
+            renderCal();
         }
 
+        function renderCal() {
+            const cal = document.getElementById('calendario'); cal.innerHTML = "";
+            const mes = dataAtual.getMonth(), ano = dataAtual.getFullYear();
+            const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
+            document.getElementById('mesAno').innerText = `${meses[mes]} ${ano}`;
+            const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+            for(let i = 1; i <= diasNoMes; i++) {
+                const k = `${ano}-${mes}-${i}`;
+                const prod = memoriaCal[k] || 0;
+                const div = document.createElement('div');
+                div.className = `dia ${prod > 0 ? 'dia-concluido' : ''} ${i===new Date().getDate() && mes===new Date().getMonth()?'hoje':''}`;
+                div.innerText = i;
+                div.onclick = () => { const m = prompt(`META DIA ${i}:`, agendaMetas[k] || 0); if(m!==null){agendaMetas[k]=parseInt(m); render();}};
+                cal.appendChild(div);
+            }
+        }
+
+        function mudarMes(d) { dataAtual.setMonth(dataAtual.getMonth() + d); renderCal(); }
         function agora() { return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
-        function salvarDados() {
-            if(!logado) return;
-            const u = logado.user;
-            localStorage.setItem(`bt_hs_${u}`, JSON.stringify(historicoSessao));
-            localStorage.setItem(`bt_at_${u}`, JSON.stringify(cargasAtivas));
-            localStorage.setItem(`bt_c_${u}`, JSON.stringify(memoriaCal));
-        }
 
-        // --- ACESSO ---
+        // CALCULADORA
+        function abrirCalc() { document.getElementById('modal-calc').style.display='flex'; }
+        function fecharCalc() { document.getElementById('modal-calc').style.display='none'; }
+
+        // ACESSO
         function fazerLogin() {
             const u = document.getElementById('user-login').value, p = document.getElementById('pass-login').value;
             const conta = usuarios.find(x => x.user === u && x.pass === p);
@@ -263,22 +286,27 @@
             if(!n || !u || !p) return alert("Preencha tudo!");
             usuarios.push({nome: n, user: u, pass: p});
             localStorage.setItem(`bt_u_${V_KEY}`, JSON.stringify(usuarios));
-            alert("Conta Criada!"); trocarTela('box-login');
+            alert("Criado!"); trocarTela('box-login');
         }
         function trocarTela(id) { document.getElementById('box-login').style.display='none'; document.getElementById('box-reg').style.display='none'; document.getElementById(id).style.display='block'; }
         function confirmarSair() { if(confirm("Sair?")) { localStorage.removeItem(`bt_l_${V_KEY}`); location.reload(); } }
+        function confirmarExcluirMinhaConta() { if(confirm("DELETAR TUDO?")){ adminExcluir(logado.user); localStorage.removeItem(`bt_l_${V_KEY}`); location.reload(); }}
 
         window.onload = () => {
             if(logado) {
-                document.getElementById('tela-acesso').style.display = 'none';
+                document.getElementById('tela-acesso').style.display='none';
                 document.getElementById('nome-logado').innerText = logado.nome;
-                const u = logado.user;
-                historicoSessao = JSON.parse(localStorage.getItem(`bt_hs_${u}`)) || [];
-                cargasAtivas = JSON.parse(localStorage.getItem(`bt_at_${u}`)) || [];
-                memoriaCal = JSON.parse(localStorage.getItem(`bt_c_${u}`)) || {};
-                if(logado.user === 'BorelAdmin') document.getElementById('btn-admin').style.display = 'block';
-                render();
+                carregarDados();
             }
+            const t = document.getElementById('teclado');
+            ['7','8','9','/','4','5','6','*','1','2','3','-','0','.','C','+'].forEach(k => {
+                const b = document.createElement('button'); b.className='btn-c'; b.innerText=k;
+                b.onclick = () => {
+                    const d = document.getElementById('display');
+                    if(k==='C') d.value='0'; else if(k==='+') d.value=eval(d.value); else d.value==='0'?d.value=k:d.value+=k;
+                };
+                t.appendChild(b);
+            });
         };
     </script>
 </body>
