@@ -3,60 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borel Tec - Sistema Raiz v9.4</title>
+    <title>Borel Tec - Sistema de Produção v9.5</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 150px 15px 20px 15px; background: #0d1117; }
+        :root { --primary: #39ff14; --secondary: #58a6ff; --bg: #0d1117; --card-bg: #161b22; --border: #30363d; }
+        body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 140px 15px 20px 15px; background: var(--bg); }
         
-        /* ACESSO RESTRITO */
-        #tela-acesso { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .acesso-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 30px 20px; background: rgba(22, 27, 34, 0.95); border-top: 4px solid #39ff14; }
-        .input-group input { width: 100%; padding: 12px; background: #0d1117; border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; box-sizing: border-box; font-weight: bold; margin: 10px 0; }
+        /* ACESSO */
+        #tela-acesso { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .acesso-card { border-radius: 12px; border: 2px solid var(--border); text-align: center; width: 85%; max-width: 320px; padding: 30px 20px; background: rgba(22, 27, 34, 0.95); border-top: 4px solid var(--primary); }
+        .input-group input { width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); color: var(--primary); text-align: center; border-radius: 6px; box-sizing: border-box; font-weight: bold; margin: 10px 0; }
         
         /* HEADER E NAV */
-        .header-tools { position: fixed; top: 0; left: 0; width: 100%; height: 70px; background: #161b22; border-bottom: 1px solid #30363d; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; box-sizing: border-box; }
-        .nav-bar { position: fixed; top: 70px; left: 0; width: 100%; height: 50px; background: #0d1117; border-bottom: 1px solid #30363d; z-index: 999; display: flex; align-items: center; justify-content: space-around; padding: 0 10px; box-sizing: border-box; }
+        .header-tools { position: fixed; top: 0; left: 0; width: 100%; height: 70px; background: var(--card-bg); border-bottom: 1px solid var(--border); z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; box-sizing: border-box; }
+        .nav-bar { position: fixed; top: 70px; left: 0; width: 100%; height: 50px; background: var(--bg); border-bottom: 1px solid var(--border); z-index: 999; display: flex; align-items: center; justify-content: space-around; padding: 0 10px; box-sizing: border-box; }
         
-        /* ADMIN - TELA CHEIA */
-        #painel-admin { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 10001; padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        .admin-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #39ff14; }
-        .detalhes-usuario { display: none; background: #0d1117; margin-top: 10px; padding: 10px; border-radius: 6px; border: 1px solid #30363d; max-height: 250px; overflow-y: auto; font-size: 0.75rem; }
-        .linha-hist { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #21262d; }
+        /* ADMIN PANEL */
+        #painel-admin { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 10001; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .admin-user-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 4px solid var(--primary); }
+        .detalhes-hist { display: none; background: #0d1117; margin-top: 10px; padding: 10px; border-radius: 6px; border: 1px solid var(--border); max-height: 200px; overflow-y: auto; font-size: 0.75rem; }
 
-        /* GERAL */
-        .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 20px; border: 1px solid #39ff14; }
-        .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
+        /* COMPONENTES */
+        .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 15px; border: 1px solid var(--primary); }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border); }
         .btn-green { background: linear-gradient(180deg, #2ea44f 0%, #238636 100%); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; }
         .btn-mini { padding: 8px 12px; font-size: 0.75rem; border-radius: 6px; border: none; font-weight: bold; color: white; cursor: pointer; margin: 2px; }
-        .nav-link.admin { color: #39ff14; border: 1px solid #39ff14; padding: 5px 8px; border-radius: 4px; font-size: 0.7rem; }
-
+        
         /* CALENDÁRIO */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-        .dia { background: #21262d; padding: 12px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; color: #8b949e; cursor: pointer;}
+        .dia { background: #21262d; padding: 12px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid var(--border); color: #8b949e; cursor: pointer;}
         .dia-concluido { background: #059669 !important; color: white !important; }
-        .hoje { border: 2px solid #58a6ff !important; color: white; }
+        .hoje { border: 2px solid var(--secondary) !important; color: white; }
 
         /* CALCULADORA */
         #modal-calc { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; }
-        .calc-body { background: #161b22; border: 2px solid #58a6ff; padding: 20px; border-radius: 15px; width: 280px; }
-        .calc-display { width: 100%; height: 50px; background: #0d1117; border: 1px solid #30363d; color: #39ff14; text-align: right; font-size: 1.5rem; padding: 10px; box-sizing: border-box; border-radius: 6px; margin-bottom: 15px; }
+        .calc-body { background: var(--card-bg); border: 2px solid var(--secondary); padding: 20px; border-radius: 15px; width: 280px; }
+        .calc-display { width: 100%; height: 50px; background: var(--bg); border: 1px solid var(--border); color: var(--primary); text-align: right; font-size: 1.5rem; padding: 10px; box-sizing: border-box; border-radius: 6px; margin-bottom: 15px; }
         .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .btn-c { background: #21262d; border: 1px solid #30363d; color: white; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-c { background: #21262d; border: 1px solid var(--border); color: white; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        .item { background: #1c2128; border-left: 5px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #30363d; }
-        select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
+        .item-ativa { background: #1c2128; border-left: 5px solid var(--secondary); padding: 15px; margin-bottom: 12px; border-radius: 6px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: white; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
     <div id="painel-admin">
         <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:20px;">
-            <h2 style="color: #39ff14; margin:0">CENTRAL MASTER</h2>
+            <h2 style="color: var(--primary); margin:0">CENTRAL MASTER</h2>
             <button class="btn-mini" style="background:#30363d" onclick="fecharAdmin()">VOLTAR</button>
         </div>
         
-        <div class="card" style="background: #161b22; border-color: #f1e05a;">
-            <h4 style="margin:0 0 10px 0; color:#f1e05a">🏆 RANKING PRIVADO (PROD. TOTAL)</h4>
-            <div id="ranking-privado"></div>
+        <div class="card" style="border-color: #f1e05a;">
+            <h4 style="margin:0 0 10px 0; color:#f1e05a">🏆 RANKING (TOTAL ACUMULADO)</h4>
+            <div id="ranking-master"></div>
         </div>
 
         <div id="lista-usuarios-admin"></div>
@@ -64,92 +63,90 @@
 
     <div id="tela-acesso">
         <div id="box-login" class="acesso-card">
-            <h3 style="color: white;">ACESSO RESTRITO</h3>
+            <h2 style="color: white; margin-bottom: 20px;">ACESSO RESTRITO</h2>
             <div class="input-group"><input type="text" id="user-login" placeholder="USUÁRIO"></div>
             <div class="input-group"><input type="password" id="pass-login" placeholder="SENHA"></div>
-            <button class="btn-green" onclick="fazerLogin()">ENTRAR NO SISTEMA</button>
-            <p style="font-size: 0.8rem; color: #8b949e;">Novo aqui? <a href="#" onclick="trocarTela('box-reg')" style="color:#58a6ff">Criar Conta</a></p>
+            <button class="btn-green" onclick="fazerLogin()">ENTRAR</button>
+            <p style="font-size: 0.8rem; color: #8b949e; margin-top: 15px;">Novo? <a href="#" onclick="trocarTela('box-reg')" style="color:var(--secondary)">Criar Conta</a></p>
         </div>
         <div id="box-reg" class="acesso-card" style="display:none">
-            <h3 style="color: white;">Novo Operador</h3>
+            <h2 style="color: white;">CADASTRAR</h2>
             <div class="input-group"><input type="text" id="reg-nome" placeholder="NOME COMPLETO"></div>
-            <div class="input-group"><input type="text" id="reg-user" placeholder="USUÁRIO LOGIN"></div>
+            <div class="input-group"><input type="text" id="reg-user" placeholder="USUÁRIO"></div>
             <div class="input-group"><input type="password" id="reg-pass" placeholder="SENHA"></div>
-            <button class="btn-green" onclick="registrarUsuario()">CADASTRAR</button>
-            <p onclick="trocarTela('box-login')" style="cursor:pointer; font-size:0.8rem; color:#8b949e; margin-top:10px">Voltar</p>
+            <button class="btn-green" onclick="registrarUsuario()">CADASTRAR AGORA</button>
+            <p onclick="trocarTela('box-login')" style="cursor:pointer; font-size:0.8rem; color:#8b949e; margin-top:10px">Voltar para Login</p>
         </div>
     </div>
 
     <div class="header-tools">
-        <button class="btn-mini" style="background:#21262d; border:1px solid #58a6ff; color:#58a6ff" onclick="abrirCalc()">🧮 CALC</button>
-        <div id="nome-logado" style="color: #58a6ff; font-weight: bold; font-size: 0.8rem;"></div>
+        <button class="btn-mini" style="background:#21262d; border:1px solid var(--secondary); color:var(--secondary)" onclick="abrirCalc()">🧮 CALCULADORA</button>
+        <div id="nome-logado" style="color: var(--secondary); font-weight: bold; font-size: 0.9rem;"></div>
     </div>
 
     <div class="nav-bar">
-        <span id="btn-admin" class="nav-link admin" style="display:none" onclick="abrirAdmin()">⚙️ ADMIN</span>
-        <span class="nav-link" onclick="confirmarSair()">SAIR</span>
-        <span class="nav-link" style="color:#f85149" onclick="confirmarExcluirMinhaConta()">DELETAR CONTA</span>
+        <span id="btn-admin" class="btn-mini" style="display:none; background:none; border: 1px solid var(--primary); color: var(--primary);" onclick="abrirAdmin()">PAINEL MASTER</span>
+        <span class="btn-mini" style="background:#30363d" onclick="confirmarSair()">SAIR</span>
     </div>
 
-    <div id="modal-calc">
-        <div class="calc-body">
-            <input type="text" class="calc-display" id="display" readonly value="0">
-            <div class="calc-grid" id="teclado"></div>
-            <button class="btn-green" style="margin-top:15px; background:#30363d" onclick="fecharCalc()">FECHAR</button>
-        </div>
-    </div>
-
-    <div class="total-box">PRODUÇÃO HOJE: <span id="somaDia">0</span></div>
+    <div class="total-box">PRODUÇÃO HOJE: <span id="somaDia">0</span> un.</div>
 
     <div class="card">
         <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:10px">
             <button class="btn-mini" onclick="mudarMes(-1)" style="background:#30363d"><</button>
-            <span id="mesAno" style="font-weight:bold; color:#58a6ff"></span>
+            <span id="mesAno" style="font-weight:bold; color:var(--secondary)"></span>
             <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d">></button>
         </div>
         <div class="cal-grid" id="calendario"></div>
     </div>
 
     <div class="card">
-        <h3 style="margin-top:0">Lançar Carga</h3>
+        <h3 style="margin-top:0">Lançar Nova Carga</h3>
         <select id="modelo">
             <option value="MALTA">MALTA</option><option value="RAVEL">RAVEL</option><option value="ARMANI">ARMANI</option><option value="IMOLA">IMOLA</option><option value="MEGA">MEGA</option>
         </select>
-        <input type="number" id="quantidade" placeholder="Quantidade">
-        <button class="btn-green" onclick="adicionarCarga()">INICIAR AGORA</button>
+        <input type="number" id="quantidade" placeholder="Quantidade de peças">
+        <button class="btn-green" onclick="adicionarCarga()">INICIAR PRODUÇÃO</button>
     </div>
 
     <div id="listaProducao"></div>
 
     <div class="card">
         <h3>Histórico da Sessão</h3>
-        <div id="listaHistorico" style="max-height: 150px; overflow-y: auto; font-size: 0.8rem;"></div>
-        <button class="btn-green" style="margin-top:15px; border: 2px solid #39ff14;" onclick="finalizarRelatorio()">✅ SALVAR E SINCRONIZAR</button>
+        <div id="listaHistorico" style="font-size: 0.85rem; max-height: 150px; overflow-y: auto;"></div>
+        <button class="btn-green" style="margin-top:15px; border: 2px solid var(--primary);" onclick="finalizarRelatorio()">✅ SALVAR TUDO NO CALENDÁRIO</button>
+    </div>
+
+    <div id="modal-calc">
+        <div class="calc-body">
+            <input type="text" class="calc-display" id="display" readonly value="0">
+            <div class="calc-grid" id="teclado-calc"></div>
+            <button class="btn-green" style="margin-top:15px; background:#30363d" onclick="fecharCalc()">FECHAR</button>
+        </div>
     </div>
 
     <script>
-        const V_KEY = 'v9_4_raiz';
+        const V_KEY = 'v9_5_final';
         let usuarios = JSON.parse(localStorage.getItem(`bt_u_${V_KEY}`)) || [];
         let logado = JSON.parse(localStorage.getItem(`bt_l_${V_KEY}`)) || null;
         let historicoSessao = [], cargasAtivas = [], memoriaCal = {}, agendaMetas = {};
         let dataAtual = new Date();
 
-        // Admin
         if (!usuarios.find(u => u.user === 'BorelAdmin')) {
             usuarios.push({ nome: 'Jean Master', user: 'BorelAdmin', pass: 'BorelAdmin' });
             localStorage.setItem(`bt_u_${V_KEY}`, JSON.stringify(usuarios));
         }
 
-        // --- ADMIN MASTER ---
+        // --- ADMIN ---
         function abrirAdmin() {
             document.getElementById('painel-admin').style.display = 'block';
-            renderRanking();
-            renderListaUsuarios();
+            renderRankingMaster();
+            renderAdminLista();
         }
         function fecharAdmin() { document.getElementById('painel-admin').style.display = 'none'; }
 
-        function renderRanking() {
-            const container = document.getElementById('ranking-privado');
+        function renderRankingMaster() {
+            const container = document.getElementById('ranking-master');
             let dados = [];
             usuarios.forEach(u => {
                 if(u.user === 'BorelAdmin') return;
@@ -158,37 +155,46 @@
                 dados.push({ nome: u.nome, total: total });
             });
             dados.sort((a, b) => b.total - a.total);
-            container.innerHTML = dados.map((d, i) => `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #21262d"><span>${i+1}º ${d.nome}</span><b style="color:#39ff14">${d.total} un.</b></div>`).join('');
+            container.innerHTML = dados.map((d, i) => `
+                <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #21262d">
+                    <span>${i+1}º <b>${d.nome}</b></span>
+                    <span style="color:var(--primary)">${d.total} peças</span>
+                </div>
+            `).join('') || "Nenhum dado disponível.";
         }
 
-        function renderListaUsuarios() {
+        function renderAdminLista() {
             const lista = document.getElementById('lista-usuarios-admin');
             lista.innerHTML = "";
             usuarios.forEach(u => {
                 if(u.user === 'BorelAdmin') return;
-                const uHis = JSON.parse(localStorage.getItem(`bt_hs_full_${u.user}`)) || [];
+                const uFullHist = JSON.parse(localStorage.getItem(`bt_hs_full_${u.user}`)) || [];
                 const uCal = JSON.parse(localStorage.getItem(`bt_c_${u.user}`)) || {};
                 const totalGeral = Object.values(uCal).reduce((a, b) => a + b, 0);
 
                 const div = document.createElement('div');
-                div.className = 'admin-card';
+                div.className = 'admin-user-card';
                 div.innerHTML = `
                     <div style="display:flex; justify-content:space-between">
-                        <b>${u.nome} (@${u.user})</b>
-                        <b style="color:#39ff14">${totalGeral} total</b>
+                        <strong>${u.nome} (@${u.user})</strong>
+                        <span style="color:var(--primary)">${totalGeral} un.</span>
                     </div>
-                    <small style="color:#8b949e">Senha: ${u.pass}</small><br>
-                    <button class="btn-mini" style="background:#1f6feb" onclick="document.getElementById('det-${u.user}').style.display='block'">DETALHES</button>
-                    <button class="btn-mini" style="background:#da3633" onclick="adminExcluir('${u.user}')">EXCLUIR</button>
-                    <div id="det-${u.user}" class="detalhes-usuario" onclick="this.style.display='none'">
-                        <strong>LOG DE CARGAS:</strong>
-                        ${uHis.slice().reverse().map(h => `<div class="linha-hist"><span>${h.data} ${h.mod}</span><span>${h.qtd}un (${h.ini}-${h.fim})</span></div>`).join('') || 'Vazio'}
+                    <div style="font-size:0.8rem; margin:5px 0">Senha: <code style="color:var(--secondary)">${u.pass}</code></div>
+                    <button class="btn-mini" style="background:#1f6feb" onclick="toggleDet('${u.user}')">VER HISTÓRICO</button>
+                    <button class="btn-mini" style="background:#da3633" onclick="adminExcluir('${u.user}')">DELETAR</button>
+                    <div id="det-${u.user}" class="detalhes-hist">
+                        <b>LOG COMPLETO:</b><br>
+                        ${uFullHist.slice().reverse().map(h => `
+                            <div style="border-bottom:1px solid #21262d; padding:4px 0">
+                                ${h.data} | ${h.mod} | ${h.qtd}un | ${h.ini} às ${h.fim}
+                            </div>
+                        `).join('') || 'Sem histórico.'}
                     </div>`;
                 lista.appendChild(div);
             });
         }
-
-        function adminExcluir(u) { if(confirm(`Remover @${u}?`)){ usuarios = usuarios.filter(x => x.user !== u); localStorage.setItem(`bt_u_${V_KEY}`, JSON.stringify(usuarios)); abrirAdmin(); }}
+        function toggleDet(id) { const el = document.getElementById(`det-${id}`); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
+        function adminExcluir(u) { if(confirm(`Excluir @${u}?`)) { usuarios = usuarios.filter(x => x.user !== u); localStorage.setItem(`bt_u_${V_KEY}`, JSON.stringify(usuarios)); abrirAdmin(); }}
 
         // --- OPERADOR ---
         function carregarDados() {
@@ -198,7 +204,7 @@
             cargasAtivas = JSON.parse(localStorage.getItem(`bt_at_${u}`)) || [];
             memoriaCal = JSON.parse(localStorage.getItem(`bt_c_${u}`)) || {};
             agendaMetas = JSON.parse(localStorage.getItem(`bt_m_${u}`)) || {};
-            if(u === 'BorelAdmin') document.getElementById('btn-admin').style.display = 'block';
+            if(u === 'BorelAdmin') document.getElementById('btn-admin').style.display = 'inline-block';
             render();
         }
 
@@ -227,25 +233,32 @@
         function finalizarRelatorio() {
             const u = logado.user;
             const key = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
-            let soma = 0;
+            let somaRelatorio = 0;
             let masterHist = JSON.parse(localStorage.getItem(`bt_hs_full_${u}`)) || [];
-            historicoSessao.forEach(i => { soma += i.qtd; masterHist.push(i); });
-            memoriaCal[key] = (memoriaCal[key] || 0) + soma;
+            
+            historicoSessao.forEach(i => {
+                somaRelatorio += i.qtd;
+                masterHist.push(i);
+            });
+            
+            memoriaCal[key] = (memoriaCal[key] || 0) + somaRelatorio;
             localStorage.setItem(`bt_hs_full_${u}`, JSON.stringify(masterHist));
-            historicoSessao = []; salvarDados(); render();
-            alert("Sincronizado!");
+            historicoSessao = [];
+            salvarDados(); render();
+            alert("Produção sincronizada com o calendário!");
         }
 
         function render() {
             salvarDados();
             const l = document.getElementById('listaProducao'); l.innerHTML = "";
             cargasAtivas.forEach(c => {
-                const div = document.createElement('div'); div.className = 'item';
-                div.innerHTML = `<b>${c.mod}</b>: ${c.qtd} un <button class="btn-mini" style="background:#238636; float:right" onclick="concluir(${c.id})">OK</button>`;
+                const div = document.createElement('div');
+                div.className = 'item-ativa';
+                div.innerHTML = `<span><b>${c.mod}</b> (${c.qtd} un)</span> <button class="btn-mini" style="background:#238636" onclick="concluir(${c.id})">CONCLUIR</button>`;
                 l.appendChild(div);
             });
             const h = document.getElementById('listaHistorico'); h.innerHTML = "";
-            historicoSessao.forEach(i => h.innerHTML += `<div>✅ ${i.mod}: ${i.qtd}un (${i.ini}-${i.fim})</div>`);
+            historicoSessao.forEach(i => h.innerHTML += `<div>✅ ${i.mod}: ${i.qtd}un (${i.ini} - ${i.fim})</div>`);
             const key = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
             document.getElementById('somaDia').innerText = memoriaCal[key] || "0";
             renderCal();
@@ -271,10 +284,6 @@
         function mudarMes(d) { dataAtual.setMonth(dataAtual.getMonth() + d); renderCal(); }
         function agora() { return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
 
-        // CALCULADORA
-        function abrirCalc() { document.getElementById('modal-calc').style.display='flex'; }
-        function fecharCalc() { document.getElementById('modal-calc').style.display='none'; }
-
         // ACESSO
         function fazerLogin() {
             const u = document.getElementById('user-login').value, p = document.getElementById('pass-login').value;
@@ -286,19 +295,22 @@
             if(!n || !u || !p) return alert("Preencha tudo!");
             usuarios.push({nome: n, user: u, pass: p});
             localStorage.setItem(`bt_u_${V_KEY}`, JSON.stringify(usuarios));
-            alert("Criado!"); trocarTela('box-login');
+            alert("Conta Criada!"); trocarTela('box-login');
         }
         function trocarTela(id) { document.getElementById('box-login').style.display='none'; document.getElementById('box-reg').style.display='none'; document.getElementById(id).style.display='block'; }
-        function confirmarSair() { if(confirm("Sair?")) { localStorage.removeItem(`bt_l_${V_KEY}`); location.reload(); } }
-        function confirmarExcluirMinhaConta() { if(confirm("DELETAR TUDO?")){ adminExcluir(logado.user); localStorage.removeItem(`bt_l_${V_KEY}`); location.reload(); }}
+        function confirmarSair() { if(confirm("Sair do sistema?")) { localStorage.removeItem(`bt_l_${V_KEY}`); location.reload(); } }
+
+        // CALCULADORA
+        function abrirCalc() { document.getElementById('modal-calc').style.display='flex'; }
+        function fecharCalc() { document.getElementById('modal-calc').style.display='none'; }
 
         window.onload = () => {
             if(logado) {
                 document.getElementById('tela-acesso').style.display='none';
-                document.getElementById('nome-logado').innerText = logado.nome;
+                document.getElementById('nome-logado').innerText = `OPERADOR: ${logado.nome}`;
                 carregarDados();
             }
-            const t = document.getElementById('teclado');
+            const t = document.getElementById('teclado-calc');
             ['7','8','9','/','4','5','6','*','1','2','3','-','0','.','C','+'].forEach(k => {
                 const b = document.createElement('button'); b.className='btn-c'; b.innerText=k;
                 b.onclick = () => {
