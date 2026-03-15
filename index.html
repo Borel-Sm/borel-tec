@@ -111,12 +111,12 @@
     </div>
 
     <script>
-        let usuarios = JSON.parse(localStorage.getItem('bt_u_v5')) || [];
-        let logado = JSON.parse(localStorage.getItem('bt_l_v5')) || null;
-        let historicoSessao = JSON.parse(localStorage.getItem('bt_hs_v5')) || []; 
-        let cargasAtivas = JSON.parse(localStorage.getItem('bt_at_v5')) || [];
-        let memoriaCal = JSON.parse(localStorage.getItem('bt_c_v5')) || {};
-        let agendaMetas = JSON.parse(localStorage.getItem('bt_m_v5')) || {};
+        let usuarios = JSON.parse(localStorage.getItem('bt_u_v6')) || [];
+        let logado = JSON.parse(localStorage.getItem('bt_l_v6')) || null;
+        let historicoSessao = JSON.parse(localStorage.getItem('bt_hs_v6')) || []; 
+        let cargasAtivas = JSON.parse(localStorage.getItem('bt_at_v6')) || [];
+        let memoriaCal = JSON.parse(localStorage.getItem('bt_c_v6')) || {};
+        let agendaMetas = JSON.parse(localStorage.getItem('bt_m_v6')) || {};
         let dataAtual = new Date();
 
         function abrirCalc() { document.getElementById('modal-calc').style.display = 'flex'; }
@@ -133,16 +133,16 @@
             const n = document.getElementById('reg-nome').value, u = document.getElementById('reg-user').value, p1 = document.getElementById('reg-pass').value, p2 = document.getElementById('reg-pass2').value;
             if(!n || !u || !p1 || p1 !== p2) return alert("Verifique os dados!");
             usuarios.push({nome: n, user: u, pass: p1});
-            localStorage.setItem('bt_u_v5', JSON.stringify(usuarios));
+            localStorage.setItem('bt_u_v6', JSON.stringify(usuarios));
             alert("Sucesso!"); trocarTela('box-login');
         }
 
         function fazerLogin() {
             const u = document.getElementById('user-login').value, p = document.getElementById('pass-login').value;
             const conta = usuarios.find(x => x.user === u && x.pass === p);
-            if(conta) { logado = conta; localStorage.setItem('bt_l_v5', JSON.stringify(logado)); location.reload(); } else alert("Erro!");
+            if(conta) { logado = conta; localStorage.setItem('bt_l_v6', JSON.stringify(logado)); location.reload(); } else alert("Erro!");
         }
-        function fazerLogout() { localStorage.removeItem('bt_l_v5'); location.reload(); }
+        function fazerLogout() { localStorage.removeItem('bt_l_v6'); location.reload(); }
 
         function adicionarCarga() {
             const q = parseInt(document.getElementById('quantidade').value);
@@ -167,7 +167,6 @@
             cargasAtivas = cargasAtivas.filter(x => x.id !== id); render();
         }
 
-        // --- FUNÇÕES DE PAUSA E EXCLUSÃO CONSERTADAS ---
         function alternarPausa(id) {
             const index = cargasAtivas.findIndex(x => x.id === id);
             if (index !== -1) {
@@ -201,10 +200,10 @@
         function zerarCalendario() { if(confirm("Zerar tudo?")) { memoriaCal = {}; agendaMetas = {}; renderCal(); render(); } }
 
         function render() {
-            localStorage.setItem('bt_at_v5', JSON.stringify(cargasAtivas));
-            localStorage.setItem('bt_c_v5', JSON.stringify(memoriaCal));
-            localStorage.setItem('bt_m_v5', JSON.stringify(agendaMetas));
-            localStorage.setItem('bt_hs_v5', JSON.stringify(historicoSessao));
+            localStorage.setItem('bt_at_v6', JSON.stringify(cargasAtivas));
+            localStorage.setItem('bt_c_v6', JSON.stringify(memoriaCal));
+            localStorage.setItem('bt_m_v6', JSON.stringify(agendaMetas));
+            localStorage.setItem('bt_hs_v6', JSON.stringify(historicoSessao));
             const lista = document.getElementById('listaProducao'); lista.innerHTML = "";
             cargasAtivas.forEach(c => {
                 const div = document.createElement('div');
@@ -224,6 +223,22 @@
         }
 
         function mudarMes(d) { dataAtual.setMonth(dataAtual.getMonth() + d); renderCal(); }
+        
+        // --- FUNÇÃO DE HISTÓRICO NO CLIQUE DO DIA ---
+        function interagirComDia(dia, mes, ano) {
+            const k = `${ano}-${mes}-${dia}`;
+            const metaAtual = agendaMetas[k] || 0;
+            const prodAtual = memoriaCal[k] || 0;
+            
+            // Mostra o que já foi salvo e pergunta a nova meta
+            const m = prompt(`HISTÓRICO DO DIA ${dia}/${mes+1}/${ano}:\n📊 PRODUÇÃO TOTAL: ${prodAtual} un.\n🎯 META ATUAL: ${metaAtual}\n\nDIGITE A NOVA META PARA ESTE DIA:`, metaAtual);
+            
+            if(m !== null) { 
+                agendaMetas[k] = parseInt(m) || 0; 
+                render(); 
+            }
+        }
+
         function renderCal() {
             const cal = document.getElementById('calendario'); cal.innerHTML = "";
             const mes = dataAtual.getMonth(), ano = dataAtual.getFullYear();
@@ -238,7 +253,7 @@
                 const div = document.createElement('div');
                 div.className = `dia ${classeExtra} ${i===new Date().getDate() && mes===new Date().getMonth()?'hoje':''}`;
                 div.innerText = i;
-                div.onclick = () => { const m = prompt(`Meta dia ${i}:`, meta); if(m !== null) { agendaMetas[k] = parseInt(m); render(); } };
+                div.onclick = () => interagirComDia(i, mes, ano);
                 cal.appendChild(div);
             }
         }
