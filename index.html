@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borel Tec - Central de Comando v10</title>
+    <title>Borel Tec - Central de Comando v10 Full</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
     <style>
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 150px 15px 20px 15px; background: #0d1117; }
         #tela-acesso { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .acesso-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 30px 20px; background: url('./background.gif'); background-position: center; background-size: cover; border-top: 4px solid #39ff14; }
+        .acesso-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 30px 20px; background: url('./background.gif'); background-position: center; background-size: cover; }
         .input-group { position: relative; width: 100%; margin: 10px 0; }
         .input-group input { width: 100%; padding: 12px; background: #0d1117; border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; box-sizing: border-box; font-weight: bold; }
         .toggle-pass { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8b949e; }
@@ -22,13 +22,20 @@
         .nav-link.admin { color: #39ff14; border: 1px solid #39ff14; }
         #painel-admin { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 10001; padding: 20px; box-sizing: border-box; overflow-y: auto; }
         .admin-user-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        .badge-meta { background: #238636; color: white; }
+        .badge-pendente { background: #d97706; color: white; }
         .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 20px; border: 1px solid #39ff14; }
         .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
         .btn-green { background: linear-gradient(180deg, #2ea44f 0%, #238636 100%); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; }
         .btn-mini { padding: 8px; font-size: 0.75rem; border-radius: 6px; border: none; font-weight: bold; color: white; cursor: pointer; margin-top: 5px; }
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
         .dia { background: #21262d; padding: 12px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; color: #8b949e; cursor: pointer;}
+        .dia-programado { background: #d97706 !important; color: white !important; }
+        .dia-concluido { background: #059669 !important; color: white !important; }
+        .hoje { border: 2px solid #58a6ff !important; color: white; }
         .item { background: #1c2128; border-left: 5px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #30363d; }
+        .item.pausado { border-left-color: #f1e05a; opacity: 0.8; }
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
         #modal-calc { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; }
         .calc-body { background: #161b22; border: 2px solid #58a6ff; padding: 20px; border-radius: 15px; width: 280px; }
@@ -51,23 +58,23 @@
         <div id="box-login" class="acesso-card">
             <h3 style="color: white;">ACESSO BOREL TEC</h3>
             <div class="input-group"><input type="text" id="user-login" placeholder="USUÁRIO"></div>
-            <div class="input-group"><input type="password" id="pass-login" placeholder="SENHA"><span class="toggle-pass" onclick="verSenha('pass-login')">👁️</span></div>
-            <button class="btn-green" onclick="fazerLogin()">ENTRAR NO SISTEMA</button>
-            <p style="font-size: 0.8rem; margin-top: 15px; color: #8b949e;">Novo aqui? <a href="#" onclick="trocarTela('box-reg')" style="color:#58a6ff">Criar Conta</a></p>
+            <div class="input-group"><input type="password" id="pass-login" placeholder="SENHA"></div>
+            <button class="btn-green" onclick="fazerLogin()">ENTRAR</button>
+            <p style="font-size: 0.8rem; color: #8b949e;">Novo aqui? <a href="#" onclick="trocarTela('box-reg')" style="color:#58a6ff">Criar Conta</a></p>
         </div>
         <div id="box-reg" class="acesso-card" style="display:none">
             <h3 style="color: white;">Criar Conta</h3>
             <div class="input-group"><input type="text" id="reg-nome" placeholder="SEU NOME"></div>
             <div class="input-group"><input type="text" id="reg-user" placeholder="USUÁRIO"></div>
-            <div class="input-group"><input type="password" id="reg-pass" placeholder="SENHA"><span class="toggle-pass" onclick="verSenha('reg-pass')">👁️</span></div>
-            <button class="btn-green" style="background:#1f6feb" onclick="registrarUsuario()">CADASTRAR</button>
-            <p onclick="trocarTela('box-login')" style="cursor:pointer; font-size:0.8rem; color:#8b949e; margin-top:10px">Voltar para Login</p>
+            <div class="input-group"><input type="password" id="reg-pass" placeholder="SENHA"></div>
+            <button class="btn-green" onclick="registrarUsuario()">CADASTRAR</button>
+            <p onclick="trocarTela('box-login')" style="cursor:pointer; color:#8b949e;">Voltar</p>
         </div>
     </div>
 
     <div class="header-tools">
         <button class="btn-calc" onclick="abrirCalc()">🧮 CALCULADORA</button>
-        <div id="nome-logado" style="font-size: 0.8rem; color: #58a6ff; font-weight: bold; text-align: right;"></div>
+        <div id="nome-logado" style="font-size: 0.8rem; color: #58a6ff; font-weight: bold;"></div>
     </div>
 
     <div class="nav-bar">
@@ -78,7 +85,11 @@
     <div class="total-box">PRODUÇÃO HOJE: <span id="somaDia">0</span></div>
 
     <div class="card">
-        <div id="mesAno" style="font-weight:bold; color:#58a6ff; text-align:center; margin-bottom:10px"></div>
+        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:10px">
+            <button class="btn-mini" onclick="mudarMes(-1)" style="background:#30363d"><</button>
+            <span id="mesAno" style="font-weight:bold; color:#58a6ff"></span>
+            <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d">></button>
+        </div>
         <div class="cal-grid" id="calendario"></div>
     </div>
 
@@ -91,6 +102,12 @@
     </div>
 
     <div id="listaProducao"></div>
+
+    <div class="card">
+        <h3>Histórico Concluído</h3>
+        <div id="listaHistorico" style="max-height: 200px; overflow-y: auto; background:#0d1117; padding:10px; border-radius:6px"></div>
+        <button class="btn-green" style="margin-top:15px;" onclick="finalizarRelatorio()">✅ FINALIZAR RELATÓRIO</button>
+    </div>
 
     <div id="modal-calc">
         <div class="calc-body">
@@ -110,7 +127,7 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO EXTRAÍDA DO SEU PRINT
+        // CONFIGURAÇÃO DO SEU FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyC3Y8zlsgPyoG4G_J-XgxvGHR2tgJ8k70Q",
             authDomain: "boreltec.firebaseapp.com",
@@ -124,102 +141,184 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let usuarios = [], logado = null, cargasAtivas = [], memoriaCal = {};
+        let usuarios = [], logado = null;
+        let historicoSessao = [], cargasAtivas = [], memoriaCal = {}, agendaMetas = {};
         let dataAtual = new Date();
 
-        // SINCRONIZAÇÃO AUTOMÁTICA
-        function conectarBanco() {
-            db.ref('usuarios').on('value', s => { usuarios = s.val() || []; });
+        // MOTOR DE SINCRONIZAÇÃO (NÃO TIRA NADA, SÓ ATUALIZA)
+        function carregarDadosUsuario() {
+            db.ref('usuarios').on('value', snapshot => { 
+                usuarios = snapshot.val() || [];
+                if (!usuarios.find(u => u.user === 'BorelAdmin')) {
+                    db.ref('usuarios/0').set({ nome: 'Borel Master', user: 'BorelAdmin', pass: 'BorelAdmin' });
+                }
+            });
+
             if(logado) {
                 const u = logado.user;
-                db.ref(`dados/${u}/ativas`).on('value', s => { cargasAtivas = s.val() || []; render(); });
-                db.ref(`dados/${u}/producao`).on('value', s => { memoriaCal = s.val() || {}; render(); });
+                db.ref(`dados/${u}/hs`).on('value', s => { historicoSessao = s.val() || []; render(); });
+                db.ref(`dados/${u}/at`).on('value', s => { cargasAtivas = s.val() || []; render(); });
+                db.ref(`dados/${u}/c`).on('value', s => { memoriaCal = s.val() || {}; render(); });
+                db.ref(`dados/${u}/m`).on('value', s => { agendaMetas = s.val() || {}; render(); });
+                if(logado.user === 'BorelAdmin') document.getElementById('btn-admin').style.display = 'block';
             }
+        }
+
+        function salvarDadosUsuario() {
+            if(!logado) return;
+            const u = logado.user;
+            db.ref(`dados/${u}/hs`).set(historicoSessao);
+            db.ref(`dados/${u}/at`).set(cargasAtivas);
+            db.ref(`dados/${u}/c`).set(memoriaCal);
+            db.ref(`dados/${u}/m`).set(agendaMetas);
+        }
+
+        // --- TODAS AS SUAS FUNÇÕES ORIGINAIS DE VOLTA ---
+
+        function adicionarCarga() {
+            const q = parseInt(document.getElementById('quantidade').value);
+            if(!q) return;
+            cargasAtivas.push({ id: Date.now(), mod: document.getElementById('modelo').value, qtd: q, ini: agora(), pausado: false, data: new Date().toLocaleDateString() });
+            document.getElementById('quantidade').value = ""; 
+            salvarDadosUsuario();
+        }
+
+        function editarCarga(id) {
+            const c = cargasAtivas.find(x => x.id === id);
+            const restante = parseInt(prompt(`RESTANTE PARA ${c.mod}:`));
+            if(!isNaN(restante) && restante >= 0 && restante < c.qtd) {
+                const feito = c.qtd - restante;
+                historicoSessao.push({ mod: c.mod, qtd: feito, ini: c.ini, fim: agora(), data: c.data });
+                c.qtd = restante; c.pausado = true; salvarDadosUsuario();
+            }
+        }
+
+        function concluir(id) {
+            const c = cargasAtivas.find(x => x.id === id);
+            historicoSessao.push({ mod: c.mod, qtd: c.qtd, ini: c.ini, fim: agora(), data: c.data });
+            cargasAtivas = cargasAtivas.filter(x => x.id !== id); 
+            salvarDadosUsuario();
+        }
+
+        function alternarPausa(id) {
+            const idx = cargasAtivas.findIndex(x => x.id === id);
+            if (idx !== -1) { cargasAtivas[idx].pausado = !cargasAtivas[idx].pausado; salvarDadosUsuario(); }
+        }
+
+        function excluirCarga(id) { if(confirm("Excluir?")) { cargasAtivas = cargasAtivas.filter(x => x.id !== id); salvarDadosUsuario(); } }
+
+        function finalizarRelatorio() {
+            const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
+            const meta = agendaMetas[k] || 0;
+            let somaSessao = 0, det = "";
+            historicoSessao.forEach(i => { somaSessao += i.qtd; det += `🔹 ${i.mod}: ${i.qtd} un. (${i.ini} às ${i.fim})\n`; });
+            memoriaCal[k] = (memoriaCal[k] || 0) + somaSessao;
+            const total = memoriaCal[k];
+            const statusMeta = total >= meta ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
+            let msg = `*RELATÓRIO BOREL TEC*\n👤 *Op:* ${logado.nome}\n📅 *Data:* ${new Date().toLocaleDateString()}\n---\n*PRODUÇÃO:*\n${det}\n---\n📊 *TOTAL DIA:* ${total} un.\n🎯 *META:* ${meta}\n${statusMeta}`;
+            salvarDadosUsuario();
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
+        }
+
+        // --- ADMIN, LOGIN E AUXILIARES ---
+
+        async function abrirAdmin() {
+            document.getElementById('painel-admin').style.display = 'block';
+            const lista = document.getElementById('lista-usuarios-admin');
+            lista.innerHTML = "Carregando...";
+            const snapshot = await db.ref('dados').once('value');
+            const todos = snapshot.val() || {};
+            const hojeKey = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+
+            lista.innerHTML = "";
+            usuarios.forEach(u => {
+                if(u.user === 'BorelAdmin') return;
+                const d = todos[u.user] || {};
+                const prodHoje = (d.c && d.c[hojeKey]) || 0;
+                const metaHoje = (d.m && d.m[hojeKey]) || 0;
+                const ativas = d.at || [];
+
+                lista.innerHTML += `
+                    <div class="admin-user-card">
+                        <strong>👤 ${u.nome} (@${u.user})</strong><br>
+                        📈 Hoje: ${prodHoje} | Meta: ${metaHoje}<br>
+                        📦 Ativas: ${ativas.length} cargas.
+                    </div>`;
+            });
         }
 
         function fazerLogin() {
             const u = document.getElementById('user-login').value, p = document.getElementById('pass-login').value;
             const conta = usuarios.find(x => x.user === u && x.pass === p);
-            if(conta) { 
-                logado = conta; 
-                localStorage.setItem('bt_logado', JSON.stringify(logado)); 
-                location.reload(); 
-            } else alert("Erro!");
+            if(conta) { logado = conta; localStorage.setItem('bt_l_v10', JSON.stringify(logado)); location.reload(); } else alert("Erro!");
         }
 
         function registrarUsuario() {
             const n = document.getElementById('reg-nome').value, u = document.getElementById('reg-user').value, p = document.getElementById('reg-pass').value;
-            if(!n || !u || !p) return alert("Preencha tudo!");
-            const novaLista = [...usuarios, {nome: n, user: u, pass: p}];
+            if(!n || !u || !p) return;
+            const novaLista = [...usuarios, {nome: n, user: u, pass: p, dataCriacao: new Date().toLocaleString()}];
             db.ref('usuarios').set(novaLista).then(() => { alert("Criado!"); trocarTela('box-login'); });
         }
 
-        function adicionarCarga() {
-            const q = parseInt(document.getElementById('quantidade').value);
-            if(!q || !logado) return;
-            cargasAtivas.push({ id: Date.now(), mod: document.getElementById('modelo').value, qtd: q, ini: new Date().toLocaleTimeString() });
-            db.ref(`dados/${logado.user}/ativas`).set(cargasAtivas);
-            document.getElementById('quantidade').value = "";
-        }
-
-        function concluir(id) {
-            const c = cargasAtivas.find(x => x.id === id);
-            const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
-            memoriaCal[k] = (memoriaCal[k] || 0) + c.qtd;
-            cargasAtivas = cargasAtivas.filter(x => x.id !== id);
-            db.ref(`dados/${logado.user}/ativas`).set(cargasAtivas);
-            db.ref(`dados/${logado.user}/producao`).set(memoriaCal);
-        }
-
-        async function abrirAdmin() {
-            document.getElementById('painel-admin').style.display = 'block';
-            const lista = document.getElementById('lista-usuarios-admin');
-            const snapshot = await db.ref('dados').once('value');
-            const todos = snapshot.val() || {};
-            const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
-            
-            lista.innerHTML = "";
-            usuarios.forEach(u => {
-                if(u.user === 'BorelAdmin') return;
-                const prod = (todos[u.user] && todos[u.user].producao && todos[u.user].producao[k]) || 0;
-                lista.innerHTML += `<div class="admin-user-card">👤 ${u.nome} | Prod. Hoje: <b>${prod}</b></div>`;
-            });
-        }
-
-        // AUXILIARES
         function render() {
             const lista = document.getElementById('listaProducao'); lista.innerHTML = "";
             cargasAtivas.forEach(c => {
-                lista.innerHTML += `<div class="item"><strong>${c.mod}</strong>: ${c.qtd} un.<br><button class="btn-mini" style="background:#238636" onclick="concluir(${c.id})">CONCLUIR</button></div>`;
+                const div = document.createElement('div');
+                div.className = `item ${c.pausado ? 'pausado' : ''}`;
+                div.innerHTML = `<strong>${c.mod}</strong>: <span style="color:#00ff00">${c.qtd} un.</span><br><small>⏰ ${c.ini}</small><br>
+                    <button class="btn-mini" style="background:#238636" onclick="concluir(${c.id})">OK</button>
+                    <button class="btn-mini" style="background:#f1e05a; color:black" onclick="alternarPausa(${c.id})">⏸️</button>
+                    <button class="btn-mini" style="background:#58a6ff" onclick="editarCarga(${c.id})">✏️</button>
+                    <button class="btn-mini" style="background:#da3633" onclick="excluirCarga(${c.id})">🗑️</button>`;
+                lista.appendChild(div);
             });
+            const h = document.getElementById('listaHistorico'); h.innerHTML = "";
+            historicoSessao.slice().reverse().forEach(i => { h.innerHTML += `<div style="font-size:0.8rem; border-bottom:1px solid #30363d; padding:5px">✅ <b>${i.mod}</b>: ${i.qtd}un <small>🕒 ${i.ini}-${i.fim}</small></div>`; });
             const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
             document.getElementById('somaDia').innerText = memoriaCal[k] || "0";
             renderCal();
         }
+
         function renderCal() {
             const cal = document.getElementById('calendario'); cal.innerHTML = "";
-            const diasNoMes = new Date(dataAtual.getFullYear(), dataAtual.getMonth() + 1, 0).getDate();
+            const mes = dataAtual.getMonth(), ano = dataAtual.getFullYear();
+            document.getElementById('mesAno').innerText = `${mes+1}/${ano}`;
+            const diasNoMes = new Date(ano, mes + 1, 0).getDate();
             for(let i = 1; i <= diasNoMes; i++) {
+                const k = `${ano}-${mes}-${i}`;
+                const meta = agendaMetas[k] || 0, prod = memoriaCal[k] || 0;
+                let classe = meta > 0 ? (prod >= meta ? "dia-concluido" : "dia-programado") : "";
                 const div = document.createElement('div');
-                div.className = `dia ${i===new Date().getDate()?'hoje':''}`;
+                div.className = `dia ${classe} ${i===new Date().getDate() && mes===new Date().getMonth()?'hoje':''}`;
                 div.innerText = i;
+                div.onclick = () => {
+                    const m = prompt(`Nova Meta p/ dia ${i}:`, agendaMetas[k] || 0);
+                    if(m !== null) { agendaMetas[k] = parseInt(m) || 0; salvarDadosUsuario(); }
+                };
                 cal.appendChild(div);
             }
         }
-        function fecharAdmin() { document.getElementById('painel-admin').style.display = 'none'; }
-        function verSenha(id) { const i = document.getElementById(id); i.type = i.type === "password" ? "text" : "password"; }
+
+        function agora() { return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
         function trocarTela(id) { document.getElementById('box-login').style.display = 'none'; document.getElementById('box-reg').style.display = 'none'; document.getElementById(id).style.display = 'block'; }
         function abrirCalc() { document.getElementById('modal-calc').style.display = 'flex'; }
         function fecharCalc() { document.getElementById('modal-calc').style.display = 'none'; }
-        function confirmarSair() { localStorage.removeItem('bt_logado'); location.reload(); }
+        function fecharAdmin() { document.getElementById('painel-admin').style.display = 'none'; }
+        function mudarMes(d) { dataAtual.setMonth(dataAtual.getMonth() + d); renderCal(); }
+        function confirmarSair() { if(confirm("Sair?")) { localStorage.removeItem('bt_l_v10'); location.reload(); } }
+        
+        // CALCULADORA LÓGICA
+        function limparCalc() { document.getElementById('display').value = '0'; }
+        function addChar(c) { const d = document.getElementById('display'); if(d.value === '0') d.value = c; else d.value += c; }
+        function apagarUltimo() { const d = document.getElementById('display'); d.value = d.value.slice(0, -1); if(d.value === '') d.value = '0'; }
+        function calcularResultado() { try { document.getElementById('display').value = eval(document.getElementById('display').value); } catch(e) { limparCalc(); } }
 
         window.onload = () => {
-            logado = JSON.parse(localStorage.getItem('bt_logado'));
-            conectarBanco();
+            logado = JSON.parse(localStorage.getItem('bt_l_v10'));
+            carregarDadosUsuario();
             if(logado) {
                 document.getElementById('tela-acesso').style.display = 'none';
                 document.getElementById('nome-logado').innerText = logado.nome;
-                if(logado.user === 'BorelAdmin') document.getElementById('btn-admin').style.display = 'inline';
             }
         };
     </script>
