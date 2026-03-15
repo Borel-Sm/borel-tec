@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borel Tec - Central de Comando v9</title>
+    <title>Borel Tec - Central de Comando v9.1</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 150px 15px 20px 15px; background: #0d1117; }
         
@@ -23,7 +23,7 @@
         .nav-link.danger { color: #f85149; }
         .nav-link.admin { color: #39ff14; border: 1px solid #39ff14; }
 
-        /* PAINEL ADMIN E MODAIS */
+        /* PAINEL ADMIN */
         #painel-admin { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 10001; padding: 20px; box-sizing: border-box; overflow-y: auto; }
         .admin-user-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
         .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
@@ -67,7 +67,6 @@
             <button class="btn-mini" style="background: #238636;" onclick="exportarDados()">💾 BACKUP GERAL</button>
             <button class="btn-mini" style="background: #1f6feb;" onclick="location.reload()">🔄 ATUALIZAR STATUS</button>
         </div>
-
         <div id="lista-usuarios-admin"></div>
     </div>
 
@@ -126,6 +125,7 @@
             <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d">></button>
         </div>
         <div class="cal-grid" id="calendario"></div>
+        <button class="btn-mini" onclick="zerarCalendarioMes()" style="background:#da3633; width:100%; margin-top:15px; opacity: 0.8;">🗑️ ZERAR TUDO DESTE MÊS</button>
     </div>
 
     <div class="card">
@@ -153,7 +153,6 @@
         let historicoSessao = [], cargasAtivas = [], memoriaCal = {}, agendaMetas = {};
         let dataAtual = new Date();
 
-        // Admin Inicial
         if (!usuarios.find(u => u.user === 'BorelAdmin')) {
             usuarios.push({ nome: 'Borel Master', user: 'BorelAdmin', pass: 'BorelAdmin', dataCriacao: new Date().toLocaleString() });
             localStorage.setItem(`bt_u_${V_KEY}`, JSON.stringify(usuarios));
@@ -179,48 +178,44 @@
             localStorage.setItem(`bt_m_${u}`, JSON.stringify(agendaMetas));
         }
 
-        // ADMIN FUNÇÕES V9
+        function zerarCalendarioMes() {
+            if(confirm("Deseja apagar TODA a produção e metas deste mês visível? Isso não pode ser desfeito.")) {
+                const mes = dataAtual.getMonth();
+                const ano = dataAtual.getFullYear();
+                for (let k in memoriaCal) {
+                    if (k.startsWith(`${ano}-${mes}-`)) delete memoriaCal[k];
+                }
+                for (let k in agendaMetas) {
+                    if (k.startsWith(`${ano}-${mes}-`)) delete agendaMetas[k];
+                }
+                render();
+            }
+        }
+
         function abrirAdmin() {
             document.getElementById('painel-admin').style.display = 'block';
             const lista = document.getElementById('lista-usuarios-admin');
             lista.innerHTML = "";
             const hojeKey = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
-
             usuarios.forEach(u => {
                 if(u.user === 'BorelAdmin') return;
-                
-                // Puxar dados do usuário para o admin ver
                 const uAtivas = JSON.parse(localStorage.getItem(`bt_at_${u.user}`)) || [];
                 const uCal = JSON.parse(localStorage.getItem(`bt_c_${u.user}`)) || {};
                 const uMetas = JSON.parse(localStorage.getItem(`bt_m_${u.user}`)) || {};
-                
                 const prodHoje = uCal[hojeKey] || 0;
                 const metaHoje = uMetas[hojeKey] || 0;
                 const statusMeta = metaHoje > 0 ? (prodHoje >= metaHoje ? '<span class="badge badge-meta">META OK</span>' : '<span class="badge badge-pendente">PENDENTE</span>') : '---';
-
                 const div = document.createElement('div');
                 div.className = 'admin-user-card';
-                div.innerHTML = `
-                    <div style="display:flex; justify-content:space-between">
-                        <strong>👤 ${u.nome} (@${u.user})</strong>
-                        <span>Senha: <code style="color:#39ff14">${u.pass}</code></span>
-                    </div>
-                    <div style="margin: 10px 0; font-size: 0.8rem; color: #8b949e;">
-                        📅 Criado: ${u.dataCriacao || 'N/A'}<br>
-                        📈 Prod. Hoje: <b>${prodHoje}</b> | Meta: <b>${metaHoje}</b> ${statusMeta}
-                    </div>
-                    <div style="background:#0d1117; padding:8px; border-radius:5px; font-size: 0.75rem;">
-                        <b>📦 CARGAS ATIVAS AGORA:</b><br>
-                        ${uAtivas.length > 0 ? uAtivas.map(c => `• ${c.mod} (${c.qtd}un)`).join('<br>') : '<span style="color:#555">Nenhuma carga em produção</span>'}
-                    </div>
-                    <button class="btn-mini" style="background:#da3633; width:100%; margin-top:10px" onclick="adminExcluirUsuario('${u.user}')">DELETAR CONTA PERMANENTEMENTE</button>
-                `;
+                div.innerHTML = `<div style="display:flex; justify-content:space-between"><strong>👤 ${u.nome} (@${u.user})</strong><span>Senha: <code style="color:#39ff14">${u.pass}</code></span></div>
+                    <div style="margin: 10px 0; font-size: 0.8rem; color: #8b949e;">📅 Criado: ${u.dataCriacao || 'N/A'}<br>📈 Prod. Hoje: <b>${prodHoje}</b> | Meta: <b>${metaHoje}</b> ${statusMeta}</div>
+                    <div style="background:#0d1117; padding:8px; border-radius:5px; font-size: 0.75rem;"><b>📦 CARGAS ATIVAS AGORA:</b><br>${uAtivas.length > 0 ? uAtivas.map(c => `• ${c.mod} (${c.qtd}un)`).join('<br>') : '<span style="color:#555">Nenhuma carga em produção</span>'}</div>
+                    <button class="btn-mini" style="background:#da3633; width:100%; margin-top:10px" onclick="adminExcluirUsuario('${u.user}')">DELETAR CONTA PERMANENTEMENTE</button>`;
                 lista.appendChild(div);
             });
         }
 
         function fecharAdmin() { document.getElementById('painel-admin').style.display = 'none'; }
-        
         function adminExcluirUsuario(userAlvo) {
             if(confirm(`⚠️ ATENÇÃO: Deletar @${userAlvo} e todos os seus dados?`)) {
                 usuarios = usuarios.filter(x => x.user !== userAlvo);
@@ -241,10 +236,8 @@
             a.click();
         }
 
-        // ACESSO
         function verSenha(id) { const i = document.getElementById(id); i.type = i.type === "password" ? "text" : "password"; }
         function trocarTela(id) { document.getElementById('box-login').style.display = 'none'; document.getElementById('box-reg').style.display = 'none'; document.getElementById(id).style.display = 'block'; }
-        
         function registrarUsuario() {
             const n = document.getElementById('reg-nome').value, u = document.getElementById('reg-user').value, p = document.getElementById('reg-pass').value;
             if(!n || !u || !p) return alert("Preencha tudo!");
@@ -261,16 +254,8 @@
         }
 
         function confirmarSair() { if(confirm("Sair do sistema?")) { localStorage.removeItem(`bt_l_${V_KEY}`); location.reload(); } }
-        
-        function confirmarExcluir() {
-            if(confirm("DELETAR SUA CONTA E TODOS OS DADOS?")) {
-                adminExcluirUsuario(logado.user);
-                localStorage.removeItem(`bt_l_${V_KEY}`);
-                location.reload();
-            }
-        }
+        function confirmarExcluir() { if(confirm("DELETAR SUA CONTA E TODOS OS DADOS?")) { adminExcluirUsuario(logado.user); localStorage.removeItem(`bt_l_${V_KEY}`); location.reload(); } }
 
-        // PRODUÇÃO
         function abrirCalc() { document.getElementById('modal-calc').style.display = 'flex'; }
         function fecharCalc() { document.getElementById('modal-calc').style.display = 'none'; }
         function limparCalc() { document.getElementById('display').value = '0'; }
