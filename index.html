@@ -6,41 +6,26 @@
     <title>Borel Tec - Central de Comando v9.4</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 150px 15px 20px 15px; background: #0d1117; }
-        
-        /* ACESSO */
         #tela-acesso { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .acesso-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 30px 20px; background: rgba(22, 27, 34, 0.95); border-top: 4px solid #39ff14; }
         .input-group { position: relative; width: 100%; margin: 10px 0; }
         .input-group input { width: 100%; padding: 12px; background: #0d1117; border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; box-sizing: border-box; font-weight: bold; }
-        .toggle-pass { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8b949e; }
-        
-        /* HEADER E NAV */
         .header-tools { position: fixed; top: 0; left: 0; width: 100%; height: 70px; background: #161b22; border-bottom: 1px solid #30363d; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; box-sizing: border-box; }
-        .nav-bar { position: fixed; top: 70px; left: 0; width: 100%; height: 50px; background: #0d1117; border-bottom: 1px solid #30363d; z-index: 999; display: flex; align-items: center; justify-content: space-around; padding: 0 10px; box-sizing: border-box; overflow-x: auto; }
-        
-        .btn-calc { background: #21262d; border: 2px solid #58a6ff; color: #58a6ff; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .nav-link { color: #8b949e; text-decoration: none; font-size: 0.75rem; font-weight: bold; cursor: pointer; padding: 5px 8px; border-radius: 5px; white-space: nowrap; }
-        .nav-link.danger { color: #f85149; }
-        .nav-link.admin { color: #39ff14; border: 1px solid #39ff14; }
-
-        /* GERAL */
+        .nav-bar { position: fixed; top: 70px; left: 0; width: 100%; height: 50px; background: #0d1117; border-bottom: 1px solid #30363d; z-index: 999; display: flex; align-items: center; justify-content: space-around; padding: 0 10px; box-sizing: border-box; }
+        .nav-link { color: #8b949e; text-decoration: none; font-size: 0.75rem; font-weight: bold; cursor: pointer; padding: 5px 8px; border-radius: 5px; }
         .total-box { background: #238636; color: white; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 20px; border: 1px solid #39ff14; }
         .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
-        .btn-green { background: linear-gradient(180deg, #2ea44f 0%, #238636 100%); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; }
+        .btn-green { background: linear-gradient(180deg, #2ea44f 0%, #238636 100%); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; }
         .btn-mini { padding: 8px; font-size: 0.75rem; border-radius: 6px; border: none; font-weight: bold; color: white; cursor: pointer; margin-top: 5px; }
-        
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
         .dia { background: #21262d; padding: 12px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; color: #8b949e; cursor: pointer;}
-        .dia-programado { background: #d97706 !important; color: white !important; }
         .dia-concluido { background: #059669 !important; color: white !important; }
+        .dia-programado { background: #d97706 !important; color: white !important; }
         .hoje { border: 2px solid #58a6ff !important; color: white; }
-
         .item { background: #1c2128; border-left: 5px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #30363d; }
         .item.pausado { border-left-color: #f1e05a; opacity: 0.8; }
-
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
-
-        /* CALCULADORA */
+        #painel-admin { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 10001; padding: 20px; box-sizing: border-box; overflow-y: auto; }
         #modal-calc { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; }
         .calc-body { background: #161b22; border: 2px solid #58a6ff; padding: 20px; border-radius: 15px; width: 280px; }
         .calc-display { width: 100%; height: 50px; background: #0d1117; border: 1px solid #30363d; color: #39ff14; text-align: right; font-size: 1.5rem; padding: 10px; box-sizing: border-box; border-radius: 6px; margin-bottom: 15px; }
@@ -55,17 +40,54 @@
             <h3 style="color: white;">ACESSO RESTRITO</h3>
             <div class="input-group"><input type="text" id="user-login" placeholder="USUÁRIO"></div>
             <div class="input-group"><input type="password" id="pass-login" placeholder="SENHA"></div>
-            <button class="btn-green" onclick="fazerLogin()">ENTRAR NO SISTEMA</button>
+            <button class="btn-green" onclick="fazerLogin()">ENTRAR</button>
+            <p style="font-size: 0.8rem; margin-top: 15px; color: #8b949e;">Novo aqui? <a href="#" onclick="trocarTela('box-reg')" style="color:#58a6ff">Criar Conta</a></p>
+        </div>
+        <div id="box-reg" class="acesso-card" style="display:none">
+            <h3 style="color: white;">Criar Conta</h3>
+            <div class="input-group"><input type="text" id="reg-nome" placeholder="SEU NOME"></div>
+            <div class="input-group"><input type="text" id="reg-user" placeholder="USUÁRIO"></div>
+            <div class="input-group"><input type="password" id="reg-pass" placeholder="SENHA"></div>
+            <button class="btn-green" onclick="registrarUsuario()">CADASTRAR</button>
+            <p onclick="trocarTela('box-login')" style="cursor:pointer; font-size:0.8rem; color:#8b949e; margin-top:10px">Voltar</p>
         </div>
     </div>
 
     <div class="header-tools">
-        <button class="btn-calc" onclick="abrirCalc()">🧮 CALCULADORA</button>
-        <div id="nome-logado" style="font-size: 0.8rem; color: #58a6ff; font-weight: bold; text-align: right;"></div>
+        <button class="btn-mini" style="background:#21262d; border: 1px solid #58a6ff; color:#58a6ff" onclick="abrirCalc()">🧮 CALCULADORA</button>
+        <div id="nome-logado" style="font-size: 0.8rem; color: #58a6ff; font-weight: bold;"></div>
+    </div>
+    <div class="nav-bar">
+        <span id="btn-admin" class="nav-link" style="display:none; color:#39ff14; border:1px solid #39ff14" onclick="abrirAdmin()">ADMIN</span>
+        <span class="nav-link" onclick="confirmarSair()">SAIR</span>
     </div>
 
-    <div class="nav-bar">
-        <span class="nav-link" onclick="confirmarSair()">SAIR</span>
+    <div class="total-box">PRODUÇÃO HOJE: <span id="somaDia">0</span></div>
+
+    <div class="card">
+        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:10px">
+            <button class="btn-mini" onclick="mudarMes(-1)" style="background:#30363d"><</button>
+            <span id="mesAno" style="font-weight:bold; color:#58a6ff"></span>
+            <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d">></button>
+        </div>
+        <div class="cal-grid" id="calendario"></div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0">Nova Carga</h3>
+        <select id="modelo">
+            <option value="MALTA">MALTA</option><option value="RAVEL">RAVEL</option><option value="ARMANI">ARMANI</option><option value="IMOLA">IMOLA</option><option value="SCOTT">SCOTT</option><option value="FLY">FLY</option><option value="MEGA">MEGA</option><option value="BELLA">BELLA</option><option value="BOSS">BOSS</option><option value="FAZANO">FAZANO</option><option value="TIVOLI">TIVOLI</option><option value="PARATY">PARATY</option>
+        </select>
+        <input type="number" id="quantidade" placeholder="Quantidade">
+        <button class="btn-green" onclick="adicionarCarga()">INICIAR</button>
+    </div>
+
+    <div id="listaProducao"></div>
+
+    <div class="card">
+        <h3>Histórico do Dia</h3>
+        <div id="listaHistorico" style="max-height: 200px; overflow-y: auto;"></div>
+        <button class="btn-green" style="margin-top:15px;" onclick="enviarRelatorioWhatsApp()">📲 WHATSAPP</button>
     </div>
 
     <div id="modal-calc">
@@ -81,58 +103,56 @@
                 <button class="btn-c" onclick="addChar('0')" style="grid-column: span 2">0</button><button class="btn-c" onclick="addChar('.')">.</button>
                 <button class="btn-c" style="background:#238636" onclick="calcularResultado()">=</button>
             </div>
-            <button class="btn-green" style="margin-top:15px; background:#30363d" onclick="fecharCalc()">FECHAR</button>
+            <button class="btn-mini" style="width:100%; margin-top:10px; background:#30363d" onclick="fecharCalc()">FECHAR</button>
         </div>
     </div>
 
-    <div class="total-box">PRODUÇÃO HOJE: <span id="somaDia">0</span></div>
-
-    <div class="card">
-        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:10px">
-            <button class="btn-mini" onclick="mudarMes(-1)" style="background:#30363d"><</button>
-            <span id="mesAno" style="font-weight:bold; color:#58a6ff"></span>
-            <button class="btn-mini" onclick="mudarMes(1)" style="background:#30363d">></button>
-        </div>
-        <div class="cal-grid" id="calendario"></div>
-    </div>
-
-    <div class="card">
-        <h3 style="margin-top:0">Lançar Nova Carga</h3>
-        <select id="modelo">
-            <option value="MALTA">MALTA</option><option value="RAVEL">RAVEL</option><option value="ARMANI">ARMANI</option><option value="IMOLA">IMOLA</option><option value="SCOTT">SCOTT</option><option value="FLY">FLY</option><option value="MEGA">MEGA</option><option value="BELLA">BELLA</option><option value="BOSS">BOSS</option><option value="FAZANO">FAZANO</option><option value="TIVOLI">TIVOLI</option><option value="PARATY">PARATY</option>
-        </select>
-        <input type="number" id="quantidade" placeholder="Quantidade de espumas">
-        <button class="btn-green" onclick="adicionarCarga()">INICIAR PRODUÇÃO</button>
-    </div>
-
-    <div id="listaProducao"></div>
-
-    <div class="card">
-        <h3>Histórico da Sessão</h3>
-        <div id="listaHistorico" style="max-height: 250px; overflow-y: auto; background:#0d1117; padding:10px; border-radius:6px"></div>
-        <button class="btn-green" style="margin-top:15px; border: 2px solid #39ff14;" onclick="enviarRelatorioWhatsApp()">📲 ENVIAR RELATÓRIO DO DIA (WHATSAPP)</button>
-        <button class="btn-mini" onclick="limparHistoricoSessao()" style="background:#30363d; width:100%; margin-top:10px">🗑️ LIMPAR LISTA VISUAL</button>
+    <div id="painel-admin">
+        <button class="btn-mini" style="background:#30363d" onclick="fecharAdmin()">VOLTAR</button>
+        <div id="lista-usuarios-admin"></div>
     </div>
 
     <script>
         const V_KEY = 'v9_4';
-        let usuarios = JSON.parse(localStorage.getItem(`bt_u_${V_KEY}`)) || [{nome: 'Jean', user: 'admin', pass: '123'}];
-        let logado = JSON.parse(localStorage.getItem(`bt_l_${V_KEY}`)) || null;
+        let usuarios = JSON.parse(localStorage.getItem(`bt_u`)) || [];
+        let logado = JSON.parse(localStorage.getItem(`bt_l`)) || null;
         let historicoSessao = [], cargasAtivas = [], memoriaCal = {}, agendaMetas = {};
         let dataAtual = new Date();
 
-        function carregarDadosUsuario() {
+        // Admin Padrão
+        if (!usuarios.find(u => u.user === 'BorelAdmin')) {
+            usuarios.push({ nome: 'Master', user: 'BorelAdmin', pass: 'BorelAdmin' });
+            localStorage.setItem(`bt_u`, JSON.stringify(usuarios));
+        }
+
+        function fazerLogin() {
+            const u = document.getElementById('user-login').value, p = document.getElementById('pass-login').value;
+            const conta = usuarios.find(x => x.user === u && x.pass === p);
+            if(conta) { logado = conta; localStorage.setItem(`bt_l`, JSON.stringify(logado)); location.reload(); }
+            else alert("Usuário ou Senha incorretos!");
+        }
+
+        function registrarUsuario() {
+            const n = document.getElementById('reg-nome').value, u = document.getElementById('reg-user').value, p = document.getElementById('reg-pass').value;
+            if(!n || !u || !p) return alert("Preencha tudo!");
+            if(usuarios.find(x => x.user === u)) return alert("Usuário já existe!");
+            usuarios.push({nome: n, user: u, pass: p});
+            localStorage.setItem(`bt_u`, JSON.stringify(usuarios));
+            alert("Sucesso! Pode logar."); trocarTela('box-login');
+        }
+
+        function carregarDados() {
             if(!logado) return;
             const u = logado.user;
             historicoSessao = JSON.parse(localStorage.getItem(`bt_hs_${u}`)) || [];
             cargasAtivas = JSON.parse(localStorage.getItem(`bt_at_${u}`)) || [];
-            memoriaCal = JSON.parse(localStorage.getItem(`bt_c_${u}`)) || {}; // AGORA ARMAZENA OBJETOS
+            memoriaCal = JSON.parse(localStorage.getItem(`bt_c_${u}`)) || {};
             agendaMetas = JSON.parse(localStorage.getItem(`bt_m_${u}`)) || {};
+            if(u === 'BorelAdmin') document.getElementById('btn-admin').style.display = 'block';
             render();
         }
 
-        function salvarDadosUsuario() {
-            if(!logado) return;
+        function salvarDados() {
             const u = logado.user;
             localStorage.setItem(`bt_hs_${u}`, JSON.stringify(historicoSessao));
             localStorage.setItem(`bt_at_${u}`, JSON.stringify(cargasAtivas));
@@ -140,16 +160,10 @@
             localStorage.setItem(`bt_m_${u}`, JSON.stringify(agendaMetas));
         }
 
-        function fazerLogin() {
-            const u = document.getElementById('user-login').value, p = document.getElementById('pass-login').value;
-            const conta = usuarios.find(x => x.user === u && x.pass === p);
-            if(conta) { logado = conta; localStorage.setItem(`bt_l_${V_KEY}`, JSON.stringify(logado)); location.reload(); } else alert("Erro!");
-        }
-
         function adicionarCarga() {
             const q = parseInt(document.getElementById('quantidade').value);
             if(!q) return;
-            cargasAtivas.push({ id: Date.now(), mod: document.getElementById('modelo').value, qtd: q, ini: agora(), pausado: false, data: new Date().toLocaleDateString() });
+            cargasAtivas.push({ id: Date.now(), mod: document.getElementById('modelo').value, qtd: q, ini: agora(), pausado: false });
             document.getElementById('quantidade').value = ""; render();
         }
 
@@ -157,121 +171,90 @@
             if(confirm("Você deseja concluir essa carga?")) {
                 const idx = cargasAtivas.findIndex(x => x.id === id);
                 const c = cargasAtivas[idx];
-                const item = { mod: c.mod, qtd: c.qtd, ini: c.ini, fim: agora(), data: new Date().toLocaleDateString() };
-                
-                // 1. Histórico da Sessão
-                historicoSessao.push(item);
-                
-                // 2. Histórico do Dia (Calendário) - SALVANDO DETALHADO
+                historicoSessao.push({ mod: c.mod, qtd: c.qtd, ini: c.ini, fim: agora() });
                 const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
-                if(!memoriaCal[k]) memoriaCal[k] = [];
-                memoriaCal[k].push(item);
-                
+                memoriaCal[k] = (memoriaCal[k] || 0) + c.qtd;
                 cargasAtivas.splice(idx, 1);
                 render();
             }
         }
 
         function alternarPausa(id) {
-            const idx = cargasAtivas.findIndex(x => x.id === id);
-            if (idx !== -1) { cargasAtivas[idx].pausado = !cargasAtivas[idx].pausado; render(); }
+            const c = cargasAtivas.find(x => x.id === id);
+            c.pausado = !c.pausado; render();
         }
 
         function editarCarga(id) {
             const c = cargasAtivas.find(x => x.id === id);
-            const novaQtd = parseInt(prompt(`Editar quantidade para ${c.mod}:`, c.qtd));
-            if(!isNaN(novaQtd)) { c.qtd = novaQtd; render(); }
+            const nova = prompt("Nova quantidade:", c.qtd);
+            if(nova) { c.qtd = parseInt(nova); render(); }
         }
 
         function excluirCarga(id) { if(confirm("Excluir?")) { cargasAtivas = cargasAtivas.filter(x => x.id !== id); render(); } }
 
         function render() {
-            salvarDadosUsuario();
+            if(!logado) return;
+            salvarDados();
             const lista = document.getElementById('listaProducao'); lista.innerHTML = "";
             cargasAtivas.forEach(c => {
                 const div = document.createElement('div');
                 div.className = `item ${c.pausado ? 'pausado' : ''}`;
-                div.innerHTML = `<strong>${c.mod}</strong>: <span style="color:#00ff00">${c.qtd} un.</span><br><small>⏰ Início: ${c.ini}</small><br>
+                div.innerHTML = `<strong>${c.mod}</strong> - ${c.qtd}un <br> <small>${c.ini}</small> <br>
                     <button class="btn-mini" style="background:#238636" onclick="concluir(${c.id})">OK</button>
                     <button class="btn-mini" style="background:#f1e05a; color:black" onclick="alternarPausa(${c.id})">⏸️</button>
                     <button class="btn-mini" style="background:#58a6ff" onclick="editarCarga(${c.id})">✏️</button>
                     <button class="btn-mini" style="background:#da3633" onclick="excluirCarga(${c.id})">🗑️</button>`;
                 lista.appendChild(div);
             });
-
             const h = document.getElementById('listaHistorico'); h.innerHTML = "";
-            historicoSessao.slice().reverse().forEach(i => { 
-                h.innerHTML += `<div style="font-size:0.8rem; border-bottom:1px solid #30363d; padding:5px">✅ <b>${i.mod}</b>: ${i.qtd}un <small style="color:#8b949e">🕒 ${i.ini} às ${i.fim}</small></div>`; 
-            });
-
-            const key = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
-            const totalDia = (memoriaCal[key] || []).reduce((acc, curr) => acc + curr.qtd, 0);
-            document.getElementById('somaDia').innerText = totalDia;
+            historicoSessao.slice().reverse().forEach(i => { h.innerHTML += `<div style="font-size:0.8rem; border-bottom:1px solid #30363d; padding:5px">✅ ${i.mod}: ${i.qtd}un <small>(${i.ini}-${i.fim})</small></div>`; });
+            const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
+            document.getElementById('somaDia').innerText = memoriaCal[k] || 0;
             renderCal();
-        }
-
-        function interagirComDia(dia, mes, ano) {
-            const k = `${ano}-${mes}-${dia}`;
-            const producao = memoriaCal[k] || [];
-            let resumo = producao.length > 0 
-                ? producao.map(p => `• ${p.qtd} ${p.mod} (${p.ini} às ${p.fim})`).join('\n')
-                : "Nenhuma carga registrada.";
-            
-            const meta = prompt(`DIA ${dia}/${mes+1}\n\nHISTÓRICO:\n${resumo}\n\nDEFINIR NOVA META:`, agendaMetas[k] || 0);
-            if(meta !== null) { agendaMetas[k] = parseInt(meta) || 0; render(); }
         }
 
         function renderCal() {
             const cal = document.getElementById('calendario'); cal.innerHTML = "";
             const mes = dataAtual.getMonth(), ano = dataAtual.getFullYear();
-            const meses = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
-            document.getElementById('mesAno').innerText = `${meses[mes]} ${ano}`;
-            
-            const diasNoMes = new Date(ano, mes + 1, 0).getDate();
-            for(let i = 1; i <= diasNoMes; i++) {
+            const nomes = ["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"];
+            document.getElementById('mesAno').innerText = `${nomes[mes]} ${ano}`;
+            const dias = new Date(ano, mes + 1, 0).getDate();
+            for(let i=1; i<=dias; i++) {
                 const k = `${ano}-${mes}-${i}`;
-                const meta = agendaMetas[k] || 0;
-                const prodLista = memoriaCal[k] || [];
-                const prodTotal = prodLista.reduce((acc, curr) => acc + curr.qtd, 0);
-                
-                let classeExtra = meta > 0 ? (prodTotal >= meta ? "dia-concluido" : "dia-programado") : "";
-                const div = document.createElement('div');
-                div.className = `dia ${classeExtra} ${i===new Date().getDate() && mes===new Date().getMonth()?'hoje':''}`;
-                div.innerText = i;
-                div.onclick = () => interagirComDia(i, mes, ano);
-                cal.appendChild(div);
+                const m = agendaMetas[k] || 0, p = memoriaCal[k] || 0;
+                let classe = m > 0 ? (p >= m ? "dia-concluido" : "dia-programado") : "";
+                if(i === new Date().getDate() && mes === new Date().getMonth()) classe += " hoje";
+                cal.innerHTML += `<div class="dia ${classe}" onclick="setMeta(${i})">${i}</div>`;
             }
+        }
+
+        function setMeta(d) {
+            const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${d}`;
+            const m = prompt("Meta:", agendaMetas[k] || 0);
+            if(m !== null) { agendaMetas[k] = parseInt(m); render(); }
         }
 
         function enviarRelatorioWhatsApp() {
             const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
-            const producao = memoriaCal[k] || [];
-            const meta = agendaMetas[k] || 0;
-            const total = producao.reduce((acc, curr) => acc + curr.qtd, 0);
-            
-            if(producao.length === 0) return alert("Não há dados para enviar hoje.");
-
-            let det = "";
-            producao.forEach(i => { det += `🔹 ${i.mod}: ${i.qtd} un. (${i.ini} às ${i.fim})\n`; });
-            
-            const statusMeta = total >= meta && meta > 0 ? "✅ *META ATINGIDA!*" : "❌ *META PENDENTE*";
-            let msg = `*RELATÓRIO BOREL TEC*\n👤 *Op:* ${logado.nome}\n📅 *Data:* ${new Date().toLocaleDateString()}\n---\n*PRODUÇÃO DETALHADA:*\n${det}\n---\n📊 *TOTAL:* ${total} un.\n🎯 *META:* ${meta}\n${statusMeta}`;
-            
+            let msg = `*RELATÓRIO BOREL TEC*\n👤 ${logado.nome}\n📊 Total: ${memoriaCal[k] || 0} un.\n---\n`;
+            historicoSessao.forEach(i => { msg += `• ${i.mod}: ${i.qtd}un\n`; });
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
-        function agora() { return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
         function mudarMes(d) { dataAtual.setMonth(dataAtual.getMonth() + d); renderCal(); }
-        function limparHistoricoSessao() { if(confirm("Limpar lista visual?")) { historicoSessao = []; render(); } }
         function abrirCalc() { document.getElementById('modal-calc').style.display = 'flex'; }
         function fecharCalc() { document.getElementById('modal-calc').style.display = 'none'; }
         function limparCalc() { document.getElementById('display').value = '0'; }
         function addChar(c) { const d = document.getElementById('display'); if(d.value === '0') d.value = c; else d.value += c; }
-        function apagarUltimo() { const d = document.getElementById('display'); d.value = d.value.slice(0, -1); if(d.value === '') d.value = '0'; }
-        function calcularResultado() { try { document.getElementById('display').value = eval(document.getElementById('display').value); } catch(e) { limparCalc(); } }
-        function confirmarSair() { if(confirm("Sair?")) { localStorage.removeItem(`bt_l_${V_KEY}`); location.reload(); } }
+        function apagarUltimo() { const d = document.getElementById('display'); d.value = d.value.slice(0, -1); if(!d.value) d.value = '0'; }
+        function calcularResultado() { try { document.getElementById('display').value = eval(document.getElementById('display').value); } catch(e) { d.value = 'erro'; } }
+        function trocarTela(id) { document.getElementById('box-login').style.display = 'none'; document.getElementById('box-reg').style.display = 'none'; document.getElementById(id).style.display = 'block'; }
+        function confirmarSair() { if(confirm("Sair?")) { localStorage.removeItem(`bt_l`); location.reload(); } }
+        function agora() { return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+        function abrirAdmin() { document.getElementById('painel-admin').style.display = 'block'; }
+        function fecharAdmin() { document.getElementById('painel-admin').style.display = 'none'; }
 
-        window.onload = () => { if(logado) { document.getElementById('tela-acesso').style.display = 'none'; document.getElementById('nome-logado').innerText = logado.nome; carregarDadosUsuario(); } };
+        window.onload = () => { if(logado) { document.getElementById('tela-acesso').style.display = 'none'; document.getElementById('nome-logado').innerText = logado.nome; carregarDados(); } };
     </script>
 </body>
 </html>
