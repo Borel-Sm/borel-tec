@@ -8,8 +8,8 @@
         body { font-family: 'Segoe UI', sans-serif; color: #ecf0f1; margin: 0; padding: 110px 15px 20px 15px; background: #0d1117; }
         
         /* ACESSO */
-        #tela-acesso { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117 url('background.jpg') center/cover; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .acesso-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 30px 20px; background: rgba(22, 27, 34, 0.95); box-shadow: 0 10px 25px rgba(0,0,0,0.5); border-top: 4px solid #39ff14; }
+        #tela-acesso { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .acesso-card { border-radius: 12px; border: 2px solid #30363d; text-align: center; width: 85%; max-width: 320px; padding: 30px 20px; background: rgba(22, 27, 34, 0.95); border-top: 4px solid #39ff14; }
         .input-group { position: relative; width: 100%; margin: 10px 0; }
         .input-group input { width: 100%; padding: 12px; background: #0d1117; border: 1px solid #30363d; color: #00ff00; text-align: center; border-radius: 6px; box-sizing: border-box; font-weight: bold; }
         .toggle-pass { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #8b949e; }
@@ -25,29 +25,26 @@
         .card { background: rgba(22, 27, 34, 0.9); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
         
         .btn-green { background: linear-gradient(180deg, #2ea44f 0%, #238636 100%); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer; }
-        .btn-mini { padding: 10px; font-size: 0.8rem; border-radius: 6px; border: none; font-weight: bold; color: white; cursor: pointer; transition: transform 0.1s; margin-right: 5px; margin-top: 8px; }
+        .btn-mini { padding: 10px; font-size: 0.8rem; border-radius: 6px; border: none; font-weight: bold; color: white; cursor: pointer; margin-right: 5px; margin-top: 8px; }
         
         .item { background: #1c2128; border-left: 5px solid #58a6ff; padding: 15px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #30363d; }
-        .item.pausado { border-left-color: #f1e05a; background: #161b22; opacity: 0.8; }
+        .item.pausado { border-left-color: #f1e05a; opacity: 0.8; }
         
-        /* CALENDÁRIO */
+        /* CALENDÁRIO DINÂMICO */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
         .dia { background: #21262d; padding: 12px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; color: #8b949e; cursor: pointer;}
-        .dia-ok { background: #238636 !important; color: white !important; border-color: #39ff14 !important; font-weight: bold; }
+        .dia-programado { background: #d97706 !important; color: white !important; border-color: #fbbf24 !important; } /* LARANJA */
+        .dia-concluido { background: #059669 !important; color: white !important; border-color: #34d399 !important; } /* VERDE */
         .hoje { border: 2px solid #58a6ff !important; color: white; }
 
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
 
         /* MODAL CALCULADORA */
-        #modal-calc { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; 
-        }
+        #modal-calc { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; }
         .calc-body { background: #161b22; border: 2px solid #58a6ff; padding: 20px; border-radius: 15px; width: 280px; }
         .calc-display { width: 100%; height: 50px; background: #0d1117; border: 1px solid #30363d; color: #39ff14; text-align: right; font-size: 1.5rem; padding: 10px; box-sizing: border-box; border-radius: 6px; margin-bottom: 15px; }
         .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .btn-c { background: #21262d; border: 1px solid #30363d; color: white; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-op { background: #238636; color: white; }
     </style>
 </head>
 <body>
@@ -56,26 +53,16 @@
         <div id="box-login" class="acesso-card">
             <h3 style="color: white;">Borel Tec Login</h3>
             <div class="input-group"><input type="text" id="user-login" placeholder="USUÁRIO"></div>
-            <div class="input-group">
-                <input type="password" id="pass-login" placeholder="SENHA">
-                <span class="toggle-pass" onclick="verSenha('pass-login')">👁️</span>
-            </div>
+            <div class="input-group"><input type="password" id="pass-login" placeholder="SENHA"><span class="toggle-pass" onclick="verSenha('pass-login')">👁️</span></div>
             <button class="btn-green" onclick="fazerLogin()">ENTRAR NO SISTEMA</button>
             <p style="font-size: 0.8rem; margin-top: 15px; color: #8b949e;">Novo aqui? <a href="#" onclick="trocarTela('box-reg')" style="color:#58a6ff">Criar Conta</a></p>
         </div>
-
         <div id="box-reg" class="acesso-card" style="display:none">
             <h3 style="color: white;">Novo Registro</h3>
             <div class="input-group"><input type="text" id="reg-nome" placeholder="NOME"></div>
             <div class="input-group"><input type="text" id="reg-user" placeholder="USUÁRIO"></div>
-            <div class="input-group">
-                <input type="password" id="reg-pass" placeholder="SENHA">
-                <span class="toggle-pass" onclick="verSenha('reg-pass')">👁️</span>
-            </div>
-            <div class="input-group">
-                <input type="password" id="reg-pass2" placeholder="CONFIRME A SENHA">
-                <span class="toggle-pass" onclick="verSenha('reg-pass2')">👁️</span>
-            </div>
+            <div class="input-group"><input type="password" id="reg-pass" placeholder="SENHA"><span class="toggle-pass" onclick="verSenha('reg-pass')">👁️</span></div>
+            <div class="input-group"><input type="password" id="reg-pass2" placeholder="CONFIRME A SENHA"><span class="toggle-pass" onclick="verSenha('reg-pass2')">👁️</span></div>
             <button class="btn-green" style="background:#1f6feb" onclick="registrarUsuario()">CRIAR AGORA</button>
             <p onclick="trocarTela('box-login')" style="cursor:pointer; font-size:0.8rem; color:#8b949e; margin-top:10px">Voltar</p>
         </div>
@@ -95,22 +82,12 @@
             <div class="calc-grid">
                 <button class="btn-c" onclick="limparCalc()" style="grid-column: span 2; background:#da3633">C</button>
                 <button class="btn-c" onclick="apagarUltimo()">⌫</button>
-                <button class="btn-c btn-op" onclick="addChar('/')">/</button>
-                <button class="btn-c" onclick="addChar('7')">7</button>
-                <button class="btn-c" onclick="addChar('8')">8</button>
-                <button class="btn-c" onclick="addChar('9')">9</button>
-                <button class="btn-c btn-op" onclick="addChar('*')">x</button>
-                <button class="btn-c" onclick="addChar('4')">4</button>
-                <button class="btn-c" onclick="addChar('5')">5</button>
-                <button class="btn-c" onclick="addChar('6')">6</button>
-                <button class="btn-c btn-op" onclick="addChar('-')">-</button>
-                <button class="btn-c" onclick="addChar('1')">1</button>
-                <button class="btn-c" onclick="addChar('2')">2</button>
-                <button class="btn-c" onclick="addChar('3')">3</button>
-                <button class="btn-c btn-op" onclick="addChar('+')">+</button>
-                <button class="btn-c" onclick="addChar('0')" style="grid-column: span 2">0</button>
-                <button class="btn-c" onclick="addChar('.')">.</button>
-                <button class="btn-c btn-op" onclick="calcularResultado()">=</button>
+                <button class="btn-c" onclick="addChar('/')">/</button>
+                <button class="btn-c" onclick="addChar('7')">7</button><button class="btn-c" onclick="addChar('8')">8</button><button class="btn-c" onclick="addChar('9')">9</button><button class="btn-c" onclick="addChar('*')">x</button>
+                <button class="btn-c" onclick="addChar('4')">4</button><button class="btn-c" onclick="addChar('5')">5</button><button class="btn-c" onclick="addChar('6')">6</button><button class="btn-c" onclick="addChar('-')">-</button>
+                <button class="btn-c" onclick="addChar('1')">1</button><button class="btn-c" onclick="addChar('2')">2</button><button class="btn-c" onclick="addChar('3')">3</button><button class="btn-c" onclick="addChar('+')">+</button>
+                <button class="btn-c" onclick="addChar('0')" style="grid-column: span 2">0</button><button class="btn-c" onclick="addChar('.')">.</button>
+                <button class="btn-c" style="background:#238636" onclick="calcularResultado()">=</button>
             </div>
             <button class="btn-green" style="margin-top:15px; background:#30363d" onclick="fecharCalc()">FECHAR</button>
         </div>
@@ -131,12 +108,7 @@
     <div class="card">
         <h3 style="margin-top:0">Lançar Nova Carga</h3>
         <select id="modelo">
-            <option value="MALTA">MALTA</option><option value="RAVEL">RAVEL</option>
-            <option value="ARMANI">ARMANI</option><option value="IMOLA">IMOLA</option>
-            <option value="SCOTT">SCOTT</option><option value="FLY">FLY</option>
-            <option value="MEGA">MEGA</option><option value="BELLA">BELLA</option>
-            <option value="BOSS">BOSS</option><option value="FAZANO">FAZANO</option>
-            <option value="TIVOLI">TIVOLI</option><option value="PARATY">PARATY</option>
+            <option value="MALTA">MALTA</option><option value="RAVEL">RAVEL</option><option value="ARMANI">ARMANI</option><option value="IMOLA">IMOLA</option><option value="SCOTT">SCOTT</option><option value="FLY">FLY</option><option value="MEGA">MEGA</option><option value="BELLA">BELLA</option><option value="BOSS">BOSS</option><option value="FAZANO">FAZANO</option><option value="TIVOLI">TIVOLI</option><option value="PARATY">PARATY</option>
         </select>
         <input type="number" id="quantidade" placeholder="Quantidade de espumas">
         <button class="btn-green" onclick="adicionarCarga()">INICIAR PRODUÇÃO</button>
@@ -145,63 +117,45 @@
     <div id="listaProducao"></div>
 
     <div class="card">
-        <h3>Histórico da Sessão (Pendentes)</h3>
-        <div id="listaHistorico" style="max-height: 200px; overflow-y: auto; background:#0d1117; padding:10px; border-radius:6px"></div>
+        <h3>Histórico da Sessão</h3>
+        <div id="listaHistorico" style="max-height: 250px; overflow-y: auto; background:#0d1117; padding:10px; border-radius:6px"></div>
         <button class="btn-green" style="margin-top:15px; border: 2px solid #39ff14;" onclick="finalizarRelatorio()">✅ FINALIZAR E ENVIAR RELATÓRIO</button>
-        <button class="btn-mini" onclick="limparHistoricoSessao()" style="background:#30363d; width:100%; margin-top:10px">Limpar Lista</button>
+        <button class="btn-mini" onclick="limparHistoricoSessao()" style="background:#30363d; width:100%; margin-top:10px">🗑️ APENAS LIMPAR LISTA</button>
     </div>
 
     <script>
-        let usuarios = JSON.parse(localStorage.getItem('bt_u_v2')) || [];
-        let logado = JSON.parse(localStorage.getItem('bt_logado_v2')) || null;
-        let historicoSessao = []; 
-        let cargasAtivas = JSON.parse(localStorage.getItem('bt_at_v2')) || [];
-        let memoriaCal = JSON.parse(localStorage.getItem('bt_c_v2')) || {};
-        let agendaMetas = JSON.parse(localStorage.getItem('bt_m_v2')) || {};
+        let usuarios = JSON.parse(localStorage.getItem('bt_u_v3')) || [];
+        let logado = JSON.parse(localStorage.getItem('bt_l_v3')) || null;
+        let historicoSessao = JSON.parse(localStorage.getItem('bt_hs_v3')) || []; 
+        let cargasAtivas = JSON.parse(localStorage.getItem('bt_at_v3')) || [];
+        let memoriaCal = JSON.parse(localStorage.getItem('bt_c_v3')) || {};
+        let agendaMetas = JSON.parse(localStorage.getItem('bt_m_v3')) || {};
         let dataAtual = new Date();
 
-        // --- LÓGICA CALCULADORA ---
         function abrirCalc() { document.getElementById('modal-calc').style.display = 'flex'; }
         function fecharCalc() { document.getElementById('modal-calc').style.display = 'none'; }
         function limparCalc() { document.getElementById('display').value = '0'; }
-        function addChar(c) {
-            const d = document.getElementById('display');
-            if(d.value === '0') d.value = c; else d.value += c;
-        }
-        function apagarUltimo() {
-            const d = document.getElementById('display');
-            d.value = d.value.slice(0, -1);
-            if(d.value === '') d.value = '0';
-        }
-        function calcularResultado() {
-            try { document.getElementById('display').value = eval(document.getElementById('display').value); }
-            catch(e) { alert("Erro na conta!"); limparCalc(); }
-        }
+        function addChar(c) { const d = document.getElementById('display'); if(d.value === '0') d.value = c; else d.value += c; }
+        function apagarUltimo() { const d = document.getElementById('display'); d.value = d.value.slice(0, -1); if(d.value === '') d.value = '0'; }
+        function calcularResultado() { try { document.getElementById('display').value = eval(document.getElementById('display').value); } catch(e) { limparCalc(); } }
 
-        // --- SISTEMA ---
         function verSenha(id) { const i = document.getElementById(id); i.type = i.type === "password" ? "text" : "password"; }
         function trocarTela(id) { document.getElementById('box-login').style.display = 'none'; document.getElementById('box-reg').style.display = 'none'; document.getElementById(id).style.display = 'block'; }
         
         function registrarUsuario() {
             const n = document.getElementById('reg-nome').value, u = document.getElementById('reg-user').value, p1 = document.getElementById('reg-pass').value, p2 = document.getElementById('reg-pass2').value;
-            if(!n || !u || !p1) return alert("Preencha tudo!");
-            if(p1 !== p2) return alert("Senhas diferentes!");
+            if(!n || !u || !p1 || p1 !== p2) return alert("Verifique os dados!");
             usuarios.push({nome: n, user: u, pass: p1});
-            localStorage.setItem('bt_u_v2', JSON.stringify(usuarios));
-            alert("Sucesso! Faça login."); trocarTela('box-login');
+            localStorage.setItem('bt_u_v3', JSON.stringify(usuarios));
+            alert("Sucesso!"); trocarTela('box-login');
         }
 
         function fazerLogin() {
             const u = document.getElementById('user-login').value, p = document.getElementById('pass-login').value;
             const conta = usuarios.find(x => x.user === u && x.pass === p);
-            if(conta) { 
-                logado = conta; localStorage.setItem('bt_logado_v2', JSON.stringify(logado)); 
-                document.getElementById('tela-acesso').style.display = 'none';
-                document.getElementById('nome-logado').innerText = logado.nome;
-            } else alert("Usuário ou senha incorretos!");
+            if(conta) { logado = conta; localStorage.setItem('bt_l_v3', JSON.stringify(logado)); location.reload(); } else alert("Erro!");
         }
-
-        function fazerLogout() { localStorage.removeItem('bt_logado_v2'); location.reload(); }
+        function fazerLogout() { localStorage.removeItem('bt_l_v3'); location.reload(); }
 
         function adicionarCarga() {
             const q = parseInt(document.getElementById('quantidade').value);
@@ -217,10 +171,8 @@
             if(!isNaN(restante) && restante >= 0 && restante < c.qtd) {
                 const feito = c.qtd - restante;
                 historicoSessao.push({ mod: c.mod, qtd: feito, ini: c.ini, fim: agora(), data: c.data });
-                c.qtd = restante;
-                c.pausado = true;
-                render();
-            } else alert("Valor inválido!");
+                c.qtd = restante; c.pausado = true; render();
+            }
         }
 
         function concluir(id) {
@@ -232,44 +184,45 @@
 
         function finalizarRelatorio() {
             const k = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
-            let somaSessao = 0;
-            let detalhamento = "";
-            historicoSessao.forEach(i => { somaSessao += i.qtd; detalhamento += `🔹 ${i.mod}: ${i.qtd} un. (${i.ini} às ${i.fim})\n`; });
+            let somaSessao = 0; let det = "";
+            historicoSessao.forEach(i => { somaSessao += i.qtd; det += `🔹 ${i.mod}: ${i.qtd} un. (${i.ini}-${i.fim})\n`; });
             memoriaCal[k] = (memoriaCal[k] || 0) + somaSessao;
-            let msg = `*RELATÓRIO BOREL TEC*\n👤 *Op:* ${logado.nome}\n📅 *Data:* ${new Date().toLocaleDateString()}\n---\n*PRODUÇÃO:*\n${detalhamento}\n---\n📊 *TOTAL:* ${memoriaCal[k]} un.\n🎯 *META:* ${agendaMetas[k] || 0} un.`;
-            historicoSessao = []; 
+            let msg = `*RELATÓRIO BOREL TEC*\n👤 *Op:* ${logado.nome}\n📅 *Data:* ${new Date().toLocaleDateString()}\n---\n*PRODUÇÃO:*\n${det}\n---\n📊 *TOTAL DIA:* ${memoriaCal[k]} un.\n🎯 *META:* ${agendaMetas[k] || 0}`;
             render(); renderCal();
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
         function agora() { return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
-        function pausar(id) { const c = cargasAtivas.find(x => x.id === id); c.pausado = !c.pausado; render(); }
-        function excluir(id) { if(confirm("Excluir?")) { cargasAtivas = cargasAtivas.filter(x => x.id !== id); render(); } }
-        function limparHistoricoSessao() { historicoSessao = []; render(); }
-        function zerarCalendario() { if(confirm("Apagar tudo?")) { memoriaCal = {}; agendaMetas = {}; renderCal(); } }
+        function limparHistoricoSessao() { if(confirm("Limpar lista de histórico?")) { historicoSessao = []; render(); } }
+        function zerarCalendario() { if(confirm("Zerar calendário?")) { memoriaCal = {}; agendaMetas = {}; renderCal(); render(); } }
 
         function render() {
-            localStorage.setItem('bt_at_v2', JSON.stringify(cargasAtivas));
-            localStorage.setItem('bt_c_v2', JSON.stringify(memoriaCal));
-            localStorage.setItem('bt_m_v2', JSON.stringify(agendaMetas));
+            localStorage.setItem('bt_at_v3', JSON.stringify(cargasAtivas));
+            localStorage.setItem('bt_c_v3', JSON.stringify(memoriaCal));
+            localStorage.setItem('bt_m_v3', JSON.stringify(agendaMetas));
+            localStorage.setItem('bt_hs_v3', JSON.stringify(historicoSessao));
+
             const lista = document.getElementById('listaProducao'); lista.innerHTML = "";
             cargasAtivas.forEach(c => {
                 const div = document.createElement('div');
                 div.className = `item ${c.pausado ? 'pausado' : ''}`;
-                div.innerHTML = `<strong>${c.mod}</strong>: <span style="color:#00ff00">${c.qtd} un.</span> <br>
-                    <small>⏰ Início: ${c.ini} | 📅 ${c.data}</small><br>
+                div.innerHTML = `<strong>${c.mod}</strong>: <span style="color:#00ff00">${c.qtd} un.</span><br><small>⏰ ${c.ini} | ${c.data}</small><br>
                     <button class="btn-mini" style="background:#238636" onclick="concluir(${c.id})">OK</button>
-                    <button class="btn-mini" style="background:#f1e05a; color:black" onclick="pausar(${c.id})">⏸️</button>
+                    <button class="btn-mini" style="background:#f1e05a; color:black" onclick="(()=>{c.pausado=!c.pausado;render()})()">⏸️</button>
                     <button class="btn-mini" style="background:#58a6ff" onclick="editarCarga(${c.id})">✏️</button>
-                    <button class="btn-mini" style="background:#da3633" onclick="excluir(${c.id})">🗑️</button>`;
+                    <button class="btn-mini" style="background:#da3633" onclick="(()=>{cargasAtivas=cargasAtivas.filter(x=>x.id!==c.id);render()})()">🗑️</button>`;
                 lista.appendChild(div);
             });
+
             const h = document.getElementById('listaHistorico'); h.innerHTML = "";
-            historicoSessao.slice().reverse().forEach(i => { h.innerHTML += `<div style="font-size:0.8rem; border-bottom:1px solid #30363d; padding:5px">✅ <b>${i.mod}</b>: ${i.qtd}un <br> <small style="color:#8b949e">🕒 ${i.ini}-${i.fim}</small></div>`; });
-            document.getElementById('somaDia').innerText = memoriaCal[`${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`] || "0";
+            historicoSessao.slice().reverse().forEach(i => { h.innerHTML += `<div style="font-size:0.8rem; border-bottom:1px solid #30363d; padding:5px">✅ <b>${i.mod}</b>: ${i.qtd}un <small style="color:#8b949e">🕒 ${i.ini}-${i.fim}</small></div>`; });
+            const key = `${dataAtual.getFullYear()}-${dataAtual.getMonth()}-${dataAtual.getDate()}`;
+            document.getElementById('somaDia').innerText = memoriaCal[key] || "0";
+            renderCal();
         }
 
         function mudarMes(d) { dataAtual.setMonth(dataAtual.getMonth() + d); renderCal(); }
+
         function renderCal() {
             const cal = document.getElementById('calendario'); cal.innerHTML = "";
             const mes = dataAtual.getMonth(), ano = dataAtual.getFullYear();
@@ -278,19 +231,20 @@
             const diasNoMes = new Date(ano, mes + 1, 0).getDate();
             for(let i = 1; i <= diasNoMes; i++) {
                 const k = `${ano}-${mes}-${i}`;
+                const meta = agendaMetas[k] || 0;
+                const prod = memoriaCal[k] || 0;
+                let classeExtra = "";
+                if(meta > 0) classeExtra = prod >= meta ? "dia-concluido" : "dia-programado";
+                
                 const div = document.createElement('div');
-                div.className = `dia ${memoriaCal[k]?'dia-ok':''} ${i===new Date().getDate() && mes===new Date().getMonth()?'hoje':''}`;
+                div.className = `dia ${classeExtra} ${i===new Date().getDate() && mes===new Date().getMonth()?'hoje':''}`;
                 div.innerText = i;
-                div.onclick = () => { const m = prompt(`Meta dia ${i}:`, agendaMetas[k] || ""); if(m !== null) { agendaMetas[k] = parseInt(m); renderCal(); } };
+                div.onclick = () => { const m = prompt(`Meta dia ${i}:`, meta); if(m !== null) { agendaMetas[k] = parseInt(m); render(); } };
                 cal.appendChild(div);
             }
         }
 
-        window.onload = () => {
-            const salvo = localStorage.getItem('bt_logado_v2');
-            if(salvo) { logado = JSON.parse(salvo); document.getElementById('tela-acesso').style.display = 'none'; document.getElementById('nome-logado').innerText = logado.nome; }
-            render(); renderCal();
-        };
+        window.onload = () => { if(logado) { document.getElementById('tela-acesso').style.display = 'none'; document.getElementById('nome-logado').innerText = logado.nome; render(); } };
     </script>
 </body>
 </html>
