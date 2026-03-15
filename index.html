@@ -32,6 +32,12 @@
         .btn-mini { width: auto; padding: 8px 12px; font-size: 0.8rem; margin-top: 8px; margin-right: 5px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; }
         select, input[type="number"] { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
         
+        /* CALENDÁRIO */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; }
+        .dia { background: #21262d; padding: 10px 0; text-align: center; border-radius: 4px; font-size: 0.8rem; border: 1px solid #30363d; cursor: pointer; }
+        .dia-ok { background: #238636 !important; border-color: #39ff14 !important; font-weight: bold; }
+        .dia-meta { border-bottom: 3px solid #58a6ff !important; }
+
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #161b22; padding: 20px; border-radius: 12px; z-index: 2000; border: 2px solid #30363d; width: 280px; }
         #calc-display { width: 100%; height: 50px; background: #010409; color: #39ff14; text-align: right; font-size: 1.5rem; border: 1px solid #30363d; margin-bottom: 10px; padding: 10px; box-sizing: border-box; }
         .grid-calc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
@@ -81,7 +87,14 @@
         <h3>Histórico Concluído</h3>
         <div id="listaHistorico" style="max-height: 250px; overflow-y: auto; margin-bottom:10px;"></div>
         <button class="btn-green" onclick="enviarZap()">📤 ENVIAR PARA WHATSAPP</button>
+        <button class="btn-green" style="background:#8957e5; margin-top:10px" onclick="fecharDia()">💾 SALVAR NO CALENDÁRIO</button>
         <button class="btn-red" onclick="limparHistorico()" style="background:#484f58; margin-top:10px">🗑️ LIMPAR HISTÓRICO</button>
+    </div>
+
+    <div class="card">
+        <h3 style="color:#58a6ff">📅 AGENDA E MEMÓRIA</h3>
+        <div class="cal-grid" id="calendario"></div>
+        <button class="btn-red" onclick="zerarCalendario()" style="background:#4a0000; margin-top: 15px;">ZERAR TUDO (MÊS)</button>
     </div>
 
     <div id="calc-modal" class="modal">
@@ -107,6 +120,8 @@
 
         let historicoGeral = JSON.parse(localStorage.getItem('borel_h_v16')) || [];
         let cargasAtivas = JSON.parse(localStorage.getItem('borel_ativas_v16')) || [];
+        let memoriaCal = JSON.parse(localStorage.getItem('borel_c_v16')) || {};
+        let agendaMetas = JSON.parse(localStorage.getItem('borel_metas_agenda')) || {};
 
         function autenticar() {
             if(document.getElementById('user').value === "BorelTec" && document.getElementById('pass').value === "Borel77") {
@@ -120,6 +135,8 @@
             localStorage.setItem('borel_s_v16', document.getElementById('somaDia').innerText);
             localStorage.setItem('borel_m_v16', document.getElementById('metaValor').value);
             localStorage.setItem('borel_ativas_v16', JSON.stringify(cargasAtivas));
+            localStorage.setItem('borel_c_v16', JSON.stringify(memoriaCal));
+            localStorage.setItem('borel_metas_agenda', JSON.stringify(agendaMetas));
         }
 
         function adicionarManual() {
@@ -197,7 +214,41 @@
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
         }
 
+        function fecharDia() {
+            const totalNaTela = parseInt(document.getElementById('somaDia').innerText);
+            if(totalNaTela === 0) return alert("Nada para salvar.");
+            const key = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+            memoriaCal[key] = (memoriaCal[key] || 0) + totalNaTela;
+            alert("Salvo no calendário!");
+            historicoGeral = []; document.getElementById('somaDia').innerText = "0";
+            renderHistorico(); renderCal(); salvar();
+        }
+
+        function renderCal() {
+            const cal = document.getElementById('calendario'); cal.innerHTML = "";
+            const hoje = new Date();
+            const diasMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).getDate();
+            for(let i=1; i<=diasMes; i++) {
+                const key = `${hoje.getFullYear()}-${hoje.getMonth()}-${i}`;
+                const div = document.createElement('div'); div.className = 'dia'; div.innerText = i;
+                if(memoriaCal[key]) div.classList.add('dia-ok');
+                if(agendaMetas[key]) div.classList.add('dia-meta');
+                div.onclick = () => {
+                    const m = prompt(`DIA ${i}\nProdução: ${memoriaCal[key]||0}\nMeta Agendada: ${agendaMetas[key]||""}\nNova Meta:`, agendaMetas[key]||"");
+                    if(m !== null) { m==="" ? delete agendaMetas[key] : agendaMetas[key]=parseInt(m); renderCal(); salvar(); carregarMetaHoje(); }
+                };
+                cal.appendChild(div);
+            }
+        }
+
+        function carregarMetaHoje() {
+            const h = new Date();
+            const key = `${h.getFullYear()}-${h.getMonth()}-${h.getDate()}`;
+            if(agendaMetas[key]) document.getElementById('metaValor').value = agendaMetas[key];
+        }
+
         function limparHistorico() { if(confirm("Limpar tela?")) { historicoGeral=[]; document.getElementById('somaDia').innerText="0"; renderHistorico(); salvar(); } }
+        function zerarCalendario() { if(confirm("Zerar Mês?")) { memoriaCal={}; agendaMetas={}; salvar(); renderCal(); } }
         function toggleCalc() { const m = document.getElementById('calc-modal'); m.style.display = m.style.display==='block'?'none':'block'; }
         function calcNum(n) { const d = document.getElementById('calc-display'); d.value = d.value==='0'?n:d.value+n; }
         function calcOp(o) { document.getElementById('calc-display').value += o; }
@@ -209,7 +260,7 @@
             if(log && (new Date().getTime() - log < 12*60*60*1000)) document.getElementById('tela-login').style.display = 'none';
             document.getElementById('somaDia').innerText = localStorage.getItem('borel_s_v16') || "0";
             document.getElementById('metaValor').value = localStorage.getItem('borel_m_v16') || "";
-            renderCargas(); renderHistorico();
+            carregarMetaHoje(); renderCargas(); renderHistorico(); renderCal();
         };
     </script>
 </body>
